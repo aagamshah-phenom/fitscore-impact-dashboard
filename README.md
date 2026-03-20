@@ -1,4 +1,4 @@
-# hi-copilot-config
+# product-copilot-beta
 
 Shared configuration for the Phenom product copilot. Works with Cursor and Claude Code.
 
@@ -29,8 +29,8 @@ The only folders you'll ever need to edit are `skills/`, `policies/`, and `agent
 ### 1. Clone the repo
 
 ```bash
-git clone <repo-url> ~/hi-copilot-config
-cd ~/hi-copilot-config
+git clone git@github.com:tim-moulton/product-copilot-beta.git ~/product-copilot-beta
+cd ~/product-copilot-beta
 ```
 
 ### 2. Add your credentials
@@ -76,7 +76,7 @@ Jira/Confluence and Figma use their official MCP servers. Add these to your IDE 
 
 ## Using with Cursor
 
-Open `~/hi-copilot-config` as your workspace in Cursor (or add it as a folder in a multi-root workspace). Cursor automatically picks up:
+Open `~/product-copilot-beta` as your workspace in Cursor (or add it as a folder in a multi-root workspace). Cursor automatically picks up:
 
 - `.cursor/rules/` — skills and policies injected as rules
 - `.cursor/mcp.json` — local copilot MCP server
@@ -115,12 +115,12 @@ Add the official MCP servers to `.cursor/mcp.json`:
 
 ## Using with Claude Code
 
-Run `claude` from inside `~/hi-copilot-config`. `CLAUDE.md` is automatically loaded and pulls in all skills and policies.
+Run `claude` from inside `~/product-copilot-beta`. `CLAUDE.md` is automatically loaded and pulls in all skills and policies.
 
 To use the copilot context while working in a different repo, add this to that repo's `CLAUDE.md`:
 
 ```markdown
-@/Users/your-name/hi-copilot-config/CLAUDE.md
+@/Users/your-name/product-copilot-beta/CLAUDE.md
 ```
 
 Add MCP servers to `~/.claude/settings.json`:
@@ -131,7 +131,7 @@ Add MCP servers to `~/.claude/settings.json`:
     "copilot": {
       "command": "npx",
       "args": ["copilot-mcp"],
-      "env": { "COPILOT_CONFIG_DIR": "/Users/your-name/hi-copilot-config" }
+      "env": { "COPILOT_CONFIG_DIR": "/Users/your-name/product-copilot-beta" }
     },
     "atlassian": {
       "command": "npx",
@@ -164,11 +164,7 @@ No regeneration step needed. Both Cursor and Claude Code read the source files d
 
 If a change also applies to the Chrome extension, manually sync the updated file to `backend/src/skills/` or `backend/src/agents/` in the product-copilot repo.
 
-See **[MAINTENANCE.md](MAINTENANCE.md)** for the full guide on:
-- Syncing skills between this repo and product-copilot
-- Translating Confluence page ID references to local `knowledge/` file paths
-- Adding new Confluence pages to the knowledge folder
-- The Confluence page → local file map
+Maintenance docs (syncing skills, managing knowledge files, Confluence page map) live in the [product-copilot](https://github.com/user/product-copilot) repo — see `MAINTENANCE.md` there.
 
 ---
 
