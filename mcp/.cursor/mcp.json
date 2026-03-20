@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "copilot": {
+      "command": "/Users/tim.moulton/hi-pocs/hi-copilot-config/mcp/node_modules/.bin/copilot-mcp",
+      "env": {
+        "COPILOT_CONFIG_DIR": "/Users/tim.moulton/hi-pocs/hi-copilot-config/mcp"
+      }
+    }
+  }
+}

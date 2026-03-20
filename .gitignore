@@ -1,0 +1,31 @@
+# =============================================================
+# WHITELIST APPROACH — everything is ignored unless listed here
+# =============================================================
+
+# Ignore everything by default
+*
+
+# Allow directory traversal (git needs this to reach nested files)
+!*/
+
+# ---- Core config files ----
+!.gitignore
+!.env.example
+!CLAUDE.md
+!README.md
+
+# ---- Copilot folders ----
+!skills/**
+!policies/**
+!agents/**
+!knowledge/**
+!mcp/**
+!.cursor/**
+
+# ---- Always ignore (even inside whitelisted folders) ----
+.env
+me.md
+**/node_modules/**
+**/.DS_Store
+**/*.local
+**/package-lock.json
