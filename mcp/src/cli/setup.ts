@@ -65,7 +65,13 @@ function waitForQueryParam(port: number, param: string, path: string = "/callbac
  */
 async function ensureLoggedIn(): Promise<string> {
   const existing = await getBackendJwt();
-  if (existing) return existing;
+  if (existing) {
+    const check = await fetch(`${BACKEND_URL}/auth/me`, {
+      headers: { Authorization: `Bearer ${existing}` },
+    });
+    if (check.ok) return existing;
+    console.log("Stored session expired, re-authenticating...");
+  }
 
   console.log("\nLogging in to Copilot backend...");
   const port = 3792;
@@ -85,6 +91,7 @@ async function pullTokensFromBackend(jwt: string): Promise<void> {
   const res = await fetch(`${BACKEND_URL}/integrations/export`, {
     headers: { Authorization: `Bearer ${jwt}` },
   });
+  if (res.status === 401) throw new Error("Session expired mid-flow — please re-run setup to log in again.");
   if (!res.ok) throw new Error(`Failed to export tokens: ${res.status}`);
 
   const data = (await res.json()) as Record<string, { access_token: string; refresh_token?: string; token_expires_at?: string; metadata?: Record<string, unknown> }>;
