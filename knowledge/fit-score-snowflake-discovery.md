@@ -1,6 +1,6 @@
 # Fit Score Snowflake discovery
 
-Concise notes from exploration and validation of `DS_DB.AIDSG_DEV.METRIC_FITFORMER`. Use with `skills/snowflake-data-context.md` for broader CID / platform context.
+Notes for Fit Score **Traditional vs Gen 3 (LLM FitScore arm)** analytics. Use with `skills/snowflake-data-context.md` for broader CID / platform context.
 
 ---
 
@@ -8,26 +8,158 @@ Concise notes from exploration and validation of `DS_DB.AIDSG_DEV.METRIC_FITFORM
 
 - **Repo:** `product-copilot-beta`.
 - **Purpose:** Copilot / MCP configuration (skills, policies, agents, local MCP server)—**not** a frontend dashboard application.
-- **Use this repo for:** Snowflake discovery, query prototyping, and documenting dashboard/report intent.
+- **Use this repo for:** documenting sources, grain, joins, and dashboard/report intent.
 - **Do not** build a web dashboard UI in this repo.
 
 ---
 
-## 2. Primary candidate table
+## 2. Authoritative source (engineering confirmed)
 
-**Table:** `DS_DB.AIDSG_DEV.METRIC_FITFORMER`
+| Item | Detail |
+|------|--------|
+| **Main table** | `PROD_DB.EXTERNAL_SCHEMA.FACT_CRM_FITSCORE` |
+| **Gen 3** | **LLM FitScore arm** — *not* Fitformer; do **not** use `DS_DB.AIDSG_DEV.METRIC_FITFORMER` for Gen 3. |
+| **Gen 2** | **Fitformer** (legacy / separate pipeline). |
+| **Payload** | Use the **`fitscore_with_feedback`** JSON object on the fact row. |
 
-**Current status:**
+**Label fields (string):**
 
-- Best discovered table so far for **Traditional vs Fitformer / new model candidate** comparison (numeric + label on the same row).
-- **Do not** refer to Fitformer as **“Gen 3”** until Fit Score or DS owners confirm naming.
-- In internal working docs, use **“Fitformer / new model candidate.”**
+| Arm | Expression |
+|-----|------------|
+| **Gen 3 (LLM)** | `parse_json(fitscore_with_feedback):armScores.llmFitScore.fit::STRING` |
+| **Traditional** | `parse_json(fitscore_with_feedback):armScores.traditional.fit::STRING` |
+
+**Numeric score fields:**
+
+| Arm | Expression |
+|-----|------------|
+| **Gen 3 (LLM)** | `parse_json(fitscore_with_feedback):armScores.llmFitScore.fitscore` |
+| **Traditional** | `parse_json(fitscore_with_feedback):armScores.traditional.fitscore` |
+
+Pairing identity for deduplication and joins: **`REFNUM`**, **`CRM_USER_ID`**, **`JOB_ID`**.
 
 ---
 
-## 3. Confirmed columns
+## 3. Latest score per candidate–job pair
 
-These columns exist on `METRIC_FITFORMER` (as of metadata / validation pass):
+Engineering-confirmed **latest row** logic:
+
+```sql
+QUALIFY ROW_NUMBER() OVER (
+  PARTITION BY REFNUM, CRM_USER_ID, JOB_ID
+  ORDER BY SCORE_UPDATED_DATE DESC
+) = 1
+```
+
+Use this (not ad hoc `YEAR`/`MONTH` ordering on other tables) as the default **one row per** `(REFNUM, CRM_USER_ID, JOB_ID)` rule for `FACT_CRM_FITSCORE` unless owners publish a different tie-breaker.
+
+---
+
+## 4. Progression and candidate status
+
+| Item | Detail |
+|------|--------|
+| **Table** | `SPX_DB.FEEDBACK_SCHEMA.DENOISED_HIRING_DATA` |
+| **Join to fit fact** | **`REFNUM`** + **`JOB_ID`** + **`CRM_USER_ID`** |
+| **Status field** | **`CANDIDATE_STATUS`** (available from `DENOISED_HIRING_DATA`) |
+
+**Hired metrics:** use **`CANDIDATE_STATUS = 'HIRED'`** only **after** validating exact allowed values in `DENOISED_HIRING_DATA` (case, spelling, and synonym rows). Until that validation is done, treat hire-related cuts as **provisional** and document assumptions in any report footnote.
+
+---
+
+## 5. Dashboard data architecture
+
+- **Do not** depend on **live Snowflake queries from the dashboard UI** for these KPIs at scale.
+- **Preferred pattern:** **scheduled aggregation** in the **`usage-metrics` repo** (or equivalent pipeline), materializing metrics the UI reads from **pre-aggregated** stores or APIs the pipeline owns.
+- Ad hoc Snowflake in Copilot or notebooks remains useful for **discovery** and **SQL validation**, not as the production serving path described in the product spec.
+
+---
+
+## 6. Score labels and taxonomies
+
+Expect the same **A / B / C / No Fit** style vocabulary where product emits standard labels; **confirm** live distributions on `FACT_CRM_FITSCORE` after parsing JSON. Allow for **Other** or expanded label sets if pipelines add values.
+
+---
+
+## 7. Product language rules
+
+Avoid misleading claims:
+
+- Do **not** call this an **“accuracy”** dashboard.
+- Do **not** claim Gen 3 (LLM arm) is **“more accurate”** without agreed outcome definitions.
+
+Prefer neutral analytics language:
+
+- Score **distribution**
+- **Model behavior comparison** (Traditional vs LLM arm)
+- **Score separation**
+- **Model selectivity** (e.g., share in “No Fit” or A/B/C buckets)
+- **Score movement** (with clear latest-row / snapshot rules)
+
+- **Hire alignment** only as a **proxy**, and only after **`CANDIDATE_STATUS`** (and hire definition) is validated on `DENOISED_HIRING_DATA`.
+
+When comparing two percentages, use **percentage point delta** (difference of percentages), not loose “percent improvement” language.
+
+---
+
+## 8. PII and governance cautions
+
+- Do **not** include **`CRM_USER_ID`** in stakeholder-facing extracts.
+- Do **not** select candidate **names, emails, phones, EEO, gender, race, ethnicity**, or other sensitive attributes.
+- **`DS_DB.AIDSG_PROD.BIAS_AUDIT_FITFORMER_RAW`** (and similar bias-audit tables) carry **sensitive dimensions**—do **not** use for general dashboards without a **governed or redacted view**.
+- Scope production reporting with **`WHERE REFNUM IN (...)`** (or equivalent) and approved warehouse/role discipline.
+
+---
+
+## 9. Recommended SQL pattern (illustrative)
+
+Safe **shape** for pair-level analytics (add governance filters and avoid broad scans). **Not** executed as part of this doc maintenance.
+
+```sql
+SELECT
+  REFNUM,
+  JOB_ID,
+  /* CRM_USER_ID: keep internal / join only; omit from stakeholder exports */
+  parse_json(fitscore_with_feedback):armScores.traditional.fit::STRING AS trad_label,
+  parse_json(fitscore_with_feedback):armScores.llmFitScore.fit::STRING AS gen3_label,
+  parse_json(fitscore_with_feedback):armScores.traditional.fitscore AS trad_fitscore,
+  parse_json(fitscore_with_feedback):armScores.llmFitScore.fitscore AS gen3_fitscore
+FROM PROD_DB.EXTERNAL_SCHEMA.FACT_CRM_FITSCORE
+WHERE REFNUM IN (/* approved tenants */)
+QUALIFY ROW_NUMBER() OVER (
+  PARTITION BY REFNUM, CRM_USER_ID, JOB_ID
+  ORDER BY SCORE_UPDATED_DATE DESC
+) = 1
+;
+```
+
+Join to progression when needed:
+
+```sql
+/* Conceptual join — adjust SELECT lists for PII policy */
+FROM latest_fitscores f
+JOIN SPX_DB.FEEDBACK_SCHEMA.DENOISED_HIRING_DATA h
+  ON f.REFNUM = h.REFNUM
+ AND f.JOB_ID = h.JOB_ID
+ AND f.CRM_USER_ID = h.CRM_USER_ID
+```
+
+---
+
+## 10. Historical discovery only — `METRIC_FITFORMER` (**invalid for Gen 3**)
+
+> **⚠️ Deprecated for current product path:** **`DS_DB.AIDSG_DEV.METRIC_FITFORMER` must not be used as the source for Gen 3 (LLM FitScore arm).**  
+> **Fitformer is Gen 2.** Gen 3 comparisons belong on **`FACT_CRM_FITSCORE`** and **`fitscore_with_feedback`** as above.
+
+The material below is **retained only** as a record of earlier exploration on **`METRIC_FITFORMER`**. Do **not** map its **Fitformer** columns to **Gen 3** naming.
+
+### 10.1 Prior primary candidate table (historical)
+
+**Table:** `DS_DB.AIDSG_DEV.METRIC_FITFORMER`
+
+Previously documented as a table with **Traditional vs Fitformer** numeric + label columns on the same row. That comparison is **Gen 2-era**, not the LLM arm.
+
+### 10.2 Historical columns (metadata snapshot)
 
 | Column |
 |--------|
@@ -66,173 +198,27 @@ These columns exist on `METRIC_FITFORMER` (as of metadata / validation pass):
 | CANDIDATE_STATUS_STANDARD_ORDER |
 | CANDIDATE_STATUS_HIRING_PROGRESSION |
 
-_All columns are nullable in `INFORMATION_SCHEMA` for this table; the validation snapshot had no nulls in the core score/label fields._
+### 10.3 Historical field mapping (Fitformer = Gen 2 only)
 
----
+- **Traditional (on that table):** `FIT_SCORE`, `FIT_LABEL`
+- **Fitformer (Gen 2):** `FITFORMER_FIT_SCORE`, `FITFORMER_FIT_LABEL` (and related columns)
 
-## 4. Traditional vs new model candidate fields
+`FITFORMER_SCORE` was **distinct** from `FITFORMER_FIT_SCORE` in past validation.
 
-**Traditional (comparison baseline on this table):**
+### 10.4 Historical grain / dedupe notes (`METRIC_FITFORMER`)
 
-- `FIT_SCORE`
-- `FIT_LABEL`
+The table was **not** one row per candidate–job pair; duplicates stacked by period dimensions. Earlier prototyping used **`ROW_NUMBER()`** over **`(REFNUM, CRM_USER_ID, JOB_ID)`** with **`ORDER BY YEAR DESC, MONTH DESC, STATUS_UPDATED_DATE DESC`**. **That logic applies to the old table only,** not to the authoritative **`FACT_CRM_FITSCORE`** latest-row rule in §3.
 
-**Fitformer / new model candidate:**
+### 10.5 Archived prototype: CIGNUS on `METRIC_FITFORMER`
 
-- `FITFORMER_FIT_SCORE`
-- `FITFORMER_FIT_LABEL`
-- `FITFORMER_SCORE`
+Internal prototype only **`REFNUM = CIGNUS`** on **`DS_DB.AIDSG_DEV.METRIC_FITFORMER`**. **Do not** map this **`REFNUM`** to a customer or **company name.** **Historical / Gen 2 table only** — **invalid for Gen 3** LLM arm analytics.
 
-**Important:**
+#### Query status (archived)
 
-- `FITFORMER_SCORE` is **distinct** from `FITFORMER_FIT_SCORE` (they never matched across the full row count in validation).
-- Prefer comparing **`FIT_SCORE` vs `FITFORMER_FIT_SCORE`** and **`FIT_LABEL` vs `FITFORMER_FIT_LABEL`** unless DS specifies otherwise.
+- Queries completed successfully (distribution + headline aggregates).
+- **82,640** deduped **candidate–job pairs** after legacy snapshot logic: `ROW_NUMBER()` over `(REFNUM, CRM_USER_ID, JOB_ID)` `ORDER BY YEAR DESC, MONTH DESC, STATUS_UPDATED_DATE DESC`, keep `rn = 1`.
 
----
-
-## 5. Confirmed grain and dedupe issue
-
-Observed in `AIDSG_DEV`:
-
-| Metric | Value |
-|--------|--------|
-| Total rows | **930,093** |
-| Distinct `REFNUM`, `CRM_USER_ID`, `JOB_ID` | **650,916** |
-
-Facts:
-
-- The table is **not** one row per candidate–job pair.
-- About **32.74%** of distinct triples have **multiple** rows (**213,127** triples with duplicates).
-- Duplicate rows **overlap in `YEAR` / `MONTH` / `QUARTER`** (every duplicate triple had more than one calendar period in the check run)—consistent with **stacked monthly/period snapshots**, not a single current fact.
-- Natural grain is closer to **`REFNUM` + `CRM_USER_ID` + `JOB_ID` + `MONTH` + `YEAR`**, possibly with **`RECRUITER_FEATURE_ACTION`** (all duplicate triples showed multiple distinct values for that dimension in the aggregate check).
-- **Do not** drive dashboard KPIs from raw row counts: that **double-counts history** and **distorts** disagreement / agreement rates across models.
-
----
-
-## 6. Recommended snapshot logic
-
-- Use an explicit **as-of** rule: prefer **`YEAR DESC`, `MONTH DESC`**, and optionally **`QUARTER DESC`**, before other tie-breakers.
-- For **candidate–job pair** metrics, reduce to **one row per** `REFNUM` + `CRM_USER_ID` + `JOB_ID`.
-- Typical pattern: **`ROW_NUMBER()`** over `(REFNUM, CRM_USER_ID, JOB_ID)` **`ORDER BY YEAR DESC, MONTH DESC, STATUS_UPDATED_DATE DESC`**.
-- **`STATUS_UPDATED_DATE` alone is not a reliable snapshot key:** for most duplicate triples, all duplicate rows shared the same timestamp; only a handful of triples had multiple distinct timestamps among duplicates.
-- **Confirm** authoritative snapshot and tie-break rules **with DS / Fit Score owners** before production logic.
-
----
-
-## 7. Score labels found
-
-**`FIT_LABEL` (non-null distribution in validation snapshot):**
-
-- A
-- B
-- C
-- No Fit
-
-**`FITFORMER_FIT_LABEL`:**
-
-- A
-- B
-- C
-- No Fit
-
-**Important:**
-
-- Strings such as “Incomplete Job,” “Incomplete Profile,” “Unsupported Language,” and “Doesn’t Exist” **did not appear** as label values in this table under basic substring checks.
-- Report / dashboard **label taxonomies** should still allow those values if product can emit them elsewhere; for **this** table, expect **A / B / C / No Fit** only unless new pipelines add more.
-
----
-
-## 8. Product language rules
-
-Avoid misleading claims:
-
-- Do **not** call this an **“accuracy”** dashboard.
-- Do **not** claim the Fitformer / new model candidate is **“more accurate.”**
-
-Prefer neutral analytics language:
-
-- Score **distribution**
-- **Model behavior comparison**
-- **Score separation**
-- **Model selectivity** (e.g., share in “No Fit” or A/B/C buckets)
-- **Score movement** (with clear as-of / snapshot rules)
-
-- **Hire alignment** only as a **proxy**, and only if outcome field definitions are validated with data owners.
-
-When comparing two percentages, use **percentage point delta** (difference of percentages), not loose “percent improvement” language.
-
----
-
-## 9. PII and governance cautions
-
-- Do **not** include **`CRM_USER_ID`** in stakeholder-facing extracts.
-- Do **not** select candidate **names, emails, phones, EEO, gender, race, ethnicity**, or other sensitive attributes.
-- **`DS_DB.AIDSG_PROD.BIAS_AUDIT_FITFORMER_RAW`** (and similar bias-audit tables) carry **sensitive dimensions**—do **not** use for general dashboards without a **governed or redacted view**.
-- **`AIDSG_DEV`** data must **not** be used for **executive or customer** reporting until **production parity** and **approvals** are explicit.
-
----
-
-## 10. Recommended next SQL query
-
-Safe **pattern** for a latest-snapshot confusion-style summary (add `WHERE REFNUM IN (...)` with an approved tenant list). Adjust warehouse, role, and predicates for cost control.
-
-**Step 1 — latest row per candidate–job triple**
-
-```sql
-WITH ranked AS (
-  SELECT
-      REFNUM,
-      CRM_USER_ID,
-      JOB_ID,
-      FIT_LABEL,
-      FITFORMER_FIT_LABEL,
-      ROW_NUMBER() OVER (
-        PARTITION BY REFNUM, CRM_USER_ID, JOB_ID
-        ORDER BY YEAR DESC, MONTH DESC, STATUS_UPDATED_DATE DESC
-      ) AS rn
-  FROM DS_DB.AIDSG_DEV.METRIC_FITFORMER
-  /* WHERE REFNUM IN (...)  -- governance: approved tenants only */
-),
-latest AS (
-  SELECT * FROM ranked WHERE rn = 1
-),
-```
-
-**Step 2 — cell counts for `FIT_LABEL` (rows) × `FITFORMER_FIT_LABEL` (columns)**
-
-Aggregate from `latest`, then compute row totals, column totals, and **A+B** buckets:
-
-- **A+B** (traditional): rows where `FIT_LABEL` in `('A','B')`.
-- **A+B** (Fitformer): rows where `FITFORMER_FIT_LABEL` in `('A','B')`.
-- **No Fit** shares: `FIT_LABEL = 'No Fit'` vs `FITFORMER_FIT_LABEL = 'No Fit'`.
-
-**Percentage point delta (example):**
-
-- `pct_trad_ab := 100.0 * COUNT_IF(FIT_LABEL IN ('A','B')) / NULLIF(COUNT(*),0)`
-- `pct_ff_ab  := 100.0 * COUNT_IF(FITFORMER_FIT_LABEL IN ('A','B')) / NULLIF(COUNT(*),0)`
-- **A+B delta (percentage points):** `pct_ff_ab - pct_trad_ab`
-
-Similarly for **No Fit**:
-
-- `pct_trad_nf` vs `pct_ff_nf`; **delta:** `pct_ff_nf - pct_trad_nf`
-
-**TOTAL row:** `COUNT(*)` on `latest` for the filtered population.
-
-Report as a small **matrix + margin totals** (counts and **% of total**); footnote the **dedupe / as-of** rule and **DEV environment** until promoted.
-
----
-
-## Prototype result: CIGNUS
-
-Internal prototype only **`REFNUM = CIGNUS`** on **`DS_DB.AIDSG_DEV.METRIC_FITFORMER`**. Do **not** map this **`REFNUM`** to a customer or **company name.** No **candidate-level identifiers** or PII appear here.
-
-### 1. Query status
-
-- Queries completed **successfully** (distribution Query 1 + headline Query 2, as documented above).
-- Population was **non-zero**.
-- **82,640** deduped **candidate–job pairs** after latest-snapshot logic: `ROW_NUMBER()` over `(REFNUM, CRM_USER_ID, JOB_ID)` `ORDER BY YEAR DESC, MONTH DESC, STATUS_UPDATED_DATE DESC`, keep `rn = 1`.
-
-### 2. Distribution comparison table
+#### Distribution comparison table (Fitformer = Gen 2; archival)
 
 | Label | Traditional Count | Traditional % | Fitformer Count | Fitformer % |
 |-------|------------------:|--------------:|----------------:|------------:|
@@ -243,9 +229,7 @@ Internal prototype only **`REFNUM = CIGNUS`** on **`DS_DB.AIDSG_DEV.METRIC_FITFO
 | TOTAL | 82,640 | 100.00 | 82,640 | 100.00 |
 | A+B | 36,611 | 44.30 | 32,457 | 39.28 |
 
-_Fitformer column = **Fitformer / new model candidate** (not “Gen 3” until owners confirm)._
-
-### 3. Headline metrics
+#### Headline metrics (archival)
 
 - `candidate_job_pairs_compared`: **82,640**
 - `traditional_ab_pct`: **44.30**
@@ -255,25 +239,17 @@ _Fitformer column = **Fitformer / new model candidate** (not “Gen 3” until o
 - `fitformer_new_model_no_fit_pct`: **40.92**
 - `no_fit_pct_point_delta`: **15.15**
 
-### 4. Product-safe interpretation
+#### Archived interpretation note
 
-On 82,640 latest-snapshot candidate-job pairs, the Fitformer / new model candidate shows a more selective distribution than the traditional model. A+B concentration decreases by about 5.03 percentage points, while No Fit classification increases by about 15.15 percentage points. This suggests stronger score separation and a stricter allocation of candidates into lower-fit buckets. This is not an accuracy claim and should remain exploratory until DS/Fit Score owners confirm model semantics, production parity, and dedupe logic.
-
-### 5. Dashboard implications
-
-- The query can support **KPI cards**.
-- The query can support a **Traditional vs Fitformer** distribution table.
-- The query can support **A+B** and **No Fit** delta visualizations.
-- The query can support a **product-facing dashboard prototype** (internal / product design), not a customer deliverable by default.
-- It should **not** be **customer-facing** until **Fitformer naming**, **production table** (vs `AIDSG_DEV`), and **snapshot / dedupe** logic are approved.
+On 82,640 legacy-snapshot pairs, **Fitformer (Gen 2)** showed a more selective distribution than traditional on **this DEV table**. This is **not** comparable to **Gen 3 (LLM arm)** on **`FACT_CRM_FITSCORE`** and is **not** an accuracy claim.
 
 ---
 
 ## Related objects (brief)
 
-- **`CID.RAW_SCHEMA`** has rich fit events and metadata (`FACT_CRM_FITSCORE`, `RB_FITSCORE_METADATA`, etc.) for alternative or joined analysis—see `skills/snowflake-data-context.md`.
-- **`SNOWFLAKE.ACCOUNT_USAGE`** was not authorized in the discovery session; discovery used `INFORMATION_SCHEMA` and targeted aggregates.
+- **`CID.RAW_SCHEMA`** and related objects may still matter for broader fit-event context—see `skills/snowflake-data-context.md`.
+- Production analytics for the Model Comparison dashboard should align with **`FACT_CRM_FITSCORE`** + **`usage-metrics`** aggregation per §5.
 
 ---
 
-*Includes internal prototype run for `REFNUM = CIGNUS` on `AIDSG_DEV.METRIC_FITFORMER`; not for customer or executive use without DS/Fit Score sign-off.*
+*Gen 3 source of truth: `PROD_DB.EXTERNAL_SCHEMA.FACT_CRM_FITSCORE` + `fitscore_with_feedback`. `METRIC_FITFORMER` is historical / Gen 2 only.*
