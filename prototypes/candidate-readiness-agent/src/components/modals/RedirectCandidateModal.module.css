@@ -1,0 +1,44 @@
+.grid {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 10px 16px;
+  margin-bottom: 12px;
+}
+
+.label {
+  font-size: var(--fs-12);
+  color: var(--text-muted);
+  align-self: center;
+}
+
+.value {
+  font-size: var(--fs-13);
+  color: var(--text-strong);
+  font-weight: var(--fw-medium);
+}
+
+.suggested {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 12px;
+  border: 1px solid var(--brand-200);
+  background: var(--brand-50);
+  border-radius: var(--radius-md);
+  gap: 2px;
+}
+
+.suggestedTitle {
+  font-size: var(--fs-13);
+  font-weight: var(--fw-semibold);
+  color: var(--brand-700);
+}
+
+.suggestedMeta {
+  font-size: var(--fs-12);
+  color: var(--text-muted);
+}
+
+.reason {
+  font-size: var(--fs-13);
+  color: var(--text-default);
+}

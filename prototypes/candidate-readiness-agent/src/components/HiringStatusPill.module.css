@@ -1,0 +1,24 @@
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  font-size: var(--fs-12);
+  color: var(--text-default);
+  background: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+  min-width: 140px;
+  justify-content: space-between;
+}
+
+.label {
+  font-weight: var(--fw-medium);
+}
+
+.changed {
+  background: var(--brand-50);
+  border-color: var(--brand-200);
+  color: var(--brand-700);
+}

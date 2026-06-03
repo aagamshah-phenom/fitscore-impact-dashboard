@@ -1,0 +1,140 @@
+:root {
+  /* ---- Color: surfaces ---- */
+  --surface-page: #f4f5f7;
+  --surface-card: #ffffff;
+  --surface-rail: #ffffff;
+  --surface-topbar: #ffffff;
+  --surface-row-hover: #f8f7fc;
+  --surface-row-selected: #f5f1ff;
+  --surface-muted: #f6f7fa;
+  --surface-inverse: #0f1320;
+
+  /* ---- Color: text ---- */
+  --text-strong: #1d1f29;
+  --text-default: #3d4154;
+  --text-muted: #6c7185;
+  --text-subtle: #9aa0b4;
+  --text-on-primary: #ffffff;
+  --text-link: #5b3ff5;
+
+  /* ---- Color: borders ---- */
+  --border-subtle: #ebecf1;
+  --border-default: #e1e3eb;
+  --border-strong: #cfd2dd;
+  --border-focus: #5b3ff5;
+
+  /* ---- Color: brand (purple) ---- */
+  --brand-50: #f4f0ff;
+  --brand-100: #ebe4ff;
+  --brand-200: #d6c8ff;
+  --brand-400: #8a6cff;
+  --brand-500: #5b3ff5;
+  --brand-600: #4a31d8;
+  --brand-700: #3a26ad;
+
+  /* ---- Color: action (teal Phenom-style) ---- */
+  --action-50: #e6f7f4;
+  --action-100: #c6efe7;
+  --action-500: #3bc4a8;
+  --action-600: #2ea98e;
+  --action-700: #228a73;
+
+  /* ---- Color: semantic ---- */
+  --success-50: #e8f7ee;
+  --success-500: #2ea160;
+  --success-700: #1f7644;
+  --warning-50: #fff5e1;
+  --warning-500: #d68a14;
+  --warning-700: #9a6209;
+  --danger-50: #fdecec;
+  --danger-500: #d83a3a;
+  --danger-700: #a32424;
+  --info-50: #e6f0fc;
+  --info-500: #2e6bd6;
+  --info-700: #1f4ea3;
+
+  /* ---- Readiness signal colors ---- */
+  --readiness-ready-bg: #e8f7ee;
+  --readiness-ready-fg: #1f7644;
+  --readiness-ready-border: #b8e2c7;
+
+  --readiness-strong-bg: #ecf3ff;
+  --readiness-strong-fg: #1f4ea3;
+  --readiness-strong-border: #c4d6f5;
+
+  --readiness-needs-review-bg: #fff5e1;
+  --readiness-needs-review-fg: #8b5708;
+  --readiness-needs-review-border: #f3d9a6;
+
+  --readiness-needs-recruiter-bg: #f4f0ff;
+  --readiness-needs-recruiter-fg: #4a31d8;
+  --readiness-needs-recruiter-border: #d6c8ff;
+
+  --readiness-send-screening-bg: #e6f7f4;
+  --readiness-send-screening-fg: #228a73;
+  --readiness-send-screening-border: #b3e2d6;
+
+  --readiness-low-priority-bg: #f0f1f5;
+  --readiness-low-priority-fg: #5a5f73;
+  --readiness-low-priority-border: #d7dae3;
+
+  /* ---- Spacing ---- */
+  --space-0: 0;
+  --space-1: 2px;
+  --space-2: 4px;
+  --space-3: 6px;
+  --space-4: 8px;
+  --space-5: 12px;
+  --space-6: 16px;
+  --space-7: 20px;
+  --space-8: 24px;
+  --space-9: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* ---- Radius ---- */
+  --radius-xs: 3px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-pill: 999px;
+
+  /* ---- Type ---- */
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --fs-11: 11px;
+  --fs-12: 12px;
+  --fs-13: 13px;
+  --fs-14: 14px;
+  --fs-15: 15px;
+  --fs-16: 16px;
+  --fs-18: 18px;
+  --fs-20: 20px;
+  --fs-24: 24px;
+
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+
+  --lh-tight: 1.25;
+  --lh-default: 1.4;
+  --lh-relaxed: 1.55;
+
+  /* ---- Elevation ---- */
+  --shadow-popover: 0 10px 32px -8px rgba(15, 19, 32, 0.18),
+    0 2px 6px -2px rgba(15, 19, 32, 0.08);
+  --shadow-modal: 0 24px 64px -16px rgba(15, 19, 32, 0.28),
+    0 4px 12px -4px rgba(15, 19, 32, 0.12);
+  --shadow-card: 0 1px 2px rgba(15, 19, 32, 0.04),
+    0 1px 3px rgba(15, 19, 32, 0.04);
+
+  /* ---- Layout ---- */
+  --rail-width: 56px;
+  --topbar-height: 52px;
+  --row-height: 56px;
+  --row-height-condensed: 44px;
+}

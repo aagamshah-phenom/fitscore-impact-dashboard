@@ -1,0 +1,117 @@
+.content {
+  width: 360px;
+  background: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-popover);
+  padding: 16px;
+  z-index: 70;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.statusIcon {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  color: white;
+  font-weight: var(--fw-semibold);
+  font-size: var(--fs-13);
+  flex-shrink: 0;
+}
+
+.statusTextWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.statusLabel {
+  font-size: var(--fs-13);
+  font-weight: var(--fw-semibold);
+  color: var(--text-strong);
+  line-height: 1.3;
+}
+
+.statusSummary {
+  font-size: var(--fs-12);
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+.evidenceList {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 8px -8px 0;
+}
+
+.evidenceRow {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  gap: 12px;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.evidenceRow + .evidenceRow {
+  border-top: 1px dashed var(--border-subtle);
+}
+
+.evidenceLabel {
+  font-size: var(--fs-12);
+  color: var(--text-muted);
+}
+
+.evidenceValue {
+  font-size: var(--fs-12);
+  color: var(--text-strong);
+  font-weight: var(--fw-medium);
+  text-align: right;
+}
+
+.riskLow {
+  color: var(--success-700);
+}
+
+.riskMedium {
+  color: var(--warning-700);
+}
+
+.riskHigh {
+  color: var(--danger-700);
+}
+
+.next {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-default);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nextLabel {
+  font-size: var(--fs-11);
+  font-weight: var(--fw-semibold);
+  color: var(--brand-500);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.nextValue {
+  font-size: var(--fs-13);
+  color: var(--text-strong);
+  font-weight: var(--fw-medium);
+  line-height: 1.4;
+}

@@ -1,0 +1,67 @@
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  font-size: var(--fs-12);
+  font-weight: var(--fw-medium);
+  border-radius: var(--radius-pill);
+  border: 1px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  line-height: 1.3;
+  background: transparent;
+}
+
+.chip:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+.readyForHm {
+  background: var(--readiness-ready-bg);
+  color: var(--readiness-ready-fg);
+  border-color: var(--readiness-ready-border);
+}
+
+.needsRecruiter {
+  background: var(--readiness-needs-recruiter-bg);
+  color: var(--readiness-needs-recruiter-fg);
+  border-color: var(--readiness-needs-recruiter-border);
+}
+
+.needsReview {
+  background: var(--readiness-needs-review-bg);
+  color: var(--readiness-needs-review-fg);
+  border-color: var(--readiness-needs-review-border);
+}
+
+.sendScreening {
+  background: var(--readiness-send-screening-bg);
+  color: var(--readiness-send-screening-fg);
+  border-color: var(--readiness-send-screening-border);
+}
+
+.strongCandidate {
+  background: var(--readiness-strong-bg);
+  color: var(--readiness-strong-fg);
+  border-color: var(--readiness-strong-border);
+}
+
+.lowPriority {
+  background: var(--readiness-low-priority-bg);
+  color: var(--readiness-low-priority-fg);
+  border-color: var(--readiness-low-priority-border);
+}
+
+.staticChip {
+  cursor: default;
+}

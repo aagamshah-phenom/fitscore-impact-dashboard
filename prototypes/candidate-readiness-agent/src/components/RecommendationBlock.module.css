@@ -1,0 +1,49 @@
+.block {
+  background: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-left: 3px solid var(--brand-500);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+.cell {
+  padding: 10px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  border-bottom: 1px solid var(--border-subtle);
+  border-right: 1px solid var(--border-subtle);
+}
+
+.cell:nth-child(2n) {
+  border-right: none;
+}
+
+.cell:nth-child(n+3) {
+  border-bottom: none;
+}
+
+.cellLabel {
+  font-size: var(--fs-11);
+  font-weight: var(--fw-semibold);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.cellLabelOutcome {
+  color: var(--brand-500);
+}
+
+.cellText {
+  font-size: var(--fs-13);
+  color: var(--text-default);
+  line-height: var(--lh-relaxed);
+}

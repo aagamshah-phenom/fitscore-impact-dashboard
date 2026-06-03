@@ -1,0 +1,19 @@
+.shell {
+  display: grid;
+  grid-template-columns: var(--rail-width) 1fr;
+  grid-template-rows: 100vh;
+  height: 100vh;
+  background: var(--surface-page);
+}
+
+.main {
+  display: grid;
+  grid-template-rows: var(--topbar-height) 1fr;
+  min-width: 0;
+  min-height: 0;
+}
+
+.content {
+  overflow: auto;
+  background: var(--surface-page);
+}

@@ -1,0 +1,91 @@
+.funnel {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  background: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+
+.stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 10px 8px;
+  position: relative;
+  text-align: center;
+}
+
+.stage + .stage {
+  border-left: 1px solid var(--border-subtle);
+}
+
+.stageHighlight {
+  background: var(--warning-50);
+  border-color: var(--readiness-needs-review-border);
+}
+
+.stageOverloaded {
+  background: var(--danger-50);
+}
+
+.stageLabel {
+  font-size: var(--fs-11);
+  font-weight: var(--fw-medium);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.stageCount {
+  font-size: var(--fs-16);
+  font-weight: var(--fw-semibold);
+  color: var(--text-strong);
+  line-height: 1.15;
+}
+
+.stageCountHighlight {
+  color: var(--warning-700);
+}
+
+.stageCountOverloaded {
+  color: var(--danger-700);
+}
+
+.stageTarget {
+  font-size: var(--fs-11);
+  color: var(--text-muted);
+}
+
+.stageTargetHighlight {
+  color: var(--warning-500);
+  font-weight: var(--fw-medium);
+}
+
+.stageBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 6px;
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-10);
+  font-weight: var(--fw-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-top: 2px;
+}
+
+.badgeGap {
+  background: var(--warning-50);
+  color: var(--warning-700);
+  border: 1px solid var(--readiness-needs-review-border);
+}
+
+.badgeOver {
+  background: var(--danger-50);
+  color: var(--danger-700);
+  border: 1px solid #f5b8b8;
+}

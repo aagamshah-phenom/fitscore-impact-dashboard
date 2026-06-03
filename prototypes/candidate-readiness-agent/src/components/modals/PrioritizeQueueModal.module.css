@@ -1,0 +1,49 @@
+.intro {
+  font-size: var(--fs-13);
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.buckets {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bucket {
+  display: grid;
+  grid-template-columns: 220px 1fr auto;
+  gap: 16px;
+  align-items: center;
+  padding: 14px 16px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--surface-card);
+}
+
+.bucketPrimary {
+  border-color: var(--brand-200);
+  background: var(--brand-50);
+}
+
+.bucketTitle {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.bucketLabel {
+  font-size: var(--fs-13);
+  color: var(--text-strong);
+  font-weight: var(--fw-semibold);
+}
+
+.bucketCount {
+  font-size: var(--fs-12);
+  color: var(--text-muted);
+}
+
+.bucketAction {
+  font-size: var(--fs-13);
+  color: var(--text-default);
+}

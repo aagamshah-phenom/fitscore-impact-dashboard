@@ -1,0 +1,213 @@
+.layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* Main body splits into a left column (content) + right sidebar (agent panel) */
+.body {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 0;
+  align-items: start;
+  padding: 0;
+}
+
+.mainCol {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px 24px 96px 32px;
+  min-width: 0;
+}
+
+.sideCol {
+  padding: 20px 24px 96px 0;
+  position: sticky;
+  top: calc(var(--topbar-height) + 8px);
+  height: calc(100vh - var(--topbar-height) - 32px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.promptWrap {
+  /* Agent prompt already has its own padding/shadow */
+}
+
+.tableHeader {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.searchAndFilter {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.searchInput {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-12);
+  color: var(--text-muted);
+  min-width: 260px;
+  cursor: default;
+}
+
+.filterBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-12);
+  color: var(--text-muted);
+  cursor: default;
+}
+
+.headerActions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.recommendedAction {
+  font-size: var(--fs-13);
+  color: var(--text-strong);
+  font-weight: var(--fw-medium);
+}
+
+.reasonCell {
+  font-size: var(--fs-12);
+  color: var(--text-muted);
+}
+
+/* ── Fit Score badge ──────────────────────────────────── */
+.fitScoreBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-13);
+  font-weight: var(--fw-bold);
+}
+
+.fitA {
+  background: var(--readiness-ready-bg);
+  color: var(--readiness-ready-fg);
+  border: 1px solid var(--readiness-ready-border);
+}
+
+.fitB {
+  background: var(--readiness-strong-bg);
+  color: var(--readiness-strong-fg);
+  border: 1px solid var(--readiness-strong-border);
+}
+
+.fitC {
+  background: var(--readiness-needs-review-bg);
+  color: var(--readiness-needs-review-fg);
+  border: 1px solid var(--readiness-needs-review-border);
+}
+
+.fitD {
+  background: var(--danger-50);
+  color: var(--danger-700);
+  border: 1px solid #f5b8b8;
+}
+
+/* ── Screening score bar ──────────────────────────────── */
+.screeningScore {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.screeningScoreText {
+  font-size: var(--fs-12);
+  font-weight: var(--fw-semibold);
+  color: var(--text-strong);
+  white-space: nowrap;
+  min-width: 32px;
+}
+
+.screeningScoreBar {
+  width: 48px;
+  height: 4px;
+  background: var(--border-subtle);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.screeningScoreFill {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: var(--brand-400);
+}
+
+.screeningScoreLow {
+  background: var(--warning-500);
+}
+
+.screeningNA {
+  font-size: var(--fs-12);
+  color: var(--text-subtle);
+  font-style: italic;
+}
+
+/* ── Risk flag ────────────────────────────────────────── */
+.riskNone {
+  font-size: var(--fs-12);
+  color: var(--success-700);
+}
+
+.riskMedium {
+  font-size: var(--fs-12);
+  color: var(--warning-700);
+}
+
+.riskHigh {
+  font-size: var(--fs-12);
+  color: var(--danger-700);
+  font-weight: var(--fw-medium);
+}
+
+/* ── Evidence text ────────────────────────────────────── */
+.evidenceText {
+  font-size: var(--fs-12);
+  color: var(--text-default);
+  max-width: 200px;
+}
+
+.emptyState {
+  background: var(--surface-card);
+  border: 1px dashed var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.emptyTitle {
+  color: var(--text-strong);
+  font-weight: var(--fw-medium);
+  margin-bottom: 4px;
+  font-size: var(--fs-14);
+}
+
+.emptySubtitle {
+  font-size: var(--fs-12);
+}

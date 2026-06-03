@@ -1,0 +1,58 @@
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.evidenceGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.evidenceRow {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 16px;
+  padding: 8px 12px;
+  font-size: var(--fs-13);
+}
+
+.evidenceRow + .evidenceRow {
+  border-top: 1px solid var(--border-subtle);
+}
+
+.evidenceLabel {
+  color: var(--text-muted);
+  font-size: var(--fs-12);
+  align-self: center;
+}
+
+.evidenceValue {
+  color: var(--text-strong);
+  font-weight: var(--fw-medium);
+  align-self: center;
+}
+
+.valueMedium {
+  color: var(--warning-700);
+}
+
+.recommendation {
+  padding: 12px;
+  background: var(--warning-50);
+  border: 1px solid var(--readiness-needs-review-border);
+  border-radius: var(--radius-md);
+  font-size: var(--fs-13);
+  color: var(--text-default);
+  line-height: var(--lh-relaxed);
+}
+
+.recommendationLabel {
+  font-weight: var(--fw-semibold);
+  color: var(--warning-700);
+  margin-right: 4px;
+}

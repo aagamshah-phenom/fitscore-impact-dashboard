@@ -1,0 +1,176 @@
+.card {
+  background: var(--surface-card);
+  border: 1px solid var(--brand-100);
+  border-left: 3px solid var(--brand-500);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+/* ── Header ─────────────────────────────────────────────── */
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px 10px;
+  border-bottom: 1px solid var(--brand-50);
+}
+
+.iconWrap {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--brand-500), #b94dff);
+  color: white;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.agentLabel {
+  font-size: var(--fs-11);
+  font-weight: var(--fw-semibold);
+  color: var(--brand-500);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ── Thread rows ─────────────────────────────────────────── */
+.thread {
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  padding: 10px 16px;
+}
+
+.row + .row {
+  border-top: 1px solid var(--surface-page);
+}
+
+/* Agent message */
+.agentRow {
+  background: var(--surface-card);
+}
+
+.agentText {
+  font-size: var(--fs-13);
+  line-height: var(--lh-relaxed);
+  color: var(--text-strong);
+}
+
+/* Recruiter selection row */
+.recruiterRow {
+  background: var(--brand-50);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.youLabel {
+  font-size: var(--fs-11);
+  font-weight: var(--fw-semibold);
+  color: var(--brand-500);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.selectedChip {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  background: var(--surface-card);
+  border: 1px solid var(--brand-200);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-12);
+  font-weight: var(--fw-medium);
+  color: var(--brand-600);
+}
+
+/* Action chips row */
+.actionsRow {
+  padding: 10px 16px 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  background: var(--surface-card);
+  border-top: 1px dashed var(--border-subtle);
+}
+
+/* Inline explain popover */
+.explainPopover {
+  width: 360px;
+  padding: 16px;
+  background: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-popover);
+  z-index: 60;
+}
+
+.explainTitle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-13);
+  font-weight: var(--fw-semibold);
+  color: var(--text-strong);
+  margin-bottom: 10px;
+}
+
+.explainList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.explainItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-left: 14px;
+  position: relative;
+}
+
+.explainItem::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 6px;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--brand-400);
+}
+
+.explainItemLabel {
+  font-size: var(--fs-12);
+  font-weight: var(--fw-medium);
+  color: var(--text-strong);
+}
+
+.explainItemText {
+  font-size: var(--fs-12);
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+.explainRec {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border-default);
+  font-size: var(--fs-12);
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+.explainRecLabel {
+  font-size: var(--fs-12);
+  font-weight: var(--fw-semibold);
+  color: var(--brand-500);
+  margin-right: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}

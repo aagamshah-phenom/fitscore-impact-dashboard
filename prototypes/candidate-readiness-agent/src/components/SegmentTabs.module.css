@@ -1,0 +1,62 @@
+.wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 8px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-link);
+  font-size: var(--fs-13);
+  font-weight: var(--fw-medium);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.tab:hover {
+  background: var(--surface-row-hover);
+}
+
+.tabActive {
+  color: var(--brand-500);
+  background: var(--brand-50);
+  border-color: var(--brand-100);
+}
+
+.count {
+  color: var(--text-muted);
+  font-weight: var(--fw-regular);
+  font-size: var(--fs-12);
+}
+
+.tabActive .count {
+  color: var(--brand-500);
+  font-weight: var(--fw-semibold);
+}
+
+.overflow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-default);
+  background: var(--surface-card);
+  color: var(--text-muted);
+  cursor: not-allowed;
+  font-size: var(--fs-13);
+  font-weight: var(--fw-medium);
+  white-space: nowrap;
+}

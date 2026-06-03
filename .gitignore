@@ -29,3 +29,11 @@ me.md
 **/.DS_Store
 **/*.local
 **/package-lock.json
+
+# ---- Prototypes ----
+!prototypes/**
+prototypes/candidate-readiness-agent/node_modules/
+prototypes/candidate-readiness-agent/dist/
+
+# Local prototype reference screenshots
+prototypes/candidate-readiness-agent/references/
