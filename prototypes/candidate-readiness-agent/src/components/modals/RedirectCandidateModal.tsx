@@ -35,7 +35,7 @@ export function RedirectCandidateModal({
       return;
     }
     redirectCandidate(candidateId);
-    pushToast(`Redirect suggestion saved for ${candidateName}.`, "success");
+    pushToast(`Lead suggestion saved for ${candidateName}.`, "success");
     onOpenChange(false);
   }
 
@@ -43,8 +43,8 @@ export function RedirectCandidateModal({
     <Modal
       open={open}
       onOpenChange={onOpenChange}
-      title="Redirect candidate to similar role"
-      subtitle="This candidate is strong, but this job's HM pipeline is full. Consider a similar open role."
+      title="Add as lead to similar role"
+      subtitle="This candidate is strong, but this job's HM pipeline is full. Suggest a similar open role — the candidate will still need to apply."
       size="md"
       footer={
         <>

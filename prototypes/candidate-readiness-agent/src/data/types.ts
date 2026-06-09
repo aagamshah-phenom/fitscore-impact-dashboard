@@ -45,6 +45,16 @@ export interface HMPipelineMetrics {
   risk: string;
   recommendedAction: string;
   ctaLabel: string;
+  /** Tile A — deadline shown as "by Jun 21" etc. */
+  deadline: string;
+  /** Tile C — total screened count */
+  screenedCount: number;
+  /** Tile C — ready candidates available before HM */
+  readyCount: number;
+  /** Tile C — label for readyCount: "ready candidates" or "ready for screening" */
+  readyLabel: string;
+  /** Tile D — one-line description of what the recommended action will change */
+  recommendedImpact: string;
 }
 
 export interface FunnelStage {

@@ -1,12 +1,19 @@
+/* ─────────────────────────────────────────────────────────
+   AgentChatPanel
+   Natural-height card that grows with content.
+   No "height: 100%" — panel sizes to its own content.
+   Cap at (viewport − topbar − 40px) so it never clips off-screen.
+   ───────────────────────────────────────────────────────── */
+
 .panel {
   display: flex;
   flex-direction: column;
-  height: 100%;
   background: var(--surface-card);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
   overflow: hidden;
+  max-height: calc(100vh - var(--topbar-height, 56px) - 40px);
 }
 
 /* ── Header ─────────────────────────────────────────────── */
@@ -14,15 +21,15 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 14px;
+  padding: 9px 13px;
   border-bottom: 1px solid var(--border-subtle);
   background: var(--surface-muted);
   flex-shrink: 0;
 }
 
 .iconWrap {
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
   border-radius: 999px;
   background: linear-gradient(135deg, var(--brand-500), #b94dff);
   color: white;
@@ -32,50 +39,55 @@
 }
 
 .headerTitle {
-  font-size: var(--fs-12);
+  font-size: var(--fs-11);
   font-weight: var(--fw-semibold);
   color: var(--brand-500);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.07em;
   flex: 1;
 }
 
 /* ── Observation ────────────────────────────────────────── */
 .observation {
-  padding: 10px 14px;
+  padding: 9px 13px;
   border-bottom: 1px solid var(--border-subtle);
   flex-shrink: 0;
 }
 
 .observationText {
   font-size: var(--fs-13);
-  line-height: var(--lh-relaxed);
+  line-height: 1.5;
   color: var(--text-default);
+  margin: 0;
 }
 
-/* ── Chips ──────────────────────────────────────────────── */
+/* ── Prompt chips ───────────────────────────────────────── */
 .chips {
-  padding: 8px 14px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+  padding: 8px 13px;
   border-bottom: 1px solid var(--border-subtle);
   flex-shrink: 0;
 }
 
 .chipsLabel {
-  width: 100%;
-  font-size: var(--fs-11);
-  font-weight: var(--fw-medium);
+  display: block;
+  font-size: var(--fs-10);
+  font-weight: var(--fw-semibold);
   color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 2px;
+  letter-spacing: 0.06em;
+  margin-bottom: 6px;
+}
+
+/* Chips wrap naturally — no internal scrollbar */
+.chipsInner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
 }
 
 .chip {
   display: inline-flex;
-  padding: 4px 10px;
+  padding: 3px 9px;
   background: var(--brand-50);
   border: 1px solid var(--brand-100);
   border-radius: var(--radius-pill);
@@ -83,8 +95,9 @@
   color: var(--brand-600);
   font-weight: var(--fw-medium);
   cursor: pointer;
-  transition: background 0.12s ease, border-color 0.12s ease;
+  transition: background 0.1s ease, border-color 0.1s ease;
   text-align: left;
+  line-height: 1.5;
 }
 
 .chip:hover {
@@ -92,27 +105,59 @@
   border-color: var(--brand-200);
 }
 
-/* ── Chat thread ────────────────────────────────────────── */
-.thread {
-  flex: 1;
-  overflow-y: auto;
-  padding: 10px 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-height: 0;
+/* "Show N more / Show less" toggle link */
+.chipsMore {
+  display: inline-block;
+  margin-top: 6px;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  font-size: var(--fs-12);
+  color: var(--brand-500);
+  font-weight: var(--fw-medium);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
-.threadEmpty {
-  font-size: var(--fs-12);
+.chipsMore:hover {
+  color: var(--brand-600);
+}
+
+/* ── Conversation thread ─────────────────────────────────── */
+
+/* Base — used in both states */
+.thread {
+  padding: 10px 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  flex-shrink: 0;
+}
+
+/* Empty state: just enough room for the hint text (~48px) */
+/* No min-height, no overflow */
+
+/* Filled state: bounded scrollable area */
+.threadFilled {
+  min-height: 200px;
+  max-height: 300px;
+  overflow-y: auto;
+  flex-shrink: 0;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.threadEmptyText {
+  font-size: var(--fs-13);
   color: var(--text-muted);
   font-style: italic;
+  line-height: 1.5;
 }
 
 .msg {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
 }
 
 .msgRole {
@@ -132,9 +177,13 @@
 
 .msgBubble {
   font-size: var(--fs-13);
-  line-height: var(--lh-relaxed);
+  line-height: 1.5;
   padding: 7px 10px;
   border-radius: var(--radius-md);
+  /* Always wrap, never overflow */
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
 }
 
 .msgBubbleAgent {
@@ -151,17 +200,19 @@
   border-radius: var(--radius-md) var(--radius-md) var(--radius-md) 0;
 }
 
-/* ── Input ──────────────────────────────────────────────── */
+/* ── Input row ──────────────────────────────────────────── */
 .inputRow {
   display: flex;
   gap: 6px;
-  padding: 8px 14px;
+  padding: 8px 13px;
   border-top: 1px solid var(--border-subtle);
   flex-shrink: 0;
+  align-items: center;
 }
 
 .input {
   flex: 1;
+  min-width: 0;
   padding: 6px 10px;
   font-size: var(--fs-13);
   border: 1px solid var(--border-default);
@@ -178,6 +229,7 @@
 }
 
 .sendBtn {
+  flex-shrink: 0;
   padding: 6px 12px;
   background: var(--brand-500);
   color: white;
@@ -186,37 +238,57 @@
   font-size: var(--fs-12);
   font-weight: var(--fw-semibold);
   cursor: pointer;
-  transition: background 0.12s ease;
+  transition: background 0.1s ease;
+  white-space: nowrap;
 }
 
 .sendBtn:hover {
   background: var(--brand-600);
 }
 
-/* ── Guardrails ─────────────────────────────────────────── */
+/* ── Guardrails (collapsible) ───────────────────────────── */
 .guardrails {
-  padding: 8px 14px;
   border-top: 1px solid var(--border-subtle);
   flex-shrink: 0;
   background: var(--surface-muted);
 }
 
+.guardrailsToggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 13px;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.guardrailsToggle:hover {
+  background: var(--surface-row-hover);
+}
+
 .guardrailsTitle {
-  font-size: var(--fs-10);
+  font-size: var(--fs-11);
   font-weight: var(--fw-semibold);
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  margin-bottom: 4px;
+}
+
+.guardrailsChevron {
+  font-size: 9px;
+  color: var(--text-muted);
+  flex-shrink: 0;
 }
 
 .guardrailsList {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 2px 13px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }
 
 .guardrailsItem {
@@ -225,7 +297,7 @@
   gap: 5px;
   font-size: var(--fs-11);
   color: var(--text-muted);
-  line-height: 1.4;
+  line-height: 1.45;
 }
 
 .guardrailsItem::before {

@@ -7,7 +7,7 @@
 /* Main body splits into a left column (content) + right sidebar (agent panel) */
 .body {
   display: grid;
-  grid-template-columns: 1fr 320px;
+  grid-template-columns: 1fr 370px;
   gap: 0;
   align-items: start;
   padding: 0;
@@ -22,13 +22,11 @@
 }
 
 .sideCol {
-  padding: 20px 24px 96px 0;
+  padding: 20px 20px 24px 0;
   position: sticky;
   top: calc(var(--topbar-height) + 8px);
-  height: calc(100vh - var(--topbar-height) - 32px);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
+  /* Natural-height sticky column — no forced height so the panel sizes to its content */
+  align-self: start;
 }
 
 .promptWrap {

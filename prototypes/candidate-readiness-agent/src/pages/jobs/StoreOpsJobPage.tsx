@@ -46,14 +46,14 @@ const INITIAL_AGENT_MSG =
   "This job already has 10 candidates with the hiring manager. Historically, this role needs 6 HM interviews. I do not recommend forwarding more candidates right now.";
 
 const FOLLOWUP_AGENT_MSG =
-  "Warm update sent to Olivia Carter and Marcus Lee. Since the HM pipeline is full, the next best step is to wait for HM feedback or redirect strong candidates to similar roles with capacity.";
+  "Warm update sent to Olivia Carter and Marcus Lee. Since the HM pipeline is full, the next best step is to wait for HM feedback or add strong candidates as leads to similar roles with available capacity.";
 
 const FOLLOWUP2_AGENT_MSG =
-  "Marcus Lee was suggested for District Operations Manager — King of Prussia District because that role has available HM capacity.";
+  "Marcus Lee was added as a lead to District Operations Manager — King of Prussia District. That role has available HM capacity and he can apply directly.";
 
 const INITIAL_ACTIONS: ActionChip[] = [
   { id: "keep-warm", label: "Keep candidates warm", variant: "primary" },
-  { id: "redirect", label: "Redirect strong candidates", variant: "secondary" },
+  { id: "redirect", label: "Add as lead to similar role", variant: "secondary" },
   { id: "review-backlog", label: "Review backlog", variant: "ghost" },
   {
     id: "explain-no-forward",
@@ -72,17 +72,17 @@ const INITIAL_ACTIONS: ActionChip[] = [
         },
         {
           label: "Better alternatives",
-          text: "Strong candidates not yet forwarded can be kept warm or redirected to similar open roles with available HM capacity.",
+          text: "Strong candidates not yet forwarded can be kept warm or added as leads to similar open roles with available HM capacity.",
         },
       ],
       recommendation:
-        "Hold on forwarding. Send warm updates to keep engaged candidates interested, and redirect top matches to roles with available HM bandwidth.",
+        "Hold on forwarding. Send warm updates to keep engaged candidates interested, and add top matches as leads to roles with available HM bandwidth.",
     },
   },
 ];
 
 const FOLLOWUP_ACTIONS: ActionChip[] = [
-  { id: "redirect-marcus", label: "Redirect Marcus Lee", variant: "primary" },
+  { id: "redirect-marcus", label: "Add Marcus Lee as lead", variant: "primary" },
   { id: "return-jobs", label: "Return to jobs", variant: "ghost" },
   { id: "reset-demo", label: "Reset demo", variant: "ghost" },
 ];
@@ -96,7 +96,7 @@ const STOREOPS_AGENT_CHIPS = [
   {
     label: "Why not forward more candidates?",
     response:
-      "The HM pipeline already has 10 candidates, 4 over the target of 6. Forwarding more increases congestion and slows HM feedback time. Keep warm or redirect instead.",
+      "The HM pipeline already has 10 candidates, 4 over the target of 6. Forwarding more increases congestion and slows HM feedback time. Keep warm or add as lead to a similar role instead.",
   },
   {
     label: "Which candidates should I keep warm?",
@@ -198,7 +198,7 @@ export function StoreOpsJobPage() {
     redirectCandidate(redirectFor);
     const candidate = candidates.find((c) => c.id === redirectFor);
     pushToast(
-      `Redirect suggestion saved for ${candidate?.name ?? redirectFor}.`,
+      `Lead suggestion saved for ${candidate?.name ?? redirectFor}.`,
       "success",
     );
     setConversationPhase("store-ops", "post-action-2");
@@ -306,7 +306,8 @@ export function StoreOpsJobPage() {
                               updateSent={updateSent}
                               redirected={redirected}
                               onRedirect={
-                                c.recommendedAction.startsWith("Redirect")
+                                c.recommendedAction.startsWith("Redirect") ||
+                                c.recommendedAction.startsWith("Add as lead")
                                   ? () => setRedirectFor(c.id)
                                   : undefined
                               }
@@ -324,7 +325,7 @@ export function StoreOpsJobPage() {
                 </Table>
                 <TableFooter>
                   <span>Showing 1 - {candidates.length} of {candidates.length}</span>
-                  <span>HM pipeline is over-capacity · Keep candidates warm or redirect</span>
+                  <span>HM pipeline is over-capacity · Keep candidates warm or add as lead to similar role</span>
                 </TableFooter>
               </TableWrap>
             </>
@@ -381,8 +382,8 @@ function RecommendedActionCell({
   if (label === "Keep warm" && updateSent) {
     return <span className={jobStyles.recommendedAction}>Update sent</span>;
   }
-  if (label.startsWith("Redirect") && redirected) {
-    return <span className={jobStyles.recommendedAction}>Redirect suggested</span>;
+  if ((label.startsWith("Redirect") || label.startsWith("Add as lead")) && redirected) {
+    return <span className={jobStyles.recommendedAction}>Lead suggestion saved</span>;
   }
   if (onRedirect) {
     return (

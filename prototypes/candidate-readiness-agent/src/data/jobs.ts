@@ -21,6 +21,11 @@ export const JOBS: JobSummary[] = [
       risk: "Role may fall behind historical fill pace",
       recommendedAction: "Fast-track 3 high-readiness candidates",
       ctaLabel: "Review recommendation",
+      deadline: "Jun 21",
+      screenedCount: 17,
+      readyCount: 3,
+      readyLabel: "ready candidates",
+      recommendedImpact: "+3 to HM → target covered",
     },
     funnel: [
       { id: "applicants", label: "Applicants", count: 64 },
@@ -57,9 +62,14 @@ export const JOBS: JobSummary[] = [
       current: 4,
       gap: 8,
       goalPct: 33,
-      risk: "High applicant volume, slow screening throughput",
+      risk: "Screening queue is the bottleneck",
       recommendedAction: "Prioritize 31 candidates for screening",
       ctaLabel: "Prioritize queue",
+      deadline: "Jun 21",
+      screenedCount: 186,
+      readyCount: 31,
+      readyLabel: "ready for screening",
+      recommendedImpact: "+31 to screening queue",
     },
     funnel: [
       { id: "applicants", label: "Applicants", count: 632 },
@@ -86,7 +96,7 @@ export const JOBS: JobSummary[] = [
     scenario: "hm-backlog",
     scenarioLabel: "HM interview backlog",
     readinessInsight: "10 of 6 HM Interview target — overloaded",
-    recommendedAction: "Do not forward more; keep warm or redirect",
+    recommendedAction: "Do not forward more; keep warm or add as lead to similar role",
     address: "200 King of Prussia Mall, King of Prussia, PA 19406",
     status: "Open",
     pipeline: {
@@ -96,8 +106,13 @@ export const JOBS: JobSummary[] = [
       gap: -4,
       goalPct: 167,
       risk: "HM interview backlog / pipeline congestion",
-      recommendedAction: "Hold, keep warm, or redirect strong candidates",
+      recommendedAction: "Hold, keep warm, or add strong candidates as leads to similar roles",
       ctaLabel: "Manage backlog",
+      deadline: "Jun 21",
+      screenedCount: 86,
+      readyCount: 10,
+      readyLabel: "ready candidates",
+      recommendedImpact: "Hold new HM sends · keep warm / add leads to similar roles",
     },
     funnel: [
       { id: "applicants", label: "Applicants", count: 142 },
@@ -112,7 +127,7 @@ export const JOBS: JobSummary[] = [
       whyItMatters:
         "Pipeline congestion increases HM cycle time and delays feedback on candidates already in review.",
       nextStep:
-        "Hold forwarding. Send warm updates to strong waiting candidates and redirect top matches to open roles with available HM capacity.",
+        "Hold forwarding. Send warm updates to strong waiting candidates and add top matches as leads to open roles with available HM capacity.",
       expectedOutcome:
         "HM workload normalizes; strong candidates remain engaged while pipeline drains.",
     },

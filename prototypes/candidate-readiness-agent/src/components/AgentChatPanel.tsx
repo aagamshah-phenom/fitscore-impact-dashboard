@@ -38,6 +38,9 @@ interface AgentChatPanelProps {
 const FALLBACK_RESPONSE =
   "I can help with screening-to-HM interview readiness. Try asking which candidates to send to HM, why the role needs more HM-ready candidates, or why a candidate needs review.";
 
+/** How many chips to show before "more" toggle */
+const INITIAL_CHIP_COUNT = 4;
+
 /** Normalize: lowercase + strip all punctuation */
 function normalize(text: string): string {
   return text.toLowerCase().replace(/[^\w\s]/g, " ").replace(/\s+/g, " ").trim();
@@ -65,7 +68,11 @@ function matchResponse(
   if (exact) return exact.response;
 
   // 3. Chip keyword overlap (score by unique word hits, ignore stop-words)
-  const STOP = new Set(["the", "a", "an", "for", "to", "and", "or", "of", "in", "is", "do", "does", "have", "what", "why", "how", "who", "me", "you", "i", "we", "with", "all", "not"]);
+  const STOP = new Set([
+    "the", "a", "an", "for", "to", "and", "or", "of", "in", "is",
+    "do", "does", "have", "what", "why", "how", "who", "me", "you",
+    "i", "we", "with", "all", "not",
+  ]);
   const inputWords = norm.split(/\s+/).filter((w) => w.length > 2 && !STOP.has(w));
 
   const scored = chips
@@ -89,7 +96,16 @@ export function AgentChatPanel({
   onAddEntries,
 }: AgentChatPanelProps) {
   const [inputValue, setInputValue] = useState("");
+  const [guardrailsOpen, setGuardrailsOpen] = useState(false);
+  const [showAllChips, setShowAllChips] = useState(false);
   const threadRef = useRef<HTMLDivElement>(null);
+
+  const hasMessages = history.length > 0;
+  const hasMoreChips = promptChips.length > INITIAL_CHIP_COUNT;
+  const visibleChips = showAllChips
+    ? promptChips
+    : promptChips.slice(0, INITIAL_CHIP_COUNT);
+  const hiddenCount = promptChips.length - INITIAL_CHIP_COUNT;
 
   function scrollToBottom() {
     setTimeout(() => {
@@ -125,37 +141,51 @@ export function AgentChatPanel({
 
   return (
     <div className={styles.panel}>
+      {/* ── A. Header ── */}
       <div className={styles.header}>
         <div className={styles.iconWrap} aria-hidden="true">
-          <Sparkles size={13} />
+          <Sparkles size={12} />
         </div>
         <span className={styles.headerTitle}>Candidate Readiness Agent</span>
       </div>
 
+      {/* Observation */}
       <div className={styles.observation}>
         <p className={styles.observationText}>{observation}</p>
       </div>
 
+      {/* ── B. Prompt chips ── */}
       <div className={styles.chips}>
         <span className={styles.chipsLabel}>Ask the agent</span>
-        {promptChips.map((chip) => (
+        <div className={styles.chipsInner}>
+          {visibleChips.map((chip) => (
+            <button
+              key={chip.label}
+              type="button"
+              className={styles.chip}
+              onClick={() => handleChipClick(chip)}
+            >
+              {chip.label}
+            </button>
+          ))}
+        </div>
+        {hasMoreChips && (
           <button
-            key={chip.label}
             type="button"
-            className={styles.chip}
-            onClick={() => handleChipClick(chip)}
+            className={styles.chipsMore}
+            onClick={() => setShowAllChips((v) => !v)}
           >
-            {chip.label}
+            {showAllChips ? "Show less" : `+${hiddenCount} more prompts`}
           </button>
-        ))}
+        )}
       </div>
 
-      <div className={styles.thread} ref={threadRef}>
-        {history.length === 0 ? (
-          <span className={styles.threadEmpty}>
-            Select a prompt above or type a question below.
-          </span>
-        ) : (
+      {/* ── C. Conversation thread ── */}
+      <div
+        className={`${styles.thread}${hasMessages ? ` ${styles.threadFilled}` : ""}`}
+        ref={threadRef}
+      >
+        {hasMessages ? (
           history.map((entry, i) => (
             <div key={i} className={styles.msg}>
               <span
@@ -170,9 +200,14 @@ export function AgentChatPanel({
               </span>
             </div>
           ))
+        ) : (
+          <span className={styles.threadEmptyText}>
+            Select a prompt above or type a question below.
+          </span>
         )}
       </div>
 
+      {/* ── D. Input row ── */}
       <div className={styles.inputRow}>
         <input
           type="text"
@@ -187,20 +222,31 @@ export function AgentChatPanel({
         </button>
       </div>
 
+      {/* ── E. Agent Guardrails (collapsible) ── */}
       <div className={styles.guardrails}>
-        <div className={styles.guardrailsTitle}>Agent guardrails</div>
-        <ul className={styles.guardrailsList}>
-          <li className={styles.guardrailsItem}>No auto-hire or auto-reject decisions</li>
-          <li className={styles.guardrailsItem}>
-            No action based only on Fit Score
-          </li>
-          <li className={styles.guardrailsItem}>
-            Requires recruiter confirmation before workflow actions
-          </li>
-          <li className={styles.guardrailsItem}>
-            Uses Fit Score, screening evidence, and pipeline context
-          </li>
-        </ul>
+        <button
+          type="button"
+          className={styles.guardrailsToggle}
+          onClick={() => setGuardrailsOpen((v) => !v)}
+          aria-expanded={guardrailsOpen}
+        >
+          <span className={styles.guardrailsTitle}>Agent Guardrails</span>
+          <span className={styles.guardrailsChevron} aria-hidden="true">
+            {guardrailsOpen ? "▲" : "▼"}
+          </span>
+        </button>
+        {guardrailsOpen && (
+          <ul className={styles.guardrailsList}>
+            <li className={styles.guardrailsItem}>No auto-hire or auto-reject decisions</li>
+            <li className={styles.guardrailsItem}>No action based only on Fit Score</li>
+            <li className={styles.guardrailsItem}>
+              Requires recruiter confirmation before workflow actions
+            </li>
+            <li className={styles.guardrailsItem}>
+              Uses Fit Score, screening evidence, and pipeline context
+            </li>
+          </ul>
+        )}
       </div>
     </div>
   );

@@ -7,11 +7,21 @@ interface HMPipelinePanelProps {
 }
 
 export function HMPipelinePanel({ metrics }: HMPipelinePanelProps) {
-  const { status, target, current, gap, goalPct, risk, recommendedAction } = metrics;
+  const {
+    status,
+    target,
+    current,
+    risk,
+    recommendedAction,
+    deadline,
+    screenedCount,
+    readyCount,
+    readyLabel,
+    recommendedImpact,
+  } = metrics;
 
   const isAtRisk = status === "at-risk";
   const isOverloaded = status === "overloaded";
-  const isHealthy = status === "healthy";
 
   const statusClass = isAtRisk
     ? styles.statusAtRisk
@@ -19,29 +29,17 @@ export function HMPipelinePanel({ metrics }: HMPipelinePanelProps) {
       ? styles.statusOverloaded
       : styles.statusHealthy;
 
-  const statusLabel = isAtRisk
-    ? "At Risk"
+  const statusLabel = isAtRisk ? "At Risk" : isOverloaded ? "Overloaded" : "Healthy";
+
+  const currentClass = isAtRisk
+    ? styles.metricValueAtRisk
     : isOverloaded
-      ? "Overloaded"
-      : "Healthy";
-
-  const barClass = isAtRisk
-    ? styles.progressBarAtRisk
-    : isOverloaded
-      ? styles.progressBarOverloaded
-      : styles.progressBarHealthy;
-
-  const clampedPct = Math.min(goalPct, 100);
-
-  const gapLabel =
-    gap > 0
-      ? `${gap} more needed`
-      : gap < 0
-        ? `${Math.abs(gap)} over target`
-        : "On target";
+      ? styles.metricValueOverloaded
+      : undefined;
 
   return (
     <div className={styles.panel}>
+      {/* ── Header ── */}
       <div className={styles.header}>
         <div className={styles.headerLeft}>
           <span className={styles.headerTitle}>HM Interview Pipeline</span>
@@ -49,53 +47,41 @@ export function HMPipelinePanel({ metrics }: HMPipelinePanelProps) {
         </div>
       </div>
 
+      {/* ── 4-tile body ── */}
       <div className={styles.body}>
-        <div className={styles.metric}>
-          <span className={styles.metricLabel}>Target</span>
-          <span className={styles.metricValue}>{target}</span>
-          <span className={styles.metricSub}>HM interviews</span>
+        {/* Tile A — HM Interview Goal */}
+        <div className={styles.tile}>
+          <span className={styles.tileLabel}>HM Interview Goal</span>
+          <span className={styles.tileValue}>{target} candidates</span>
+          <span className={styles.tileSub}>by {deadline}</span>
         </div>
-        <div className={styles.metric}>
-          <span className={styles.metricLabel}>Current</span>
-          <span
-            className={cn(
-              styles.metricValue,
-              isAtRisk && styles.metricValueAtRisk,
-              isOverloaded && styles.metricValueOverloaded,
-            )}
-          >
-            {current}
-          </span>
-          <span className={styles.metricSub}>HM-ready / sent</span>
+
+        {/* Tile B — Current HM Pipeline */}
+        <div className={styles.tile}>
+          <span className={styles.tileLabel}>Current HM Pipeline</span>
+          <span className={cn(styles.tileValue, currentClass)}>{current}</span>
+          <span className={styles.tileSub}>in HM review</span>
         </div>
-        <div className={styles.metric}>
-          <span className={styles.metricLabel}>Gap</span>
-          <span
-            className={cn(
-              styles.metricValue,
-              isAtRisk && styles.metricValueAtRisk,
-              isOverloaded && styles.metricValueOverloaded,
-            )}
-          >
-            {gapLabel}
+
+        {/* Tile C — Screening Supply */}
+        <div className={styles.tile}>
+          <span className={styles.tileLabel}>Screening Supply</span>
+          <span className={styles.tileValue}>{screenedCount} screened</span>
+          <span className={styles.tileSub}>
+            {readyCount} {readyLabel}
           </span>
         </div>
-        <div className={styles.progressWrap}>
-          <span className={styles.progressLabel}>Goal achievement</span>
-          <span className={styles.progressPct}>{goalPct}%</span>
-          <div className={styles.progressBarTrack}>
-            <div
-              className={cn(styles.progressBarFill, barClass)}
-              style={{ width: `${clampedPct}%` }}
-              role="progressbar"
-              aria-valuenow={goalPct}
-              aria-valuemin={0}
-              aria-valuemax={100}
-            />
-          </div>
+
+        {/* Tile D — Recommended Impact */}
+        <div className={cn(styles.tile, styles.tileImpact)}>
+          <span className={styles.tileLabel}>Recommended Impact</span>
+          <span className={cn(styles.tileValue, styles.tileValueImpact)}>
+            {recommendedImpact}
+          </span>
         </div>
       </div>
 
+      {/* ── Footer: Risk + Recommended action ── */}
       <div className={styles.footer}>
         <div className={styles.footerCell}>
           <span className={styles.footerLabel}>Risk</span>
@@ -104,7 +90,6 @@ export function HMPipelinePanel({ metrics }: HMPipelinePanelProps) {
               styles.footerText,
               isAtRisk && styles.footerTextRisk,
               isOverloaded && styles.footerTextOverloaded,
-              isHealthy && "",
             )}
           >
             {risk}

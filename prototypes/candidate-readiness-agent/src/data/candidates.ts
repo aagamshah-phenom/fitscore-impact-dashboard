@@ -280,7 +280,7 @@ export const STORE_OPS_CANDIDATES: Candidate[] = [
     hiringStatus: "Lead",
     readiness: "strong-candidate",
     screening: "completed",
-    recommendedAction: "Redirect to similar role",
+    recommendedAction: "Add as lead to similar role",
     reason: "Better opportunity available",
     createdDate: "Apr 11, 2026, 1:32 PM EDT",
     profileSource: "Direct Sourcing",
