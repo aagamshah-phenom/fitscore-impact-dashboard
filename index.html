@@ -4,104 +4,99 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>FitScore Adoption & Impact Dashboard — ABLAUS</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/recharts/2.5.0/Recharts.js"></script>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js" crossorigin></script>
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#1a2233;background:#f5f7fb}
 .app{max-width:1200px;margin:0 auto;padding:24px}
 h1{font-size:22px;font-weight:700;margin:0}
-.subtitle{color:#6b7689;font-size:14px;margin:4px 0 0}
+.sub{color:#6b7689;font-size:14px;margin:4px 0 0}
 .badge{display:inline-flex;align-items:center;gap:6px;font-size:13px;padding:4px 10px;border-radius:999px;background:#ecfdf5;color:#047857;margin-top:8px}
-.filter-bar{background:#fff;border:1px solid #e6e9f0;border-radius:12px;padding:14px 18px;margin:16px 0;display:flex;gap:24px;flex-wrap:wrap;align-items:center}
-.filter-bar span{font-size:13px;color:#6b7689}
-.filter-bar strong{color:#1a2233}
+.fbar{background:#fff;border:1px solid #e6e9f0;border-radius:12px;padding:14px 18px;margin:16px 0;display:flex;gap:24px;flex-wrap:wrap;align-items:center}
+.fbar span{font-size:13px;color:#6b7689}
+.fbar strong{color:#1a2233}
 .tabs{display:flex;gap:4px;border-bottom:1px solid #e6e9f0;margin:0 0 16px}
 .tab{background:none;border:none;padding:10px 16px;font-size:14px;color:#6b7689;cursor:pointer;border-bottom:2px solid transparent}
-.tab.active{color:#2d5bff;border-bottom-color:#2d5bff;font-weight:600}
-.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin:16px 0}
-.kpi-2{grid-template-columns:repeat(2,1fr);max-width:600px}
-.kpi-card{background:#fff;border:1px solid #e6e9f0;border-radius:12px;padding:16px;position:relative}
-.kpi-label{color:#6b7689;font-size:13px;margin:0 0 6px}
-.kpi-value{font-size:26px;font-weight:700;margin:0}
-.kpi-hint{color:#9aa3b2;font-size:12px;margin:6px 0 0}
-.kpi-i{position:absolute;top:10px;right:10px;width:16px;height:16px;border:1px solid #c2c8d4;border-radius:50%;color:#9aa3b2;font-size:11px;font-style:italic;font-family:Georgia,serif;line-height:14px;text-align:center;cursor:help}
-.kpi-tip{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);width:max-content;max-width:220px;background:#1f2937;color:#fff;font-size:12px;font-style:normal;font-family:system-ui;text-align:left;line-height:1.4;padding:6px 10px;border-radius:6px;box-shadow:0 4px 12px rgba(20,30,60,.18);opacity:0;visibility:hidden;transition:opacity .12s;z-index:10;pointer-events:none;white-space:normal}
-.kpi-i:hover .kpi-tip{opacity:1;visibility:visible}
-.chart-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;margin-top:16px}
-.chart-panel{background:#fff;border:1px solid #e6e9f0;border-radius:12px;padding:16px 20px}
-.chart-title{font-size:14px;font-weight:600;margin:0 0 12px}
+.tab.on{color:#2d5bff;border-bottom-color:#2d5bff;font-weight:600}
+.kg{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin:16px 0}
+.kg2{grid-template-columns:repeat(2,1fr);max-width:600px}
+.kc{background:#fff;border:1px solid #e6e9f0;border-radius:12px;padding:16px;position:relative}
+.kl{color:#6b7689;font-size:13px;margin:0 0 6px}
+.kv{font-size:26px;font-weight:700;margin:0}
+.kh{color:#9aa3b2;font-size:12px;margin:6px 0 0}
+.ki{position:absolute;top:10px;right:10px;width:16px;height:16px;border:1px solid #c2c8d4;border-radius:50%;color:#9aa3b2;font-size:11px;font-style:italic;font-family:Georgia,serif;line-height:14px;text-align:center;cursor:help}
+.kt{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);width:max-content;max-width:220px;background:#1f2937;color:#fff;font-size:12px;font-style:normal;font-family:system-ui;text-align:left;line-height:1.4;padding:6px 10px;border-radius:6px;box-shadow:0 4px 12px rgba(20,30,60,.18);opacity:0;visibility:hidden;transition:opacity .12s;z-index:10;pointer-events:none;white-space:normal}
+.ki:hover .kt{opacity:1;visibility:visible}
+.cr{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;margin-top:16px}
+.cp{background:#fff;border:1px solid #e6e9f0;border-radius:12px;padding:16px 20px}
+.ct{font-size:14px;font-weight:600;margin:0 0 12px}
 .note{color:#6b7689;font-size:13px;margin:8px 2px 0}
-.info-box{background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;border-radius:10px;padding:16px 18px;font-size:14px;margin:8px 0 16px}
-.warn-box{background:#fff7ed;border:1px solid #fdba74;color:#9a3412;border-radius:10px;padding:12px 14px;font-size:13px;margin:8px 0}
-.method-note{font-size:13px;color:#6b7689;background:#f8faff;border-left:3px solid #2d5bff;padding:8px 12px;border-radius:0 6px 6px 0;margin:12px 0 16px}
-.assm-toggle{background:none;border:none;padding:0;font-size:13px;color:#2d5bff;cursor:pointer;font-weight:500}
-.assm-body{margin-top:10px;background:#f8faff;border:1px solid #e0e8ff;border-radius:10px;padding:14px 16px}
-.assm-row{display:grid;grid-template-columns:160px 120px 1fr;gap:8px 16px;padding:6px 0;border-bottom:1px solid #eef1f6;font-size:13px}
-.assm-row:last-of-type{border-bottom:none}
-.assm-label{font-weight:600}
-.assm-val{color:#2d5bff;font-weight:600}
-.assm-note{color:#6b7689;line-height:1.45}
-.assm-footer{margin:10px 0 0;font-size:12px;color:#9aa3b2;line-height:1.5}
+.ibox{background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;border-radius:10px;padding:16px 18px;font-size:14px;margin:8px 0 16px}
+.wbox{background:#fff7ed;border:1px solid #fdba74;color:#9a3412;border-radius:10px;padding:12px 14px;font-size:13px;margin:8px 0}
+.mn{font-size:13px;color:#6b7689;background:#f8faff;border-left:3px solid #2d5bff;padding:8px 12px;border-radius:0 6px 6px 0;margin:12px 0 16px}
+.atog{background:none;border:none;padding:0;font-size:13px;color:#2d5bff;cursor:pointer;font-weight:500}
+.abody{margin-top:10px;background:#f8faff;border:1px solid #e0e8ff;border-radius:10px;padding:14px 16px}
+.arow{display:grid;grid-template-columns:160px 120px 1fr;gap:8px 16px;padding:6px 0;border-bottom:1px solid #eef1f6;font-size:13px}
+.arow:last-of-type{border-bottom:none}
+.al{font-weight:600}
+.av{color:#2d5bff;font-weight:600}
+.an{color:#6b7689;line-height:1.45}
+.af{margin:10px 0 0;font-size:12px;color:#9aa3b2;line-height:1.5}
 </style>
 </head>
 <body>
-<div id="root"></div>
+<div id="root"><p style="padding:24px;color:#6b7689">Loading dashboard...</p></div>
 <script>
-const {useState,createElement:h} = React;
-const {
-  ResponsiveContainer,BarChart,Bar,LineChart,Line,ComposedChart,
-  XAxis,YAxis,CartesianGrid,Tooltip,Legend,Cell
-} = Recharts;
-
-// ── DATA ────────────────────────────────────────────────────────────────────
-const D = {
-  adoption:{
-    kpis:{views:354099,ai_visits:1481,ai_adds:621,ai_dismisses:1429,active_jobs:10774,total_jobs:14109},
-    trend:[
-      {m:"2024-12",views:31857,visits:97, adds:18, dim:11},
-      {m:"2025-01",views:50178,visits:219,adds:43, dim:93},
-      {m:"2025-02",views:51723,visits:228,adds:30, dim:21},
-      {m:"2025-03",views:62202,visits:237,adds:46, dim:47},
-      {m:"2025-04",views:71352,visits:343,adds:88, dim:78},
-      {m:"2025-05",views:86787,visits:357,adds:396,dim:1179},
-    ]
-  },
-  feedback:{
-    up:0, down:53,
-    trend:[
-      {m:"2024-12",up:0,down:2},
-      {m:"2025-01",up:0,down:8},
-      {m:"2025-02",up:0,down:9},
-      {m:"2025-03",up:0,down:8},
-      {m:"2025-04",up:0,down:7},
-      {m:"2025-05",up:0,down:19},
-    ]
-  },
-  dist:{
-    bands:[
-      {band:"A",      count:82970,  color:"#16a34a"},
-      {band:"B",      count:534230, color:"#2d5bff"},
-      {band:"C",      count:352411, color:"#f59e0b"},
-      {band:"No Fit", count:182821, color:"#ef4444"},
-    ],
-    monthly:[
-      {m:"2024-12",A:10212, B:49644, C:33408, N:18953},
-      {m:"2025-01",A:13067, B:81001, C:57094, N:29442},
-      {m:"2025-02",A:8861,  B:77835, C:50443, N:26128},
-      {m:"2025-03",A:11236, B:83997, C:52155, N:25749},
-      {m:"2025-04",A:10910, B:72102, C:50402, N:24336},
-      {m:"2025-05",A:28684, B:169651,C:108909,N:58213},
-    ]
-  },
-  cs:(()=>{
-    const monthly=[
-      {m:"2024-12",ab:35608, cn:22757},
-      {m:"2025-01",ab:67361, cn:54554},
-      {m:"2025-02",ab:68055, cn:53250},
-      {m:"2025-03",ab:72203, cn:53123},
-      {m:"2025-04",ab:66711, cn:54297},
+window.addEventListener('load', function() {
+  try {
+    const h = React.createElement;
+    const {useState} = React;
+    const RC = Recharts;
+    const AD = {
+      kpis:{views:354099,ai_visits:1481,ai_adds:621,ai_dismisses:1429,active:10774,total:14109},
+      trend:[
+        {m:"2024-12",views:31857,visits:97, adds:18, dim:11},
+        {m:"2025-01",views:50178,visits:219,adds:43, dim:93},
+        {m:"2025-02",views:51723,visits:228,adds:30, dim:21},
+        {m:"2025-03",views:62202,visits:237,adds:46, dim:47},
+        {m:"2025-04",views:71352,visits:343,adds:88, dim:78},
+        {m:"2025-05",views:86787,visits:357,adds:396,dim:1179},
+      ]
+    };
+    const FD = {
+      up:0,down:53,
+      trend:[
+        {m:"2024-12",up:0,down:2},{m:"2025-01",up:0,down:8},
+        {m:"2025-02",up:0,down:9},{m:"2025-03",up:0,down:8},
+        {m:"2025-04",up:0,down:7},{m:"2025-05",up:0,down:19},
+      ]
+    };
+    const DD = {
+      bands:[
+        {band:"A",count:82970,color:"#16a34a"},
+        {band:"B",count:534230,color:"#2d5bff"},
+        {band:"C",count:352411,color:"#f59e0b"},
+        {band:"No Fit",count:182821,color:"#ef4444"},
+      ],
+      monthly:[
+        {m:"2024-12",A:10212,B:49644,C:33408,N:18953},
+        {m:"2025-01",A:13067,B:81001,C:57094,N:29442},
+        {m:"2025-02",A:8861, B:77835,C:50443,N:26128},
+        {m:"2025-03",A:11236,B:83997,C:52155,N:25749},
+        {m:"2025-04",A:10910,B:72102,C:50402,N:24336},
+        {m:"2025-05",A:28684,B:169651,C:108909,N:58213},
+      ]
+    };
+    const dtotal = DD.bands.reduce((s,b)=>s+b.count,0);
+    DD.bands = DD.bands.map(b=>({...b,pct:Math.round(b.count/dtotal*1000)/10}));
+    const csMonthly = [
+      {m:"2024-12",ab:35608,cn:22757},
+      {m:"2025-01",ab:67361,cn:54554},
+      {m:"2025-02",ab:68055,cn:53250},
+      {m:"2025-03",ab:72203,cn:53123},
+      {m:"2025-04",ab:66711,cn:54297},
       {m:"2025-05",ab:158394,cn:118275},
     ].map(r=>{
       const hrs=(r.ab*2+r.cn*4)/60;
@@ -109,311 +104,299 @@ const D = {
         dollars:Math.round(hrs*30),fte:Math.round(hrs/1800*1000)/1000};
     });
     const qm={};
-    monthly.forEach(r=>{
+    csMonthly.forEach(r=>{
       const[y,mo]=r.month.split('-').map(Number);
       const q=`${y}-Q${Math.ceil(mo/3)}`;
       if(!qm[q])qm[q]={h:0,d:0};
       qm[q].h+=r.hrs; qm[q].d+=r.dollars;
     });
-    const quarterly=Object.entries(qm).sort(([a],[b])=>a.localeCompare(b))
-      .map(([q,v])=>({quarter:q,dollars:v.d,hrs:Math.round(v.h*10)/10,fte:Math.round(v.h/1800*1000)/1000}));
+    const csQ=Object.entries(qm).sort(([a],[b])=>a.localeCompare(b))
+      .map(([q,v])=>({quarter:q,dollars:v.d,hrs:Math.round(v.h*10)/10,
+        fte:Math.round(v.h/1800*1000)/1000}));
     const ab=468332,cn=356256;
-    const totalHrs=(ab*2+cn*4)/60;
-    return{
-      kpis:{total:824588,ab,cn,hrs:Math.round(totalHrs*10)/10,
-        dollars:Math.round(totalHrs*30),fte:Math.round(totalHrs/1800*100)/100},
-      monthly, quarterly
+    const th=(ab*2+cn*4)/60;
+    const CSD={
+      kpis:{total:824588,ab,cn,hrs:Math.round(th*10)/10,
+        dollars:Math.round(th*30),fte:Math.round(th/1800*100)/100},
+      monthly:csMonthly, quarterly:csQ
     };
-  })()
-};
-
-// pct for dist
-const distTotal=D.dist.bands.reduce((s,b)=>s+b.count,0);
-D.dist.bands=D.dist.bands.map(b=>({...b,pct:Math.round(b.count/distTotal*1000)/10}));
-
-// ── HELPERS ──────────────────────────────────────────────────────────────────
-const fi=n=>n.toLocaleString();
-const fd=n=>n>=1e6?`$${(n/1e6).toFixed(1)}M`:n>=1000?`$${(n/1000).toFixed(1)}K`:`$${n}`;
-const fh=n=>n>=1000?`${(n/1000).toFixed(1)}K`:n.toLocaleString();
-
-function KPI({label,value,hint,tip}){
-  return h('div',{className:'kpi-card'},
-    tip&&h('div',{className:'kpi-i'},'i',h('span',{className:'kpi-tip'},tip)),
-    h('p',{className:'kpi-label'},label),
-    h('p',{className:'kpi-value'},value),
-    hint&&h('p',{className:'kpi-hint'},hint)
-  );
-}
-
-function Panel({title,children}){
-  return h('div',{className:'chart-panel'},
-    h('p',{className:'chart-title'},title),
-    children
-  );
-}
-
-function CTip({active,payload,label}){
-  if(!active||!payload?.length)return null;
-  return h('div',{style:{background:'#fff',border:'1px solid #e6e9f0',borderRadius:8,padding:'8px 10px',fontSize:12,boxShadow:'0 4px 12px rgba(20,30,60,.1)'}},
-    h('div',{style:{fontWeight:600,marginBottom:4}},label),
-    payload.map(p=>h('div',{key:p.name,style:{display:'flex',alignItems:'center',gap:6,padding:'1px 0'}},
-      h('span',{style:{width:10,height:10,borderRadius:2,background:p.color,display:'inline-block'}}),
-      h('span',null,p.name,': ',h('strong',null,
-        p.value>999?fi(Math.round(p.value)):typeof p.value==='number'?p.value.toFixed(p.value<1?3:0):p.value
-      ))
-    ))
-  );
-}
-
-// ── TABS ─────────────────────────────────────────────────────────────────────
-function AdoptionTab(){
-  const k=D.adoption.kpis;
-  return h('div',null,
-    h('div',{className:'kpi-grid'},
-      h(KPI,{label:'FitScore Views',value:fi(k.views),tip:'Total times a FitScore card was opened by a recruiter in this period.'}),
-      h(KPI,{label:'AI Discovery Visits',value:fi(k.ai_visits),tip:'Total visits to the AI Discovery panel.'}),
-      h(KPI,{label:'Jobs w/ FitScore Active',value:`${Math.round(k.active_jobs/k.total_jobs*1000)/10}%`,hint:`${fi(k.active_jobs)} of ${fi(k.total_jobs)} jobs`,tip:'Jobs where at least one FitScore view was recorded.'}),
-      h(KPI,{label:'AI Add/Dismiss Ratio',value:`${Math.round(k.ai_adds/(k.ai_adds+k.ai_dismisses)*1000)/10}%`,hint:`${fi(k.ai_adds)} added · ${fi(k.ai_dismisses)} dismissed`,tip:'AI Discovery adds as a share of total add+dismiss actions.'})
-    ),
-    h('div',{className:'chart-row'},
-      h(Panel,{title:'FitScore Views by Month'},
-        h(ResponsiveContainer,{width:'100%',height:220},
-          h(BarChart,{data:D.adoption.trend,margin:{top:4,right:8,left:0,bottom:0}},
-            h(CartesianGrid,{strokeDasharray:'3 3',stroke:'#f0f0f0'}),
-            h(XAxis,{dataKey:'m',tick:{fontSize:11}}),
-            h(YAxis,{tick:{fontSize:11},tickFormatter:v=>v>=1000?`${(v/1000).toFixed(0)}K`:v}),
-            h(Tooltip,{content:h(CTip)}),
-            h(Bar,{dataKey:'views',name:'FitScore Views',fill:'#2d5bff',radius:[3,3,0,0]})
+    const fi=n=>n.toLocaleString();
+    const fd=n=>n>=1e6?`$${(n/1e6).toFixed(1)}M`:n>=1000?`$${(n/1000).toFixed(1)}K`:`$${n}`;
+    const fh=n=>n>=1000?`${(n/1000).toFixed(1)}K`:n.toLocaleString();
+    function KPI({label,value,hint,tip}){
+      return h('div',{className:'kc'},
+        tip&&h('div',{className:'ki'},'i',h('span',{className:'kt'},tip)),
+        h('p',{className:'kl'},label),
+        h('p',{className:'kv'},value),
+        hint&&h('p',{className:'kh'},hint)
+      );
+    }
+    function Panel({title,children}){
+      return h('div',{className:'cp'},h('p',{className:'ct'},title),children);
+    }
+    function TTip({active,payload,label}){
+      if(!active||!payload?.length)return null;
+      return h('div',{style:{background:'#fff',border:'1px solid #e6e9f0',borderRadius:8,
+        padding:'8px 10px',fontSize:12,boxShadow:'0 4px 12px rgba(20,30,60,.1)'}},
+        h('div',{style:{fontWeight:600,marginBottom:4}},label),
+        payload.map(p=>h('div',{key:p.name,style:{display:'flex',alignItems:'center',gap:6,padding:'1px 0'}},
+          h('span',{style:{width:10,height:10,borderRadius:2,background:p.color,display:'inline-block'}}),
+          h('span',null,`${p.name}: `,h('strong',null,
+            typeof p.value==='number'&&p.value>999?fi(Math.round(p.value)):
+            typeof p.value==='number'?p.value:p.value
+          ))
+        ))
+      );
+    }
+    function AdoptionTab(){
+      const k=AD.kpis;
+      return h('div',null,
+        h('div',{className:'kg'},
+          h(KPI,{label:'FitScore Views',value:fi(k.views),tip:'Total times a FitScore card was opened by a recruiter.'}),
+          h(KPI,{label:'AI Discovery Visits',value:fi(k.ai_visits),tip:'Total visits to the AI Discovery panel.'}),
+          h(KPI,{label:'Jobs w/ FitScore Active',value:`${Math.round(k.active/k.total*1000)/10}%`,
+            hint:`${fi(k.active)} of ${fi(k.total)} jobs`,tip:'Jobs where at least one FitScore view was recorded.'}),
+          h(KPI,{label:'AI Add/Dismiss Ratio',value:`${Math.round(k.ai_adds/(k.ai_adds+k.ai_dismisses)*1000)/10}%`,
+            hint:`${fi(k.ai_adds)} added · ${fi(k.ai_dismisses)} dismissed`,tip:'AI Discovery adds as a share of total add+dismiss actions.'})
+        ),
+        h('div',{className:'cr'},
+          h(Panel,{title:'FitScore Views by Month'},
+            h(RC.ResponsiveContainer,{width:'100%',height:220},
+              h(RC.BarChart,{data:AD.trend,margin:{top:4,right:8,left:0,bottom:0}},
+                h(RC.CartesianGrid,{strokeDasharray:'3 3',stroke:'#f0f0f0'}),
+                h(RC.XAxis,{dataKey:'m',tick:{fontSize:11}}),
+                h(RC.YAxis,{tick:{fontSize:11},tickFormatter:v=>v>=1000?`${(v/1000).toFixed(0)}K`:v}),
+                h(RC.Tooltip,{content:h(TTip)}),
+                h(RC.Bar,{dataKey:'views',name:'FitScore Views',fill:'#2d5bff',radius:[3,3,0,0]})
+              )
+            )
+          ),
+          h(Panel,{title:'AI Discovery Visits by Month'},
+            h(RC.ResponsiveContainer,{width:'100%',height:220},
+              h(RC.BarChart,{data:AD.trend,margin:{top:4,right:8,left:0,bottom:0}},
+                h(RC.CartesianGrid,{strokeDasharray:'3 3',stroke:'#f0f0f0'}),
+                h(RC.XAxis,{dataKey:'m',tick:{fontSize:11}}),
+                h(RC.YAxis,{tick:{fontSize:11}}),
+                h(RC.Tooltip,{content:h(TTip)}),
+                h(RC.Bar,{dataKey:'visits',name:'AI Discovery Visits',fill:'#7c3aed',radius:[3,3,0,0]})
+              )
+            )
           )
-        )
-      ),
-      h(Panel,{title:'AI Discovery Visits by Month'},
-        h(ResponsiveContainer,{width:'100%',height:220},
-          h(BarChart,{data:D.adoption.trend,margin:{top:4,right:8,left:0,bottom:0}},
-            h(CartesianGrid,{strokeDasharray:'3 3',stroke:'#f0f0f0'}),
-            h(XAxis,{dataKey:'m',tick:{fontSize:11}}),
-            h(YAxis,{tick:{fontSize:11}}),
-            h(Tooltip,{content:h(CTip)}),
-            h(Bar,{dataKey:'visits',name:'AI Discovery Visits',fill:'#7c3aed',radius:[3,3,0,0]})
-          )
-        )
-      )
-    ),
-    h('div',{className:'chart-row'},
-      h(Panel,{title:'AI Discovery Adds vs Dismisses (MoM)'},
-        h(ResponsiveContainer,{width:'100%',height:220},
-          h(ComposedChart,{data:D.adoption.trend,margin:{top:4,right:8,left:0,bottom:0}},
-            h(CartesianGrid,{strokeDasharray:'3 3',stroke:'#f0f0f0'}),
-            h(XAxis,{dataKey:'m',tick:{fontSize:11}}),
-            h(YAxis,{tick:{fontSize:11}}),
-            h(Tooltip,{content:h(CTip)}),
-            h(Legend,{wrapperStyle:{fontSize:12}}),
-            h(Line,{type:'monotone',dataKey:'adds',name:'Adds',stroke:'#16a34a',strokeWidth:2,dot:{r:3}}),
-            h(Line,{type:'monotone',dataKey:'dim',name:'Dismisses',stroke:'#ef4444',strokeWidth:2,dot:{r:3}})
-          )
-        )
-      )
-    )
-  );
-}
-
-function FeedbackTab(){
-  const{up,down,trend}=D.feedback;
-  return h('div',null,
-    h('div',{className:'warn-box'},'⚠️ No thumbs-up feedback recorded for ABLAUS in this period. All 53 signals are thumbs-down. This may indicate recruiters use the dismiss signal but not the approve signal — worth discussing with the customer.'),
-    h('div',{className:'kpi-grid'},
-      h(KPI,{label:'👍 Thumbs Up',value:fi(up),tip:'Total positive recruiter feedback on FitScore in this period.'}),
-      h(KPI,{label:'👎 Thumbs Down',value:fi(down),tip:'Total negative recruiter feedback on FitScore in this period.'}),
-      h(KPI,{label:'Positive Rate',value:'0%',tip:'Thumbs up as a share of all feedback. Low rate may reflect usage pattern rather than poor score quality.'}),
-      h(KPI,{label:'Total Feedback',value:fi(up+down),tip:`${fi(up+down)} feedback signals out of ${fi(D.adoption.kpis.views)} FitScore views — very low engagement rate on explicit feedback.`})
-    ),
-    h('div',{className:'chart-row'},
-      h(Panel,{title:'Recruiter Feedback (MoM)'},
-        h(ResponsiveContainer,{width:'100%',height:220},
-          h(ComposedChart,{data:trend,margin:{top:4,right:8,left:0,bottom:0}},
-            h(CartesianGrid,{strokeDasharray:'3 3',stroke:'#f0f0f0'}),
-            h(XAxis,{dataKey:'m',tick:{fontSize:11}}),
-            h(YAxis,{tick:{fontSize:11}}),
-            h(Tooltip,{content:h(CTip)}),
-            h(Legend,{wrapperStyle:{fontSize:12}}),
-            h(Bar,{dataKey:'up',name:'Thumbs Up',fill:'#16a34a',radius:[3,3,0,0]}),
-            h(Bar,{dataKey:'down',name:'Thumbs Down',fill:'#ef4444',radius:[3,3,0,0]})
-          )
-        )
-      )
-    )
-  );
-}
-
-function DistributionTab(){
-  const{bands,monthly}=D.dist;
-  const stacked=monthly.map(r=>({month:r.m,A:r.A,B:r.B,C:r.C,'No Fit':r.N}));
-  return h('div',null,
-    h('div',{className:'kpi-grid'},
-      bands.map(b=>h(KPI,{key:b.band,label:`${b.band} Fit`,value:fi(b.count),hint:`${b.pct}% of scored`,tip:`Candidates scored ${b.band} Fit. Deduplicated to latest score per candidate-job pair.`}))
-    ),
-    h('div',{className:'chart-row'},
-      h(Panel,{title:'Score Distribution (Overall)'},
-        h(ResponsiveContainer,{width:'100%',height:220},
-          h(BarChart,{data:bands,margin:{top:4,right:8,left:0,bottom:0}},
-            h(CartesianGrid,{strokeDasharray:'3 3',stroke:'#f0f0f0'}),
-            h(XAxis,{dataKey:'band',tick:{fontSize:12}}),
-            h(YAxis,{tick:{fontSize:11},tickFormatter:v=>v>=1000?`${(v/1000).toFixed(0)}K`:v}),
-            h(Tooltip,{content:h(CTip)}),
-            h(Bar,{dataKey:'count',name:'Candidates',radius:[4,4,0,0]},
-              bands.map(b=>h(Cell,{key:b.band,fill:b.color}))
+        ),
+        h('div',{className:'cr'},
+          h(Panel,{title:'AI Discovery Adds vs Dismisses (MoM)'},
+            h(RC.ResponsiveContainer,{width:'100%',height:220},
+              h(RC.ComposedChart,{data:AD.trend,margin:{top:4,right:8,left:0,bottom:0}},
+                h(RC.CartesianGrid,{strokeDasharray:'3 3',stroke:'#f0f0f0'}),
+                h(RC.XAxis,{dataKey:'m',tick:{fontSize:11}}),
+                h(RC.YAxis,{tick:{fontSize:11}}),
+                h(RC.Tooltip,{content:h(TTip)}),
+                h(RC.Legend,{wrapperStyle:{fontSize:12}}),
+                h(RC.Line,{type:'monotone',dataKey:'adds',name:'Adds',stroke:'#16a34a',strokeWidth:2,dot:{r:3}}),
+                h(RC.Line,{type:'monotone',dataKey:'dim',name:'Dismisses',stroke:'#ef4444',strokeWidth:2,dot:{r:3}})
+              )
             )
           )
         )
-      ),
-      h(Panel,{title:'Score Distribution by Month (Stacked)'},
-        h(ResponsiveContainer,{width:'100%',height:220},
-          h(BarChart,{data:stacked,margin:{top:4,right:8,left:0,bottom:0}},
-            h(CartesianGrid,{strokeDasharray:'3 3',stroke:'#f0f0f0'}),
-            h(XAxis,{dataKey:'month',tick:{fontSize:11}}),
-            h(YAxis,{tick:{fontSize:11},tickFormatter:v=>v>=1000?`${(v/1000).toFixed(0)}K`:v}),
-            h(Tooltip,{content:h(CTip)}),
-            h(Legend,{wrapperStyle:{fontSize:12}}),
-            h(Bar,{dataKey:'A',stackId:'s',name:'A Fit',fill:'#16a34a'}),
-            h(Bar,{dataKey:'B',stackId:'s',name:'B Fit',fill:'#2d5bff'}),
-            h(Bar,{dataKey:'C',stackId:'s',name:'C Fit',fill:'#f59e0b'}),
-            h(Bar,{dataKey:'No Fit',stackId:'s',name:'No Fit',fill:'#ef4444',radius:[3,3,0,0]})
+      );
+    }
+    function FeedbackTab(){
+      const{up,down,trend}=FD;
+      return h('div',null,
+        h('div',{className:'wbox'},'⚠️ No thumbs-up feedback recorded for ABLAUS in this period. All 53 signals are thumbs-down. This may reflect usage pattern (recruiters use dismiss signal only) rather than poor score quality — worth discussing with the customer.'),
+        h('div',{className:'kg'},
+          h(KPI,{label:'👍 Thumbs Up',value:fi(up),tip:'Total positive recruiter feedback on FitScore.'}),
+          h(KPI,{label:'👎 Thumbs Down',value:fi(down),tip:'Total negative recruiter feedback on FitScore.'}),
+          h(KPI,{label:'Positive Rate',value:'0%',tip:'Low rate may reflect usage pattern rather than poor score quality.'}),
+          h(KPI,{label:'Total Feedback',value:fi(up+down),tip:`${fi(up+down)} feedback signals out of ${fi(AD.kpis.views)} FitScore views — very low explicit feedback rate.`})
+        ),
+        h('div',{className:'cr'},
+          h(Panel,{title:'Recruiter Feedback (MoM)'},
+            h(RC.ResponsiveContainer,{width:'100%',height:220},
+              h(RC.ComposedChart,{data:trend,margin:{top:4,right:8,left:0,bottom:0}},
+                h(RC.CartesianGrid,{strokeDasharray:'3 3',stroke:'#f0f0f0'}),
+                h(RC.XAxis,{dataKey:'m',tick:{fontSize:11}}),
+                h(RC.YAxis,{tick:{fontSize:11}}),
+                h(RC.Tooltip,{content:h(TTip)}),
+                h(RC.Legend,{wrapperStyle:{fontSize:12}}),
+                h(RC.Bar,{dataKey:'up',name:'Thumbs Up',fill:'#16a34a',radius:[3,3,0,0]}),
+                h(RC.Bar,{dataKey:'down',name:'Thumbs Down',fill:'#ef4444',radius:[3,3,0,0]})
+              )
+            )
           )
         )
-      )
-    ),
-    h('p',{className:'note'},'Deduplicated to latest score per candidate-job pair. Excludes Incomplete Profile, Unsupported Language, and Incomplete Job statuses.')
-  );
-}
-
-function OutcomesTab(){
-  return h('div',{className:'info-box'},
-    h('strong',null,'Outcomes data not included in this snapshot.'),
-    h('br'),
-    'Outcomes (interview rate and hire rate by FitScore band) requires candidate-level funnel matching and is available in the live internal dashboard. This snapshot covers Adoption, Feedback, Distribution, and Cost Savings.'
-  );
-}
-
-function CostSavingsTab(){
-  const[open,setOpen]=useState(false);
-  const{kpis,monthly,quarterly}=D.cs;
-  function CSTip({active,payload,label}){
-    if(!active||!payload?.length)return null;
-    return h('div',{style:{background:'#fff',border:'1px solid #e6e9f0',borderRadius:8,padding:'8px 10px',fontSize:12,boxShadow:'0 4px 12px rgba(20,30,60,.1)'}},
-      h('div',{style:{fontWeight:600,marginBottom:4}},label),
-      payload.map(p=>h('div',{key:p.name,style:{display:'flex',alignItems:'center',gap:6,padding:'1px 0'}},
-        h('span',{style:{width:10,height:10,borderRadius:2,background:p.color,display:'inline-block'}}),
-        h('span',null,p.name,': ',h('strong',null,
-          p.name==='$ Saved'?fd(p.value):p.name==='FTE Saved'?p.value.toFixed(3):fi(Math.round(p.value))
-        ))
-      ))
-    );
+      );
+    }
+    function DistributionTab(){
+      const{bands,monthly}=DD;
+      const stacked=monthly.map(r=>({month:r.m,A:r.A,B:r.B,C:r.C,'No Fit':r.N}));
+      return h('div',null,
+        h('div',{className:'kg'},
+          bands.map(b=>h(KPI,{key:b.band,label:`${b.band} Fit`,value:fi(b.count),
+            hint:`${b.pct}% of scored`,tip:`Candidates scored ${b.band} Fit. Latest score per candidate-job pair.`}))
+        ),
+        h('div',{className:'cr'},
+          h(Panel,{title:'Score Distribution (Overall)'},
+            h(RC.ResponsiveContainer,{width:'100%',height:220},
+              h(RC.BarChart,{data:bands,margin:{top:4,right:8,left:0,bottom:0}},
+                h(RC.CartesianGrid,{strokeDasharray:'3 3',stroke:'#f0f0f0'}),
+                h(RC.XAxis,{dataKey:'band',tick:{fontSize:12}}),
+                h(RC.YAxis,{tick:{fontSize:11},tickFormatter:v=>v>=1000?`${(v/1000).toFixed(0)}K`:v}),
+                h(RC.Tooltip,{content:h(TTip)}),
+                h(RC.Bar,{dataKey:'count',name:'Candidates',radius:[4,4,0,0]},
+                  bands.map(b=>h(RC.Cell,{key:b.band,fill:b.color}))
+                )
+              )
+            )
+          ),
+          h(Panel,{title:'Score Distribution by Month (Stacked)'},
+            h(RC.ResponsiveContainer,{width:'100%',height:220},
+              h(RC.BarChart,{data:stacked,margin:{top:4,right:8,left:0,bottom:0}},
+                h(RC.CartesianGrid,{strokeDasharray:'3 3',stroke:'#f0f0f0'}),
+                h(RC.XAxis,{dataKey:'month',tick:{fontSize:11}}),
+                h(RC.YAxis,{tick:{fontSize:11},tickFormatter:v=>v>=1000?`${(v/1000).toFixed(0)}K`:v}),
+                h(RC.Tooltip,{content:h(TTip)}),
+                h(RC.Legend,{wrapperStyle:{fontSize:12}}),
+                h(RC.Bar,{dataKey:'A',stackId:'s',name:'A Fit',fill:'#16a34a'}),
+                h(RC.Bar,{dataKey:'B',stackId:'s',name:'B Fit',fill:'#2d5bff'}),
+                h(RC.Bar,{dataKey:'C',stackId:'s',name:'C Fit',fill:'#f59e0b'}),
+                h(RC.Bar,{dataKey:'No Fit',stackId:'s',name:'No Fit',fill:'#ef4444',radius:[3,3,0,0]})
+              )
+            )
+          )
+        ),
+        h('p',{className:'note'},'Deduplicated to latest score per candidate-job pair. Excludes Incomplete Profile, Unsupported Language, and Incomplete Job statuses.')
+      );
+    }
+    function OutcomesTab(){
+      return h('div',{className:'ibox'},
+        h('strong',null,'Outcomes data not included in this snapshot.'),h('br'),
+        'Outcomes (interview and hire rate by FitScore band) requires candidate-level funnel matching and is available in the live internal dashboard. This snapshot covers Adoption, Feedback, Distribution, and Cost Savings.'
+      );
+    }
+    function CostSavingsTab(){
+      const[open,setOpen]=useState(false);
+      const{kpis,monthly,quarterly}=CSD;
+      function CSTip({active,payload,label}){
+        if(!active||!payload?.length)return null;
+        return h('div',{style:{background:'#fff',border:'1px solid #e6e9f0',borderRadius:8,
+          padding:'8px 10px',fontSize:12,boxShadow:'0 4px 12px rgba(20,30,60,.1)'}},
+          h('div',{style:{fontWeight:600,marginBottom:4}},label),
+          payload.map(p=>h('div',{key:p.name,style:{display:'flex',alignItems:'center',gap:6,padding:'1px 0'}},
+            h('span',{style:{width:10,height:10,borderRadius:2,background:p.color,display:'inline-block'}}),
+            h('span',null,`${p.name}: `,h('strong',null,
+              p.name==='$ Saved'?fd(p.value):
+              p.name==='FTE Saved'?p.value.toFixed(3):
+              fi(Math.round(p.value))
+            ))
+          ))
+        );
+      }
+      const assm=[
+        ['Candidate count','View-filtered','Only candidates on jobs where at least 3 FitScore cards were viewed by a recruiter. Single-view jobs excluded. Error states (Incomplete Profile, Unsupported Language, Incomplete Job) excluded entirely.'],
+        ['A/B Fit candidates','2 min saved each','Recruiter still reviews high-fit candidates but skips manual prioritization. Baseline cold review approx 7 min to 5 min with score signal. Delta: 2 min saved.'],
+        ['C/No Fit candidates','4 min saved each','Recruiter skips full review — quick sanity check only. Baseline approx 7 min to 3 min spot-check. Delta: 4 min saved.'],
+        ['Recruiter hourly cost','$30 / hr','Conservative lower bound aligned with Phenom screening dashboard assumptions. Enterprise US TA recruiter fully loaded cost range is $30-35/hr.'],
+        ['1 FTE','1,800 hrs / year','Productive hours: gross 2,080 minus PTO and non-screening overhead. FTE Saved = hours saved divided by 1,800.'],
+      ];
+      return h('div',null,
+        h('div',null,
+          h('button',{className:'atog',onClick:()=>setOpen(o=>!o)},`How is this calculated? ${open?'▲':'▼'}`),
+          open&&h('div',{className:'abody'},
+            assm.map(([l,v,n])=>h('div',{key:l,className:'arow'},
+              h('span',{className:'al'},l),
+              h('span',{className:'av'},v),
+              h('span',{className:'an'},n)
+            )),
+            h('p',{className:'af'},'Directional estimates based on industry benchmarks (SHRM, LinkedIn Talent) — not measured outcomes. Use as a starting point; encourage customers to adjust recruiter cost to their actual rate.')
+          )
+        ),
+        h('p',{className:'mn'},'Counts candidates on jobs where at least 3 FitScore cards were viewed by a recruiter. Single-view jobs excluded. Data through May 2025.'),
+        h('div',{className:'kg'},
+          h(KPI,{label:'$ Saved',value:fd(kpis.dollars),tip:'Estimated recruiter cost savings. A/B = 2 min each, C/No Fit = 4 min each at $30/hr. Jobs with 3+ FitScore views only.'}),
+          h(KPI,{label:'Hours Saved',value:fh(kpis.hrs),tip:'Total recruiter hours saved on active FitScore jobs.'}),
+          h(KPI,{label:'FTE Saved',value:kpis.fte.toFixed(2),hint:'full-time equivalents',tip:'Hours saved divided by 1,800 productive hrs/year.'}),
+          h(KPI,{label:'Candidates Scored',value:fi(kpis.total),tip:'Candidate-job pairs with A/B/C/No Fit on jobs with 3+ FitScore views.'})
+        ),
+        h('div',{className:'kg kg2'},
+          h(KPI,{label:'A/B Fit Volume',value:fi(kpis.ab),hint:'2 min saved each',tip:'High-fit candidates on active FitScore jobs.'}),
+          h(KPI,{label:'C / No Fit Volume',value:fi(kpis.cn),hint:'4 min saved each',tip:'Low-fit candidates on active FitScore jobs.'})
+        ),
+        h('div',{className:'cr'},
+          h(Panel,{title:'$ Saved & FTE Saved — Month over Month'},
+            h(RC.ResponsiveContainer,{width:'100%',height:240},
+              h(RC.ComposedChart,{data:monthly,margin:{top:4,right:20,left:0,bottom:0}},
+                h(RC.CartesianGrid,{strokeDasharray:'3 3',stroke:'#f0f0f0'}),
+                h(RC.XAxis,{dataKey:'month',tick:{fontSize:11}}),
+                h(RC.YAxis,{yAxisId:'d',tickFormatter:v=>v>=1000?`$${(v/1000).toFixed(0)}K`:`$${v}`,tick:{fontSize:11},width:60}),
+                h(RC.YAxis,{yAxisId:'f',orientation:'right',tickFormatter:v=>v.toFixed(2),tick:{fontSize:11},width:40}),
+                h(RC.Tooltip,{content:h(CSTip)}),
+                h(RC.Legend,{wrapperStyle:{fontSize:12,paddingTop:8}}),
+                h(RC.Bar,{yAxisId:'d',dataKey:'dollars',name:'$ Saved',fill:'#2dd4bf',radius:[3,3,0,0]}),
+                h(RC.Line,{yAxisId:'f',type:'monotone',dataKey:'fte',name:'FTE Saved',stroke:'#2d5bff',dot:{r:3},strokeWidth:2})
+              )
+            )
+          ),
+          h(Panel,{title:'$ Saved & FTE Saved — Quarter over Quarter'},
+            h(RC.ResponsiveContainer,{width:'100%',height:240},
+              h(RC.ComposedChart,{data:quarterly,margin:{top:4,right:20,left:0,bottom:0}},
+                h(RC.CartesianGrid,{strokeDasharray:'3 3',stroke:'#f0f0f0'}),
+                h(RC.XAxis,{dataKey:'quarter',tick:{fontSize:11}}),
+                h(RC.YAxis,{yAxisId:'d',tickFormatter:v=>v>=1000?`$${(v/1000).toFixed(0)}K`:`$${v}`,tick:{fontSize:11},width:60}),
+                h(RC.YAxis,{yAxisId:'f',orientation:'right',tickFormatter:v=>v.toFixed(2),tick:{fontSize:11},width:40}),
+                h(RC.Tooltip,{content:h(CSTip)}),
+                h(RC.Legend,{wrapperStyle:{fontSize:12,paddingTop:8}}),
+                h(RC.Bar,{yAxisId:'d',dataKey:'dollars',name:'$ Saved',fill:'#2dd4bf',radius:[3,3,0,0]}),
+                h(RC.Line,{yAxisId:'f',type:'monotone',dataKey:'fte',name:'FTE Saved',stroke:'#2d5bff',dot:{r:3},strokeWidth:2})
+              )
+            )
+          )
+        ),
+        h('p',{className:'note',style:{marginTop:8}},'Directional estimates based on industry benchmarks for manual resume review time — not measured outcomes. Encourage customers to adjust recruiter cost to their actual rate.')
+      );
+    }
+    const TABS=[
+      {id:'adoption',label:'Adoption'},
+      {id:'feedback',label:'Recruiter Feedback'},
+      {id:'distribution',label:'FitScore Distribution'},
+      {id:'outcomes',label:'Outcomes'},
+      {id:'cost-savings',label:'Cost Savings'},
+    ];
+    function App(){
+      const[active,setActive]=useState('adoption');
+      const panels={
+        adoption:h(AdoptionTab),
+        feedback:h(FeedbackTab),
+        distribution:h(DistributionTab),
+        outcomes:h(OutcomesTab),
+        'cost-savings':h(CostSavingsTab),
+      };
+      return h('div',{className:'app'},
+        h('div',null,
+          h('h1',null,'FitScore Adoption & Impact Dashboard'),
+          h('p',{className:'sub'},'Adoption, recruiter feedback, score distribution, and outcomes — internal only'),
+          h('span',{className:'badge'},'Snapshot · ABLAUS · Dec 2024 – May 2025')
+        ),
+        h('div',{className:'fbar'},
+          h('span',null,'Customer: ',h('strong',null,'ABLAUS')),
+          h('span',null,'Period: ',h('strong',null,'Dec 1, 2024 – May 28, 2025')),
+          h('span',null,'Source: ',h('strong',null,'Snowflake (read-only snapshot)')),
+          h('span',{style:{color:'#9aa3b2',fontSize:12}},'For CVM validation · Internal only')
+        ),
+        h('div',{className:'tabs'},
+          TABS.map(t=>h('button',{key:t.id,
+            className:'tab'+(active===t.id?' on':''),
+            onClick:()=>setActive(t.id)},t.label))
+        ),
+        panels[active]
+      );
+    }
+    ReactDOM.createRoot(document.getElementById('root')).render(h(App));
+  } catch(e) {
+    document.getElementById('root').innerHTML =
+      '<p style="padding:24px;color:#b91c1c;font-family:system-ui">Error: ' + e.message + '</p>';
   }
-  return h('div',null,
-    h('div',{className:'cs-assm'},
-      h('button',{className:'assm-toggle',onClick:()=>setOpen(o=>!o)},`How is this calculated? ${open?'▲':'▼'}`),
-      open&&h('div',{className:'assm-body'},
-        [
-          ['Candidate count','View-filtered','Only candidates on jobs where at least 3 FitScore cards were viewed. Single-view jobs excluded to filter out incidental engagement. Error states (Incomplete Profile, Unsupported Language, Incomplete Job) excluded.'],
-          ['A/B Fit candidates','2 min saved each','Recruiter still reviews high-fit candidates but skips manual prioritization. Baseline cold review ≈7 min → ~5 min with score signal. Delta: 2 min saved.'],
-          ['C/No Fit candidates','4 min saved each','Recruiter skips full review — quick sanity check only. Baseline ≈7 min → ~3 min spot-check. Delta: 4 min saved.'],
-          ['Recruiter hourly cost','$30 / hr','Conservative lower bound. Enterprise US TA recruiter fully loaded cost range is $30–35/hr. EU customers will be lower.'],
-          ['1 FTE','1,800 hrs / year','Productive hours: gross 2,080 minus PTO and non-screening overhead. FTE Saved = hours saved ÷ 1,800.'],
-        ].map(([l,v,n])=>h('div',{key:l,className:'assm-row'},
-          h('span',{className:'assm-label'},l),
-          h('span',{className:'assm-val'},v),
-          h('span',{className:'assm-note'},n)
-        )),
-        h('p',{className:'assm-footer'},'Directional estimates based on industry benchmarks (SHRM, LinkedIn Talent) — not measured outcomes. Use as a starting point; encourage customers to adjust recruiter cost to their actual rate.')
-      )
-    ),
-    h('p',{className:'method-note'},'Counts candidates on jobs where at least 3 FitScore cards were viewed by a recruiter. Single-view jobs excluded. Data through May 2025.'),
-    h('div',{className:'kpi-grid'},
-      h(KPI,{label:'$ Saved',value:fd(kpis.dollars),tip:'Estimated recruiter cost savings. A/B = 2 min each, C/No Fit = 4 min each at $30/hr. Jobs with ≥3 FitScore views only.'}),
-      h(KPI,{label:'Hours Saved',value:fh(kpis.hrs),tip:'Total recruiter hours saved on active FitScore jobs.'}),
-      h(KPI,{label:'FTE Saved',value:kpis.fte.toFixed(2),hint:'full-time equivalents',tip:'Hours saved ÷ 1,800 productive hrs/year. Translates time savings into staffing terms.'}),
-      h(KPI,{label:'Candidates Scored',value:fi(kpis.total),tip:'Candidate-job pairs with A/B/C/No Fit on jobs with ≥3 FitScore views. Error states excluded.'})
-    ),
-    h('div',{className:'kpi-grid kpi-2'},
-      h(KPI,{label:'A/B Fit Volume',value:fi(kpis.ab),hint:'2 min saved each',tip:'High-fit candidates on active FitScore jobs.'}),
-      h(KPI,{label:'C / No Fit Volume',value:fi(kpis.cn),hint:'4 min saved each',tip:'Low-fit candidates on active FitScore jobs. Recruiter skips full review.'})
-    ),
-    h('div',{className:'chart-row'},
-      h(Panel,{title:'$ Saved & FTE Saved — Month over Month'},
-        h(ResponsiveContainer,{width:'100%',height:240},
-          h(ComposedChart,{data:monthly,margin:{top:4,right:20,left:0,bottom:0}},
-            h(CartesianGrid,{strokeDasharray:'3 3',stroke:'#f0f0f0'}),
-            h(XAxis,{dataKey:'month',tick:{fontSize:11}}),
-            h(YAxis,{yAxisId:'d',tickFormatter:v=>v>=1000?`$${(v/1000).toFixed(0)}K`:`$${v}`,tick:{fontSize:11},width:60}),
-            h(YAxis,{yAxisId:'f',orientation:'right',tickFormatter:v=>v.toFixed(2),tick:{fontSize:11},width:40}),
-            h(Tooltip,{content:h(CSTip)}),
-            h(Legend,{wrapperStyle:{fontSize:12,paddingTop:8}}),
-            h(Bar,{yAxisId:'d',dataKey:'dollars',name:'$ Saved',fill:'#2dd4bf',radius:[3,3,0,0]}),
-            h(Line,{yAxisId:'f',type:'monotone',dataKey:'fte',name:'FTE Saved',stroke:'#2d5bff',dot:{r:3},strokeWidth:2})
-          )
-        )
-      ),
-      h(Panel,{title:'$ Saved & FTE Saved — Quarter over Quarter'},
-        h(ResponsiveContainer,{width:'100%',height:240},
-          h(ComposedChart,{data:quarterly,margin:{top:4,right:20,left:0,bottom:0}},
-            h(CartesianGrid,{strokeDasharray:'3 3',stroke:'#f0f0f0'}),
-            h(XAxis,{dataKey:'quarter',tick:{fontSize:11}}),
-            h(YAxis,{yAxisId:'d',tickFormatter:v=>v>=1000?`$${(v/1000).toFixed(0)}K`:`$${v}`,tick:{fontSize:11},width:60}),
-            h(YAxis,{yAxisId:'f',orientation:'right',tickFormatter:v=>v.toFixed(2),tick:{fontSize:11},width:40}),
-            h(Tooltip,{content:h(CSTip)}),
-            h(Legend,{wrapperStyle:{fontSize:12,paddingTop:8}}),
-            h(Bar,{yAxisId:'d',dataKey:'dollars',name:'$ Saved',fill:'#2dd4bf',radius:[3,3,0,0]}),
-            h(Line,{yAxisId:'f',type:'monotone',dataKey:'fte',name:'FTE Saved',stroke:'#2d5bff',dot:{r:3},strokeWidth:2})
-          )
-        )
-      )
-    ),
-    h('p',{className:'note',style:{marginTop:8}},'Directional estimates based on industry benchmarks for manual resume review time — not measured outcomes. Encourage customers to adjust recruiter cost to their actual rate.')
-  );
-}
-
-// ── APP ──────────────────────────────────────────────────────────────────────
-const TABS=[
-  {id:'adoption',label:'Adoption'},
-  {id:'feedback',label:'Recruiter Feedback'},
-  {id:'distribution',label:'FitScore Distribution'},
-  {id:'outcomes',label:'Outcomes'},
-  {id:'cost-savings',label:'Cost Savings'},
-];
-
-function App(){
-  const[active,setActive]=useState('adoption');
-  const panels={
-    adoption:h(AdoptionTab),
-    feedback:h(FeedbackTab),
-    distribution:h(DistributionTab),
-    outcomes:h(OutcomesTab),
-    'cost-savings':h(CostSavingsTab),
-  };
-  return h('div',{className:'app'},
-    h('div',null,
-      h('h1',null,'FitScore Adoption & Impact Dashboard'),
-      h('p',{className:'subtitle'},'Adoption, recruiter feedback, score distribution, and outcomes — internal only'),
-      h('span',{className:'badge'},'📸 Snapshot · ABLAUS · Dec 2024 – May 2025')
-    ),
-    h('div',{className:'filter-bar'},
-      h('span',null,'Customer: ',h('strong',null,'ABLAUS')),
-      h('span',null,'Period: ',h('strong',null,'Dec 1, 2024 – May 28, 2025')),
-      h('span',null,'Source: ',h('strong',null,'Snowflake (read-only snapshot)')),
-      h('span',{style:{color:'#9aa3b2',fontSize:12}},'For CVM validation · Internal only')
-    ),
-    h('div',{className:'tabs'},
-      TABS.map(t=>h('button',{
-        key:t.id,
-        className:'tab'+(active===t.id?' active':''),
-        onClick:()=>setActive(t.id)
-      },t.label))
-    ),
-    panels[active]
-  );
-}
-
-ReactDOM.createRoot(document.getElementById('root')).render(h(App));
+});
 </script>
 </body>
 </html>
