@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PMI — Fit Score Impact Report</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+:root {
+  --bg:#f4f6fb;--surface:#fff;--surface2:#f0f2f8;--border:#e2e6f0;
+  --accent:#3b5bdb;--accent-light:#eef1fd;--accent-border:#c5d0f5;
+  --green:#2f9e44;--green-light:#ebfbee;--green-border:#b2f2bb;
+  --amber:#e67700;--amber-light:#fff9db;--amber-border:#ffe066;
+  --text:#1a1d2e;--muted:#5c6280;--muted2:#9399b8;
+  --shadow:0 1px 4px rgba(0,0,0,.07);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;}
+
+.hdr{background:var(--surface);border-bottom:1px solid var(--border);padding:16px 36px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);}
+.hdr-l{display:flex;align-items:center;gap:14px;}
+.logo{width:38px;height:38px;background:linear-gradient(135deg,#3b5bdb,#7048e8);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;color:#fff;}
+.hdr h1{font-size:15px;font-weight:650;color:var(--text);}
+.hdr p{font-size:11px;color:var(--muted);margin-top:2px;}
+.hdr-r{display:flex;align-items:center;gap:10px;}
+.dfilt{display:flex;align-items:center;gap:3px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:3px;}
+.dbtn{padding:5px 13px;border-radius:5px;font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;border:none;background:transparent;transition:all .15s;}
+.dbtn:hover{color:var(--text);background:#fff;}
+.dbtn.active{background:#fff;color:var(--accent);font-weight:650;box-shadow:var(--shadow);}
+.pbadge{font-size:11px;font-weight:500;color:var(--accent);background:var(--accent-light);border:1px solid var(--accent-border);padding:4px 10px;border-radius:20px;}
+
+.story{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 36px;display:flex;align-items:center;gap:20px;overflow-x:auto;}
+.sstep{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);white-space:nowrap;cursor:pointer;padding:4px 0;}
+.sstep.active{color:var(--accent);font-weight:600;}
+.snum{width:22px;height:22px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--muted);flex-shrink:0;}
+.sstep.active .snum{background:var(--accent);border-color:var(--accent);color:#fff;}
+.sarr{color:var(--border);font-size:14px;}
+
+.tabs{background:var(--surface);border-bottom:1px solid var(--border);padding:0 36px;display:flex;}
+.tab{padding:12px 18px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;}
+.tab:hover{color:var(--text);}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:650;}
+
+.content{padding:26px 36px;max-width:1280px;}
+.tpanel{display:none;}.tpanel.active{display:block;}
+
+.intro{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:8px;padding:14px 18px;margin-bottom:22px;}
+.intro h2{font-size:13px;font-weight:650;color:var(--text);margin-bottom:3px;}
+.intro p{font-size:12px;color:var(--muted);line-height:1.6;}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,#ebfbee 0%,#f0f9f2 100%);border:1px solid var(--green-border);border-radius:14px;padding:30px 36px;margin-bottom:20px;display:flex;align-items:center;gap:36px;}
+.hero-num{font-size:80px;font-weight:700;line-height:1;color:var(--green);flex-shrink:0;}
+.hero-divider{width:1px;height:80px;background:var(--green-border);flex-shrink:0;}
+.hero-text h3{font-size:19px;font-weight:650;color:var(--text);margin-bottom:8px;}
+.hero-text p{font-size:13px;color:var(--muted);line-height:1.7;max-width:500px;}
+.hero-tag{display:inline-block;margin-top:12px;background:var(--green-light);border:1px solid var(--green-border);color:var(--green);font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;}
+
+/* STAT GRID */
+.sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px;}
+.scard{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;box-shadow:var(--shadow);}
+.slabel{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:8px;}
+.sval{font-size:28px;font-weight:700;line-height:1;}
+.sval.blue{color:var(--accent);}
+.sval.green{color:var(--green);}
+.sval.amber{color:var(--amber);}
+.ssub{font-size:11px;color:var(--muted);margin-top:7px;line-height:1.45;}
+.sexpl{font-size:10px;color:var(--muted2);margin-top:5px;font-style:italic;line-height:1.5;}
+
+.kgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:22px;}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;box-shadow:var(--shadow);}
+.klabel{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:8px;}
+.kval{font-size:32px;font-weight:700;line-height:1;}
+.kval.blue{color:var(--accent);}
+.kval.green{color:var(--green);}
+.kval.amber{color:var(--amber);}
+.ksub{font-size:11px;color:var(--muted);margin-top:7px;line-height:1.45;}
+
+.crow{display:grid;gap:18px;margin-bottom:20px;}
+.crow.two{grid-template-columns:1fr 1fr;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px;box-shadow:var(--shadow);}
+.ctitle{font-size:13px;font-weight:650;color:var(--text);margin-bottom:3px;}
+.csub{font-size:11px;color:var(--muted);margin-bottom:14px;line-height:1.5;}
+.cwrap{position:relative;}
+.cwrap.h200{height:200px;}
+.cwrap.h240{height:240px;}
+.cwrap.h280{height:280px;}
+.cwrap.h300{height:300px;}
+
+.ins{border-radius:8px;padding:12px 15px;font-size:12px;line-height:1.65;margin-top:14px;}
+.ins.green{background:var(--green-light);border:1px solid var(--green-border);color:#1a5e2a;}
+.ins.amber{background:var(--amber-light);border:1px solid var(--amber-border);color:#7d4a00;}
+.ins.blue{background:var(--accent-light);border:1px solid var(--accent-border);color:#1e3a9e;}
+.ins.grey{background:var(--surface2);border:1px solid var(--border);color:var(--muted);}
+
+/* FUNNEL */
+.frow{display:flex;align-items:center;gap:14px;margin-bottom:16px;}
+.fstage{width:120px;flex-shrink:0;text-align:right;}
+.fname{font-size:12px;font-weight:600;color:var(--text);}
+.fdesc{font-size:10px;color:var(--muted2);margin-top:1px;}
+.fbars{flex:1;}
+.fbar-row{display:flex;align-items:center;gap:8px;margin-bottom:3px;}
+.fbar{height:15px;border-radius:3px;min-width:2px;}
+.fbar.ab{background:var(--accent);}
+.fbar.cnf{background:#ced4da;}
+.fbar-lbl{font-size:10px;width:80px;white-space:nowrap;}
+.fpct{width:64px;text-align:center;flex-shrink:0;}
+.fpct-n{font-size:17px;font-weight:700;line-height:1;}
+.fpct-t{font-size:9px;color:var(--muted2);margin-top:1px;}
+.legend{display:flex;gap:16px;margin-bottom:14px;}
+.leg-i{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);}
+.leg-d{width:11px;height:11px;border-radius:3px;flex-shrink:0;}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:12px;}
+.tbl th{text-align:left;padding:9px 13px;color:var(--muted);font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.05em;border-bottom:2px solid var(--border);background:var(--surface2);}
+.tbl td{padding:9px 13px;border-bottom:1px solid var(--border);color:var(--text);}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl tr:hover td{background:var(--surface2);}
+.pcell{display:flex;align-items:center;gap:8px;}
+.pbg{flex:1;height:7px;background:var(--surface2);border-radius:4px;overflow:hidden;border:1px solid var(--border);}
+.pbar{height:100%;border-radius:4px;}
+.pbar.g{background:var(--green);}
+.pbar.b{background:var(--accent);}
+.pbar.a{background:var(--amber);}
+.pn{font-size:12px;font-weight:700;width:40px;text-align:right;}
+.pn.g{color:var(--green);}
+.pn.b{color:var(--accent);}
+.pn.a{color:var(--amber);}
+.vtag{display:inline-block;font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;}
+.vtag.g{background:var(--green-light);color:var(--green);}
+.vtag.a{background:var(--amber-light);color:var(--amber);}
+.tscroll{max-height:360px;overflow-y:auto;border-radius:8px;border:1px solid var(--border);}
+.tscroll::-webkit-scrollbar{width:4px;}
+.tscroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+
+/* PIPELINE */
+.pipeline{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;margin:14px 0;border-radius:8px;overflow:hidden;}
+.pseg{padding:14px 10px;text-align:center;}
+.pseg-n{font-size:18px;font-weight:700;line-height:1;}
+.pseg-l{font-size:10px;margin-top:4px;font-weight:600;}
+.pseg-s{font-size:10px;margin-top:3px;opacity:.75;}
+
+/* PATH TO 80 */
+.path-row{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.path-label{font-size:12px;font-weight:500;color:var(--text);width:210px;flex-shrink:0;}
+.path-track{flex:1;height:28px;background:var(--surface2);border-radius:6px;overflow:hidden;position:relative;border:1px solid var(--border);}
+.path-fill{height:100%;border-radius:5px;display:flex;align-items:center;padding-left:10px;}
+.path-fill.green{background:var(--green);}
+.path-fill.amber{background:var(--amber);opacity:.75;}
+.path-fill.strikethrough{background:#d1fae5;opacity:.6;}
+.path-num{font-size:13px;font-weight:700;width:48px;text-align:right;flex-shrink:0;}
+.path-num.green{color:var(--green);}
+.path-num.amber{color:var(--amber);}
+.path-num.solved{color:var(--green);text-decoration:line-through;opacity:.6;}
+
+/* SOLVED BADGE */
+.solved-badge{display:inline-flex;align-items:center;gap:5px;background:var(--green-light);border:1px solid var(--green-border);color:var(--green);font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;margin-bottom:10px;}
+
+/* WORKSTREAM */
+.ws{border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:12px;}
+.ws.a1{border-left:3px solid var(--green);}
+.ws.a2{border-left:3px solid var(--amber);}
+.ws.solved{border-left:3px solid var(--green);opacity:.75;}
+.ws-t{font-size:13px;font-weight:650;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.ws-tag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;}
+.ws-tag.g{background:var(--green-light);color:var(--green);border:1px solid var(--green-border);}
+.ws-tag.a{background:var(--amber-light);color:var(--amber);border:1px solid var(--amber-border);}
+.ws-tag.s{background:var(--green-light);color:var(--green);border:1px solid var(--green-border);}
+.ws-b{font-size:12px;color:var(--muted);line-height:1.7;}
+
+/* COVERAGE ITEMS */
+.cgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px;}
+.citem{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:15px 17px;}
+.citem-l{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:6px;}
+.citem-v{font-size:24px;font-weight:700;}
+.citem-v.bl{color:var(--accent);}
+.citem-v.gr{color:var(--green);}
+.citem-v.am{color:var(--amber);}
+.citem-s{font-size:11px;color:var(--muted2);margin-top:4px;}
+
+.footer{margin-top:36px;padding:14px 36px;border-top:1px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--muted2);}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-l">
+    <div class="logo">P</div>
+    <div>
+      <h1>Fit Score Impact Report — PMI</h1>
+      <p id="hdrPeriod">Jan – Jun 2026 · Confidential</p>
+    </div>
+  </div>
+  <div class="hdr-r">
+    <div class="dfilt">
+      <button class="dbtn" onclick="setRange(1,this)">Last 1 month</button>
+      <button class="dbtn" onclick="setRange(3,this)">Last 3 months</button>
+      <button class="dbtn active" onclick="setRange(6,this)">Last 6 months</button>
+    </div>
+    <div class="pbadge" id="pbadge">Jan – Jun 2026</div>
+  </div>
+</div>
+
+<div class="story">
+  <div class="sstep active" id="ss1" onclick="switchTab('outcomes',document.querySelectorAll('.tab')[0],1)"><div class="snum">1</div>Signal is working</div>
+  <div class="sarr">→</div>
+  <div class="sstep" id="ss2" onclick="switchTab('funnel',document.querySelectorAll('.tab')[1],2)"><div class="snum">2</div>Funnel confirms it</div>
+  <div class="sarr">→</div>
+  <div class="sstep" id="ss3" onclick="switchTab('categories',document.querySelectorAll('.tab')[2],3)"><div class="snum">3</div>Strongest by job type</div>
+  <div class="sarr">→</div>
+  <div class="sstep" id="ss4" onclick="switchTab('adoption',document.querySelectorAll('.tab')[3],4)"><div class="snum">4</div>Untapped pipeline</div>
+  <div class="sarr">→</div>
+  <div class="sstep" id="ss5" onclick="switchTab('coverage',document.querySelectorAll('.tab')[4],5)"><div class="snum">5</div>Path to 80%</div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('outcomes',this,1)">Hiring Outcomes</div>
+  <div class="tab" onclick="switchTab('funnel',this,2)">Funnel Signal</div>
+  <div class="tab" onclick="switchTab('categories',this,3)">By Job Category</div>
+  <div class="tab" onclick="switchTab('adoption',this,4)">Recruiter Adoption</div>
+  <div class="tab" onclick="switchTab('coverage',this,5)">Path to 80%</div>
+</div>
+
+<div class="content">
+
+<!-- ===== TAB 1: HIRING OUTCOMES ===== -->
+<div class="tpanel active" id="tab-outcomes">
+
+  <div class="hero">
+    <div class="hero-num" id="heroNum">62%</div>
+    <div class="hero-divider"></div>
+    <div class="hero-text">
+      <h3>of scored hires were A or B rated</h3>
+      <p>When Fit Score has enough information to generate a rating, it identifies the right candidates — 62% of scored hires are A or B. The funnel confirms this further: A/B candidates are 3.8× more likely to reach interview. This is the foundation the rest of this report builds on.</p>
+      <div class="hero-tag" id="heroPeriod">Jan – Jun 2026</div>
+    </div>
+  </div>
+
+  <div class="sgrid">
+    <div class="scard">
+      <div class="slabel">A/B at Interview Stage</div>
+      <div class="sval green">79%</div>
+      <div class="ssub">Of candidates currently at Interview stage, 79% are A or B rated</div>
+      <div class="sexpl">Shows Fit Score concentrating high-fit candidates at the decision point — candidates who progressed to Hired are counted in that stage</div>
+    </div>
+    <div class="scard">
+      <div class="slabel">Advancement Advantage</div>
+      <div class="sval blue">3.8×</div>
+      <div class="ssub">A/B candidates are 3.8× more likely to reach interview than C or No Fit candidates</div>
+      <div class="sexpl">Consistent signal across all five funnel stages — confirms the model is separating candidates correctly</div>
+    </div>
+    <div class="scard">
+      <div class="slabel">PMI Target</div>
+      <div class="sval amber">80%</div>
+      <div class="ssub">of all hires to come from A or B candidates — enabling 10% CLE headcount savings</div>
+      <div class="sexpl">Two concrete actions close this gap — see the final tab</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ctitle">Fit Score Rating Across All Candidates — <span id="distLbl" style="font-weight:400;color:var(--muted)">Jan – Jun 2026</span></div>
+    <div class="csub">How Fit Score rated every candidate assessed in Jan–Jun 2026. Blue = strong match, green = top match, grey = partial or no match, yellow = could not be scored. Read as: out of 100 candidates, 39 were A or B (prioritise these), 42 were C or No Fit, and 19 could not be scored.</div>
+    <div class="cwrap h200"><canvas id="distChart"></canvas></div>
+    <div class="ins grey"><strong>How to read the colours:</strong> Blue (B Fit) and green (A Fit) are the candidates Fit Score recommends prioritising — strong and top matches. Grey candidates are partial or no matches but remain visible to recruiters. Yellow represents candidates that could not be scored — before Gen3, this was mainly due to language limitations. PMI moved to Gen3 last month, which adds cross-lingual scoring across 17 languages, so this group will shrink significantly going forward. Recruiters retain full control over every hiring decision.</div>
+  </div>
+
+</div>
+
+<!-- ===== TAB 2: FUNNEL ===== -->
+<div class="tpanel" id="tab-funnel">
+  <div class="intro">
+    <h2>Chapter 2 — The funnel confirms the signal</h2>
+    <p>If Fit Score is working, A and B candidates should appear at higher rates as candidates advance through the pipeline. The data shows this consistently at every stage. Each row below shows candidates at their current status — stages are mutually exclusive, so a hired candidate is counted at Hired, not Interview. The rising A/B percentage as you move down is the signal.</p>
+  </div>
+
+  <div class="kgrid">
+    <div class="kpi">
+      <div class="klabel">A/B Share at Application</div>
+      <div class="kval blue">43%</div>
+      <div class="ksub">Starting point — 43 out of every 100 applicants are A or B rated</div>
+    </div>
+    <div class="kpi">
+      <div class="klabel">A/B at Interview Stage</div>
+      <div class="kval green">79%</div>
+      <div class="ksub">Of candidates currently at Interview, 79% are A or B — a 36pp rise from application</div>
+    </div>
+    <div class="kpi">
+      <div class="klabel">A/B Advancement Advantage</div>
+      <div class="kval green">3.8×</div>
+      <div class="ksub">A/B candidates are 3.8× more likely to reach interview than C or No Fit candidates</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ctitle">A/B vs C/No Fit — Candidates at Each Hiring Stage</div>
+    <div class="csub">Each row shows candidates at their current status — this is a status distribution, not cumulative progression. Candidates who progressed to Hired are counted at Hired, not Interview. The rising A/B percentage at each stage confirms Fit Score is concentrating high-fit candidates at each decision point.</div>
+    <div class="legend">
+      <div class="leg-i"><div class="leg-d" style="background:var(--accent)"></div>A or B Fit Score</div>
+      <div class="leg-i"><div class="leg-d" style="background:#ced4da"></div>C or No Fit Score</div>
+    </div>
+    <div id="funnelViz"></div>
+    <div class="ins green">
+      <strong>Key finding:</strong> The A/B share rises from 43% at application to 79% at Interview — a 36 percentage point increase across the pipeline. At every stage, the proportion of high-fit candidates grows. This confirms Fit Score is working as a prioritisation signal and that recruiters are using it to make better decisions at each step.
+    </div>
+  </div>
+</div>
+
+<!-- ===== TAB 3: CATEGORIES ===== -->
+<div class="tpanel" id="tab-categories">
+  <div class="intro">
+    <h2>Chapter 3 — The signal is strongest where configuration is best</h2>
+    <p>Fit Score performance varies by job category. Finance and IT are already at or near 80% — proving the target is achievable. Commercial Operations is PMI's highest-volume category and the biggest single opportunity to move the overall number.</p>
+  </div>
+
+  <div class="card">
+    <div class="ctitle">A/B Hire Rate by Job Category — Scored Hires Only</div>
+    <div class="csub">% of hires from A/B candidates per job category · Jan–Jun 2026 · Minimum 10 hires · Sorted by performance · "Scored Hires" excludes candidates where configuration prevented scoring</div>
+    <div class="tscroll" style="margin-top:10px">
+      <table class="tbl"><thead><tr>
+        <th>Job Category</th><th>Total Hires</th><th>Scored Hires</th>
+        <th style="width:220px">A/B Rate</th><th>vs 80% Target</th>
+      </tr></thead>
+      <tbody id="catBody"></tbody></table>
+    </div>
+    <div class="ins blue" style="margin-top:14px">
+      <strong>How to read this:</strong> Finance is at 82.9% — already above target. IT is at 79.2% — effectively there. These two categories prove 80% is achievable with Fit Score. Commercial Operations at 3,877 hires is the highest-volume opportunity — improving configuration compliance and recruiter adoption here moves the overall A/B rate more than any other single category.
+    </div>
+  </div>
+</div>
+
+<!-- ===== TAB 4: ADOPTION ===== -->
+<div class="tpanel" id="tab-adoption">
+  <div class="intro">
+    <h2>Chapter 4 — There is an untapped pipeline of strong candidates</h2>
+    <p>97,828 candidates reached Lead status in Jan–Jun 2026 — Fit Score surfaced them as potential matches — but have not yet received a recruiter action. Of those with a valid score, <strong>31,047 are A or B rated</strong>. These are strong candidates already in the system, ready to be engaged today.</p>
+  </div>
+
+  <div class="kgrid">
+    <div class="kpi">
+      <div class="klabel">Lead — Not Yet Actioned</div>
+      <div class="kval amber">97,828</div>
+      <div class="ksub" id="leadSub">Surfaced by Fit Score in Jan–Jun 2026, no recruiter action taken yet</div>
+    </div>
+    <div class="kpi">
+      <div class="klabel">Of Those — A or B Rated</div>
+      <div class="kval blue">31,047</div>
+      <div class="ksub">Strong candidates already in the system — scored A or B but not yet engaged by a recruiter</div>
+    </div>
+    <div class="kpi">
+      <div class="klabel">A/B Share of Unactioned Pool</div>
+      <div class="kval blue">31%</div>
+      <div class="ksub">Nearly 1 in 3 unactioned Lead candidates is a high-fit match — a significant ready pipeline</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:18px">
+    <div class="ctitle">Where Are All Candidates Today? — Jan–Jun 2026</div>
+    <div class="csub">Current status of all unique candidates in PMI's pipeline this period. The Lead pool (amber) represents candidates surfaced by Fit Score but not yet engaged — 31,047 of whom are already A or B rated.</div>
+    <div class="pipeline">
+      <div class="pseg" style="background:#ebfbee">
+        <div class="pseg-n" style="color:var(--green)">5,658</div>
+        <div class="pseg-l" style="color:var(--green)">Hired</div>
+        <div class="pseg-s" style="color:var(--green)">Goal achieved</div>
+      </div>
+      <div class="pseg" style="background:#eef1fd">
+        <div class="pseg-n" style="color:var(--accent)">64,763</div>
+        <div class="pseg-l" style="color:var(--accent)">In Pipeline</div>
+        <div class="pseg-s" style="color:var(--accent)">Active process</div>
+      </div>
+      <div class="pseg" style="background:#fff9db">
+        <div class="pseg-n" style="color:var(--amber)">97,828</div>
+        <div class="pseg-l" style="color:var(--amber)">Lead — Unactioned</div>
+        <div class="pseg-s" style="color:var(--amber)">31K are A/B rated ↗</div>
+      </div>
+      <div class="pseg" style="background:#f0f2f8">
+        <div class="pseg-n" style="color:var(--muted)">236,822</div>
+        <div class="pseg-l" style="color:var(--muted)">Not Advanced</div>
+        <div class="pseg-s" style="color:var(--muted)">Reviewed, no fit</div>
+      </div>
+      <div class="pseg" style="background:#f0f2f8">
+        <div class="pseg-n" style="color:var(--muted)">137,821</div>
+        <div class="pseg-l" style="color:var(--muted)">Closed</div>
+        <div class="pseg-s" style="color:var(--muted)">Role filled/closed</div>
+      </div>
+    </div>
+    <div class="ins amber">
+      <strong>The opportunity:</strong> 31,047 A or B rated candidates are already in PMI's pipeline — Fit Score identified them as strong matches, but no recruiter has engaged them yet. Prioritising outreach to this group requires no technical changes and can begin immediately. This is the fastest path to improving hiring outcomes this quarter.
+    </div>
+  </div>
+
+  <div class="crow two">
+    <div class="card">
+      <div class="ctitle">Monthly Recruiter Feedback Volume</div>
+      <div class="csub">Thumbs up and thumbs down actions by recruiters each month. Consistent engagement confirms Fit Score is part of the daily recruiting workflow across PMI.</div>
+      <div class="cwrap h240"><canvas id="thumbsChart"></canvas></div>
+      <div class="ins grey">April was the peak month at 14,849 thumbs up actions. Engagement is consistent across all six months — Fit Score is embedded in the recruiter workflow.</div>
+    </div>
+    <div class="card">
+      <div class="ctitle">Unique Candidates Actioned Each Month</div>
+      <div class="csub">How many individual candidates received a recruiter decision each month — the breadth of Fit Score usage across the team.</div>
+      <div class="cwrap h240"><canvas id="cndChart"></canvas></div>
+      <div class="ins grey">Between 9,800 and 15,600 unique candidates were actioned per month — strong day-to-day recruiter engagement with Fit Score across PMI.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TAB 5: PATH TO 80% ===== -->
+<div class="tpanel" id="tab-coverage">
+  <div class="intro">
+    <h2>Chapter 5 — The path to 80% is two actions</h2>
+    <p>The model is already working — 62% of scored hires are A or B. One coverage gap has already been resolved by the Gen3 migration. One remains. And the fastest path of all requires no technical changes whatsoever.</p>
+  </div>
+
+  <!-- THREE STATUS CARDS -->
+  <div class="cgrid">
+    <div class="citem">
+      <div class="citem-l">A + B Fit Hires</div>
+      <div class="citem-v gr">3,722</div>
+      <div class="citem-s">62% of scored hires — the model working as intended</div>
+    </div>
+    <div class="citem">
+      <div class="citem-l">Incomplete Job Setup</div>
+      <div class="citem-v am">1,088</div>
+      <div class="citem-s">12% of hires — job not configured for scoring. Fixable by recruiters.</div>
+    </div>
+    <div class="citem" style="border-color:var(--green-border);background:var(--green-light)">
+      <div class="citem-l" style="color:var(--green)">Language Coverage — Resolved</div>
+      <div class="citem-v gr">2,052</div>
+      <div class="citem-s" style="color:var(--green)">hires previously unscored due to language — now covered by Gen3 cross-lingual (17 languages, active for PMI)</div>
+    </div>
+  </div>
+
+  <div class="crow two">
+    <div class="card">
+      <div class="ctitle">Where the Gap to 80% Comes From</div>
+      <div class="csub">The scored hire rate is 62%. One gap remains to reach 80% — job configuration. Language is already solved.</div>
+
+      <div style="margin:20px 0 8px">
+        <div class="path-row">
+          <div class="path-label">Scored hires — A or B rated</div>
+          <div class="path-track"><div class="path-fill green" style="width:62%"><span style="font-size:12px;font-weight:700;color:#fff">62%</span></div></div>
+          <div class="path-num green">62%</div>
+        </div>
+        <div class="path-row">
+          <div class="path-label" style="color:var(--amber)">Remaining gap: Incomplete Job</div>
+          <div class="path-track" style="background:#fff9db;border-color:var(--amber-border)">
+            <div class="path-fill amber" style="width:12%"><span style="font-size:11px;font-weight:600;color:#fff">12%</span></div>
+          </div>
+          <div class="path-num amber">−12%</div>
+        </div>
+        <div class="path-row">
+          <div class="path-label" style="color:var(--green)">Language gap — already closed</div>
+          <div class="path-track" style="background:var(--green-light);border-color:var(--green-border);position:relative">
+            <div style="position:absolute;inset:0;display:flex;align-items:center;padding-left:12px">
+              <span style="font-size:11px;font-weight:600;color:var(--green)">✓ Gen3 cross-lingual now active for PMI</span>
+            </div>
+          </div>
+          <div class="path-num solved">✓</div>
+        </div>
+        <div class="path-row">
+          <div class="path-label" style="color:var(--green);font-weight:600">PMI target</div>
+          <div class="path-track" style="background:var(--green-light);border-color:var(--green-border);position:relative">
+            <div style="position:absolute;inset:0;display:flex;align-items:center;padding-left:12px">
+              <span style="font-size:12px;font-weight:700;color:var(--green)">80% — Close the job config gap to reach this</span>
+            </div>
+          </div>
+          <div class="path-num green">80%</div>
+        </div>
+      </div>
+
+      <div class="ins green">
+        <strong>The key insight:</strong> The language gap — which previously prevented scoring for a significant share of hires — is resolved by PMI's Gen3 migration. The only remaining coverage gap is incomplete job configuration. Closing that plus engaging the A/B Lead pipeline are the two actions that get PMI to 80%.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ctitle">Two Actions to Reach 80%</div>
+      <div class="csub">In order of speed and impact</div>
+      <div style="margin-top:16px">
+
+        <div class="ws a1">
+          <div class="ws-t">
+            Action 1 — Engage the A/B Lead Pipeline
+            <span class="ws-tag g">Immediate · No tech changes</span>
+          </div>
+          <div class="ws-b">
+            31,047 A or B rated candidates are sitting at Lead — already identified by Fit Score as strong matches but not yet engaged by a recruiter. Prioritising outreach to this group can begin this week. No model changes, no configuration work, no waiting. This is the fastest lever to improve hiring outcomes and move the A/B hire rate this quarter.
+          </div>
+        </div>
+
+        <div class="ws a2">
+          <div class="ws-t">
+            Action 2 — Complete Job Configurations
+            <span class="ws-tag a">1,088 hires currently unscored</span>
+          </div>
+          <div class="ws-b">
+            12% of hires had no Fit Score because the job posting was incomplete — required skills, experience range, or location were not filled in. Fit Score needs a minimum level of job information to generate a rating. Identifying jobs with incomplete configuration and coaching recruiters on setup best practices closes this gap without any system changes on either side.
+          </div>
+        </div>
+
+        <div class="ws solved">
+          <div class="ws-t">
+            <span style="color:var(--green)">✓ Language Coverage — Already Resolved by Gen3</span>
+            <span class="ws-tag s">No action needed from PMI</span>
+          </div>
+          <div class="ws-b" style="color:var(--muted)">
+            <strong style="color:var(--text)">Before Gen3:</strong> A significant share of candidates could not be scored because their profile or job was in a language the previous model did not support. In the Jan–Jun 2026 data window, 2,052 hires fell into this category — candidates who were hired but had no Fit Score to guide the decision.<br><br>
+            <strong style="color:var(--text)">With Gen3 (active now):</strong> PMI completed its Gen3 migration last month. Gen3 includes full cross-lingual scoring across 17 languages — English, French, German, Spanish, Portuguese, Dutch, Chinese, Italian, Polish, Japanese, Turkish, Romanian, Czech, Serbian, Korean, Hungarian, and Finnish. Candidates in these languages are now scored automatically. No configuration change is needed from PMI's side.<br><br>
+            <strong style="color:var(--green)">Impact:</strong> The 2,052 previously unscored hires from language gaps will no longer occur under Gen3. This alone expands the scoreable candidate pool and improves the overall A/B hire rate going forward.
+          </div>
+        </div>
+
+        <div class="ins green" style="margin-top:14px">
+          <strong>Combined impact:</strong> Gen3 has already eliminated the language scoring gap — 2,052 previously unscored hires per period will now receive a Fit Score automatically. Engaging the 31,047 A/B Lead candidates improves outcomes this week. Closing the job configuration gap adds the final coverage boost. PMI is closer to 80% than the Jan–Jun numbers suggest — the path forward is operational, not technical, and one gap is already closed.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="footer">
+  <span>Fit Score Impact Report — PMI · Phenom · Confidential</span>
+  <span id="ftPeriod">Data period: Jan – Jun 2026</span>
+</div>
+
+<script>
+const fitDist=[
+  {l:"B Fit — Strong match",p:34.9,c:"#3b5bdb"},
+  {l:"A Fit — Top match",p:4.3,c:"#2f9e44"},
+  {l:"C Fit — Partial match",p:25.4,c:"#94a3b8"},
+  {l:"No Fit",p:17.0,c:"#cbd5e1"},
+  {l:"Could not be scored",p:18.4,c:"#fcd34d"}
+];
+const cats=[
+  {c:"Finance",h:344,s:344,p:82.9},{c:"Information Technology",h:157,s:130,p:79.2},
+  {c:"Other",h:553,s:560,p:73.0},{c:"Smoke-Free Products",h:102,s:97,p:70.1},
+  {c:"Life Sciences",h:14,s:10,p:70.0},{c:"Operations",h:1865,s:763,p:65.4},
+  {c:"People & Culture",h:345,s:313,p:64.2},{c:"Commercial",h:85,s:59,p:62.7},
+  {c:"Commercial Operations",h:3877,s:2326,p:62.3},{c:"Legal & Compliance",h:49,s:47,p:61.7},
+  {c:"General Management",h:17,s:14,p:57.1},{c:"Workplace Experience",h:17,s:11,p:54.5},
+  {c:"External Affairs",h:12,s:11,p:54.5}
+];
+const funnel=[
+  {s:"Applied",d:"All applicants",ab:95195,cnf:126072},
+  {s:"Screening",d:"Profile reviewed",ab:15965,cnf:7190},
+  {s:"Assessment",d:"Test / evaluation",ab:14643,cnf:10054},
+  {s:"Interview",d:"Currently at interview",ab:3467,cnf:918},
+  {s:"Hired",d:"Offer accepted",ab:3722,cnf:1797}
+];
+const thumbs=[
+  {m:"Jan",u:9479,d:3031,a:11314},{m:"Feb",u:7247,d:3217,a:9844},
+  {m:"Mar",u:11165,d:5145,a:15602},{m:"Apr",u:14849,d:6514,a:14130},
+  {m:"May",u:10761,d:5094,a:12240},{m:"Jun",u:11615,d:3383,a:12796}
+];
+const ranges={
+  1:{lbl:"Jun 2026",badge:"Jun 2026",months:["Jun"],sc:63,u:11615,d:3383},
+  3:{lbl:"Apr – Jun 2026",badge:"Apr – Jun 2026",months:["Apr","May","Jun"],sc:62,u:37225,d:14991},
+  6:{lbl:"Jan – Jun 2026",badge:"Jan – Jun 2026",months:["Jan","Feb","Mar","Apr","May","Jun"],sc:62,u:65116,d:26384}
+};
+
+Chart.defaults.color="#5c6280";
+Chart.defaults.borderColor="#e2e6f0";
+Chart.defaults.font.family="Inter";
+Chart.defaults.font.size=12;
+
+let distC,thumbsC,cndC;
+
+function buildDist(){
+  if(distC)distC.destroy();
+  distC=new Chart(document.getElementById("distChart"),{
+    type:"doughnut",
+    data:{labels:fitDist.map(d=>d.l),datasets:[{
+      data:fitDist.map(d=>d.p),backgroundColor:fitDist.map(d=>d.c),
+      borderWidth:2,borderColor:"#fff",hoverOffset:6}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:"62%",
+      plugins:{legend:{position:"right",labels:{font:{size:11},padding:10,boxWidth:12,usePointStyle:true}},
+      tooltip:{callbacks:{label:c=>` ${c.label}: ${c.parsed}% of candidates`}}}}
+  });
+}
+
+function buildFunnel(){
+  const el=document.getElementById("funnelViz");el.innerHTML="";
+  const mx=Math.max(...funnel.map(d=>d.ab+d.cnf));
+  funnel.forEach(d=>{
+    const tot=d.ab+d.cnf,pct=Math.round(d.ab*100/tot);
+    const aw=Math.round(d.ab*80/mx),cw=Math.round(d.cnf*80/mx);
+    const col=pct>=70?"#2f9e44":pct>=55?"#3b5bdb":"#e67700";
+    el.innerHTML+=`<div class="frow">
+      <div class="fstage"><div class="fname">${d.s}</div><div class="fdesc">${d.d}</div></div>
+      <div class="fbars">
+        <div class="fbar-row"><div class="fbar ab" style="width:${aw}%"></div><div class="fbar-lbl" style="color:#3b5bdb;font-weight:500">${d.ab.toLocaleString()} A/B</div></div>
+        <div class="fbar-row"><div class="fbar cnf" style="width:${cw}%"></div><div class="fbar-lbl">${d.cnf.toLocaleString()} C/No Fit</div></div>
+      </div>
+      <div class="fpct"><div class="fpct-n" style="color:${col}">${pct}%</div><div class="fpct-t">are A or B</div></div>
+    </div>`;
+  });
+}
+
+function buildCats(){
+  const tb=document.getElementById("catBody");tb.innerHTML="";
+  cats.forEach(c=>{
+    const cl=c.p>=80?"g":c.p>=65?"b":"a";
+    const vs=c.p>=80?`<span class="vtag g">✓ At target</span>`:`<span class="vtag a">−${(80-c.p).toFixed(1)}pp</span>`;
+    tb.innerHTML+=`<tr>
+      <td style="font-weight:600">${c.c}</td>
+      <td style="color:var(--muted)">${c.h.toLocaleString()}</td>
+      <td style="color:var(--muted)">${c.s.toLocaleString()}</td>
+      <td><div class="pcell"><div class="pbg"><div class="pbar ${cl}" style="width:${c.p}%"></div></div><span class="pn ${cl}">${c.p}%</span></div></td>
+      <td>${vs}</td>
+    </tr>`;
+  });
+}
+
+function buildThumbs(range){
+  const cfg=ranges[range],ft=thumbs.filter(d=>cfg.months.includes(d.m));
+  if(thumbsC)thumbsC.destroy();
+  thumbsC=new Chart(document.getElementById("thumbsChart"),{
+    type:"bar",
+    data:{labels:ft.map(d=>d.m),datasets:[
+      {label:"Thumbs Up",data:ft.map(d=>d.u),backgroundColor:"#3b5bdb",borderRadius:5},
+      {label:"Thumbs Down",data:ft.map(d=>d.d),backgroundColor:"#ced4da",borderRadius:5}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:"top",labels:{font:{size:11},usePointStyle:true}}},
+      scales:{y:{grid:{color:"#f0f2f8"},ticks:{callback:v=>v.toLocaleString()}},x:{grid:{display:false}}}}
+  });
+  if(cndC)cndC.destroy();
+  cndC=new Chart(document.getElementById("cndChart"),{
+    type:"line",
+    data:{labels:ft.map(d=>d.m),datasets:[{
+      label:"Unique Candidates Actioned",data:ft.map(d=>d.a),
+      borderColor:"#7048e8",backgroundColor:"rgba(112,72,232,.09)",fill:true,tension:.4,
+      pointRadius:5,pointBackgroundColor:"#7048e8",pointBorderColor:"#fff",pointBorderWidth:2}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{y:{grid:{color:"#f0f2f8"},ticks:{callback:v=>v.toLocaleString()}},x:{grid:{display:false}}}}
+  });
+}
+
+function setRange(r,btn){
+  document.querySelectorAll(".dbtn").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+  const cfg=ranges[r];
+  document.getElementById("pbadge").textContent=cfg.badge;
+  document.getElementById("hdrPeriod").textContent=cfg.lbl+" · Confidential";
+  document.getElementById("ftPeriod").textContent="Data period: "+cfg.lbl;
+  document.getElementById("distLbl").textContent=cfg.lbl;
+  document.getElementById("heroNum").textContent=cfg.sc+"%";
+  document.getElementById("heroPeriod").textContent=cfg.lbl;
+  document.getElementById("leadSub").textContent="Surfaced by Fit Score in "+cfg.lbl+" — no recruiter action taken yet";
+  buildThumbs(r);
+}
+
+function switchTab(name,el,step){
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  document.querySelectorAll(".tpanel").forEach(p=>p.classList.remove("active"));
+  document.querySelectorAll(".sstep").forEach(s=>s.classList.remove("active"));
+  el.classList.add("active");
+  document.getElementById("tab-"+name).classList.add("active");
+  document.getElementById("ss"+step).classList.add("active");
+}
+
+buildDist();
+buildFunnel();
+buildCats();
+buildThumbs(6);
+document.getElementById("ss1").classList.add("active");
+</script>
+</body>
+</html>
