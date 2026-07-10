@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fit Score Flags — Phenom CRM</title>
+  <style>
+    /* ── Reset & base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html,
+    body {
+      background: #f5f5f3;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: #1a1a18;
+      min-height: 100vh;
+      display: flex;
+      line-height: 1.4;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 200px;
+      flex-shrink: 0;
+      background: #fff;
+      border-right: 1px solid #e5e5e3;
+      padding: 20px 0;
+      overflow-y: auto;
+      min-height: 100vh;
+    }
+
+    .sidebar-section {
+      margin-bottom: 20px;
+    }
+
+    .sidebar-section-label {
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #a0a09c;
+      padding: 0 16px 6px;
+    }
+
+    .sidebar-item {
+      display: block;
+      padding: 7px 16px;
+      font-size: 13px;
+      color: #3d3d3a;
+      text-decoration: none;
+      cursor: default;
+      transition: background 0.15s;
+    }
+
+    .sidebar-item:hover {
+      background: #f9f9f7;
+    }
+
+    .sidebar-item.active {
+      color: #1a6fd4;
+      font-weight: 500;
+    }
+
+    /* ── Main content ── */
+    .main {
+      flex: 1;
+      padding: 32px 40px;
+      overflow-y: auto;
+    }
+
+    .page-title {
+      font-size: 20px;
+      font-weight: 500;
+      margin-bottom: 24px;
+      color: #1a1a18;
+    }
+
+    /* ── Cards ── */
+    .card {
+      background: #fff;
+      border: 1px solid #e5e5e3;
+      border-radius: 12px;
+      padding: 24px 28px;
+      margin-bottom: 16px;
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 10px;
+      color: #1a1a18;
+    }
+
+    /* ── Language chips ── */
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .chip {
+      font-size: 12px;
+      background: #f5f5f3;
+      border: 1px solid #e5e5e3;
+      border-radius: 20px;
+      padding: 3px 10px;
+      color: #3d3d3a;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .chip-remove {
+      color: #a0a09c;
+      font-size: 11px;
+      cursor: default;
+      line-height: 1;
+    }
+
+    .lang-select {
+      width: 100%;
+      height: 36px;
+      border: 1px solid #c8c8c4;
+      border-radius: 8px;
+      font-size: 13px;
+      padding: 0 12px;
+      color: #6b6b68;
+      background: #fff;
+      font-family: inherit;
+      appearance: auto;
+    }
+
+    .lang-select:focus {
+      outline: none;
+      border-color: #1d6cd4;
+      box-shadow: 0 0 0 2px rgba(29, 108, 212, 0.12);
+    }
+
+    /* ── Flag rows ── */
+    .flag-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 18px 0;
+    }
+
+    .flag-row:first-child {
+      padding-top: 0;
+    }
+
+    .flag-row:last-child {
+      padding-bottom: 0;
+    }
+
+    .flag-divider {
+      height: 1px;
+      background: #e5e5e3;
+    }
+
+    .flag-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .flag-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: #1a1a18;
+      margin-bottom: 4px;
+    }
+
+    .flag-description {
+      font-size: 13px;
+      color: #6b6b68;
+      line-height: 1.5;
+    }
+
+    .explainer {
+      font-size: 12px;
+      color: #a0a09c;
+      background: #f5f5f3;
+      border-left: 2px solid #d1d1cf;
+      border-radius: 6px;
+      padding: 8px 10px;
+      margin-top: 8px;
+      line-height: 1.5;
+    }
+
+    /* ── Toggle switch ── */
+    .toggle {
+      flex-shrink: 0;
+      width: 42px;
+      height: 24px;
+      border-radius: 12px;
+      background: #d1d1cf;
+      border: none;
+      cursor: pointer;
+      position: relative;
+      transition: background 0.2s ease;
+      padding: 0;
+    }
+
+    .toggle::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #fff;
+      transition: transform 0.2s ease;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+    }
+
+    .toggle.on {
+      background: #1d6cd4;
+    }
+
+    .toggle.on::after {
+      transform: translateX(18px);
+    }
+
+    /* ── Section label with NEW badge ── */
+    .section-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 8px 0 12px;
+    }
+
+    .section-label-text {
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #a0a09c;
+    }
+
+    .badge-new {
+      background: #e6f1fb;
+      color: #185fa5;
+      font-size: 10px;
+      font-weight: 500;
+      border-radius: 4px;
+      padding: 1px 6px;
+      letter-spacing: 0.02em;
+    }
+
+    /* ── Proximity expandable block (explainer + distance inputs) ── */
+    .proximity-expand {
+      opacity: 0;
+      transform: translateY(-4px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      pointer-events: none;
+      max-height: 0;
+      overflow: hidden;
+    }
+
+    .proximity-expand.visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+      max-height: 320px;
+    }
+
+    .distance-block {
+      margin-top: 14px;
+    }
+
+    .distance-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .distance-label {
+      font-size: 13px;
+      color: #3d3d3a;
+      font-weight: 500;
+    }
+
+    .distance-input {
+      width: 80px;
+      height: 32px;
+      border: 1px solid #c8c8c4;
+      border-radius: 8px;
+      font-size: 13px;
+      padding: 0 10px;
+      font-family: inherit;
+      color: #1a1a18;
+    }
+
+    .distance-input:focus {
+      outline: none;
+      border-color: #1d6cd4;
+      box-shadow: 0 0 0 2px rgba(29, 108, 212, 0.12);
+    }
+
+    .unit-select {
+      height: 32px;
+      border: 1px solid #c8c8c4;
+      border-radius: 8px;
+      font-size: 13px;
+      padding: 0 10px;
+      font-family: inherit;
+      color: #1a1a18;
+      background: #fff;
+      min-width: 110px;
+    }
+
+    .unit-select:focus {
+      outline: none;
+      border-color: #1d6cd4;
+      box-shadow: 0 0 0 2px rgba(29, 108, 212, 0.12);
+    }
+
+    .distance-note {
+      font-size: 12px;
+      color: #a0a09c;
+      margin-top: 10px;
+      line-height: 1.5;
+    }
+
+    .distance-note strong {
+      color: #6b6b68;
+      font-weight: 500;
+    }
+
+    /* ── Footer ── */
+    .footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding-top: 24px;
+    }
+
+    .btn {
+      font-family: inherit;
+      font-size: 13px;
+      border-radius: 8px;
+      padding: 7px 18px;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .btn-discard {
+      background: #fff;
+      border: 1px solid #c8c8c4;
+      color: #6b6b68;
+    }
+
+    .btn-discard:hover {
+      background: #f9f9f7;
+    }
+
+    .btn-save {
+      background: #1d6cd4;
+      border: 1px solid #1d6cd4;
+      color: #fff;
+      font-weight: 500;
+    }
+
+    .btn-save:hover {
+      background: #185fa5;
+      border-color: #185fa5;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Left sidebar ── -->
+  <nav class="sidebar" aria-label="Settings navigation">
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Configuration</div>
+      <a class="sidebar-item" href="#">Evaluation Forms for Events</a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Events</div>
+      <a class="sidebar-item" href="#">Events Settings</a>
+      <a class="sidebar-item" href="#">Phenom Video</a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Fields Management</div>
+      <a class="sidebar-item" href="#">Candidate Fields Grouping</a>
+      <a class="sidebar-item" href="#">Job Fields Grouping</a>
+      <a class="sidebar-item" href="#">Event Registration Forms</a>
+      <a class="sidebar-item active" href="#" aria-current="page">Fit Score Flags</a>
+      <a class="sidebar-item" href="#">GDPR</a>
+      <a class="sidebar-item" href="#">Hiring Statuses</a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Interview Scorecards</div>
+      <a class="sidebar-item" href="#">Scorecards</a>
+      <a class="sidebar-item" href="#">General Settings</a>
+    </div>
+  </nav>
+
+  <!-- ── Main content ── -->
+  <main class="main">
+    <h1 class="page-title">Fit Score Flags</h1>
+
+    <!-- CARD 1 — Language config -->
+    <section class="card">
+      <h2 class="card-title">FitScore enabled languages</h2>
+      <div class="chips" id="language-chips">
+        <!-- Chips rendered by JS for consistency -->
+      </div>
+      <select class="lang-select" aria-label="Add language">
+        <option value="" selected disabled>Make a selection</option>
+        <option value="arabic">Arabic</option>
+        <option value="hebrew">Hebrew</option>
+        <option value="hindi">Hindi</option>
+      </select>
+    </section>
+
+    <!-- CARD 2 — Existing flags -->
+    <section class="card" id="existing-flags">
+      <!-- Rows rendered by JS -->
+    </section>
+
+    <!-- Section label -->
+    <div class="section-label">
+      <span class="section-label-text">Scoring configuration</span>
+      <span class="badge-new">NEW</span>
+    </div>
+
+    <!-- CARD 3 — New flags -->
+    <section class="card" id="scoring-flags">
+      <!-- Location proximity -->
+      <div class="flag-row" id="proximity-row">
+        <div class="flag-content">
+          <div class="flag-name">Location proximity threshold</div>
+          <div class="flag-description">
+            When enabled, candidates beyond the specified distance from the job location — or whose location cannot be determined — cannot receive an A FitScore. They may still receive B, C, or No Fit scores normally.
+          </div>
+          <div class="proximity-expand" id="proximity-expand">
+            <div class="explainer" id="proximity-explainer">
+              How this works: Set a maximum distance below. Any candidate whose parsed profile location falls outside that radius from the job site will be capped at B FitScore. Candidates with no parseable location are also capped. Candidates within the radius are scored normally across all bands. This setting applies tenant-wide to all jobs with a specified location.
+            </div>
+            <div class="distance-block" id="distance-block">
+              <div class="distance-row">
+                <span class="distance-label">Maximum distance</span>
+                <input type="number" class="distance-input" id="distance-value" value="50" min="1" max="999" aria-label="Maximum distance">
+                <select class="unit-select" id="distance-unit" aria-label="Distance unit">
+                  <option value="miles" selected>Miles</option>
+                  <option value="kilometers">Kilometers</option>
+                </select>
+              </div>
+              <p class="distance-note" id="distance-note">
+                Candidates located more than <strong id="distance-preview">50 miles</strong> from the job site, or whose location cannot be determined from their profile, will not receive an A FitScore.
+              </p>
+            </div>
+          </div>
+        </div>
+        <button type="button" class="toggle" id="toggle-proximity" aria-label="Toggle location proximity threshold" aria-pressed="false"></button>
+      </div>
+
+      <div class="flag-divider"></div>
+
+      <!-- Lock FitScore -->
+      <div class="flag-row">
+        <div class="flag-content">
+          <div class="flag-name">Lock FitScore after first assignment</div>
+          <div class="flag-description">
+            When enabled, a candidate's FitScore for a job is locked once it is first assigned. It will not change if the candidate updates their profile or uploads a new resume. Only changes to the job's matching criteria will trigger a rescore.
+          </div>
+          <div class="explainer">
+            Why this matters: By default, FitScores recalculate whenever a candidate updates their profile on an open job. Locking scores ensures recruiters compare candidates on a consistent baseline throughout the hiring process.
+          </div>
+        </div>
+        <button type="button" class="toggle" id="toggle-lock" aria-label="Toggle lock FitScore after first assignment" aria-pressed="false"></button>
+      </div>
+
+      <div class="flag-divider"></div>
+
+      <!-- Disable years of experience -->
+      <div class="flag-row">
+        <div class="flag-content">
+          <div class="flag-name">Disable years of experience</div>
+          <div class="flag-description">
+            When enabled, years of experience carries zero weight in FitScore calculations. Candidates are evaluated on skills, title alignment, and location only. When off, years of experience is factored in normally.
+          </div>
+          <div class="explainer">
+            Important: This setting takes effect for new scoring events only. Scores already assigned before this change are not recalculated. Applies tenant-wide to all jobs. Enable this to reduce experience-based bias or open roles to career changers evaluated primarily on skills.
+          </div>
+        </div>
+        <button type="button" class="toggle" id="toggle-experience" aria-label="Toggle disable years of experience" aria-pressed="false"></button>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <button type="button" class="btn btn-discard">Discard</button>
+      <button type="button" class="btn btn-save">Save changes</button>
+    </footer>
+  </main>
+
+  <script>
+    /* ── Language chips ── */
+    var LANGUAGES = [
+      'ENGLISH', 'CZECH', 'CHINESE', 'PORTUGUESE', 'FRENCH', 'DUTCH',
+      'FINNISH', 'DANISH', 'POLISH', 'SERBIAN', 'ROMANIAN', 'HUNGARIAN',
+      'SPANISH', 'ITALIAN', 'JAPANESE', 'TURKISH', 'GERMAN', 'SWEDISH', 'KOREAN'
+    ];
+
+    var chipsContainer = document.getElementById('language-chips');
+    LANGUAGES.forEach(function (lang) {
+      var chip = document.createElement('span');
+      chip.className = 'chip';
+      chip.textContent = lang + ' ';
+      var remove = document.createElement('span');
+      remove.className = 'chip-remove';
+      remove.textContent = '✕';
+      remove.setAttribute('aria-hidden', 'true');
+      chip.appendChild(remove);
+      chipsContainer.appendChild(chip);
+    });
+
+    /* ── Existing flags (Card 2) ── */
+    var EXISTING_FLAGS = [
+      {
+        name: 'Enable similar candidates',
+        description: 'Turn on this flag to enable similar candidate recommendations in the candidate detail page.',
+        on: true
+      },
+      {
+        name: 'Disable similar candidates for employees',
+        description: 'Turn on this flag to disable similar candidate recommendations for employees.',
+        on: false
+      },
+      {
+        name: 'Enable job recommendations',
+        description: 'Turn on this flag to enable job recommendations for candidates in the candidate detail page.',
+        on: true
+      },
+      {
+        name: 'Disable job recommendations for employees',
+        description: 'Turn on this flag to disable job recommendations for employees.',
+        on: false
+      }
+    ];
+
+    var existingContainer = document.getElementById('existing-flags');
+
+    EXISTING_FLAGS.forEach(function (flag, index) {
+      var row = document.createElement('div');
+      row.className = 'flag-row';
+
+      var content = document.createElement('div');
+      content.className = 'flag-content';
+
+      var name = document.createElement('div');
+      name.className = 'flag-name';
+      name.textContent = flag.name;
+
+      var desc = document.createElement('div');
+      desc.className = 'flag-description';
+      desc.textContent = flag.description;
+
+      content.appendChild(name);
+      content.appendChild(desc);
+
+      var toggle = document.createElement('button');
+      toggle.type = 'button';
+      toggle.className = 'toggle' + (flag.on ? ' on' : '');
+      toggle.setAttribute('aria-label', 'Toggle ' + flag.name);
+      toggle.setAttribute('aria-pressed', flag.on ? 'true' : 'false');
+
+      toggle.addEventListener('click', function () {
+        var isOn = toggle.classList.toggle('on');
+        toggle.setAttribute('aria-pressed', isOn ? 'true' : 'false');
+      });
+
+      row.appendChild(content);
+      row.appendChild(toggle);
+      existingContainer.appendChild(row);
+
+      if (index < EXISTING_FLAGS.length - 1) {
+        var divider = document.createElement('div');
+        divider.className = 'flag-divider';
+        existingContainer.appendChild(divider);
+      }
+    });
+
+    /* ── Generic toggle helper for Card 3 (non-proximity) ── */
+    function bindToggle(toggleEl) {
+      toggleEl.addEventListener('click', function () {
+        var isOn = toggleEl.classList.toggle('on');
+        toggleEl.setAttribute('aria-pressed', isOn ? 'true' : 'false');
+      });
+    }
+
+    bindToggle(document.getElementById('toggle-lock'));
+    bindToggle(document.getElementById('toggle-experience'));
+
+    /* ── Location proximity toggle + distance block ── */
+    var proximityToggle = document.getElementById('toggle-proximity');
+    var proximityExpand = document.getElementById('proximity-expand');
+    var distanceValue = document.getElementById('distance-value');
+    var distanceUnit = document.getElementById('distance-unit');
+    var distancePreview = document.getElementById('distance-preview');
+
+    function updateDistancePreview() {
+      var val = distanceValue.value || '50';
+      var unit = distanceUnit.value;
+      var unitLabel = unit === 'kilometers' ? 'kilometers' : 'miles';
+      distancePreview.textContent = val + ' ' + unitLabel;
+    }
+
+    function setProximityVisible(visible) {
+      proximityExpand.classList.toggle('visible', visible);
+    }
+
+    proximityToggle.addEventListener('click', function () {
+      var isOn = proximityToggle.classList.toggle('on');
+      proximityToggle.setAttribute('aria-pressed', isOn ? 'true' : 'false');
+      setProximityVisible(isOn);
+    });
+
+    distanceValue.addEventListener('input', updateDistancePreview);
+    distanceUnit.addEventListener('change', updateDistancePreview);
+
+    /* Initial preview text */
+    updateDistancePreview();
+  </script>
+</body>
+</html>
