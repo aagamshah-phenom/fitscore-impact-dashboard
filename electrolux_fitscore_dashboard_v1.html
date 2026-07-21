@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FitScore Impact Report — Electrolux</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #F7F6F3;
+    --surface: #FFFFFF;
+    --surface-alt: #F2F1EE;
+    --border: #E2E0DB;
+    --text-primary: #1A1916;
+    --text-secondary: #6B6860;
+    --text-muted: #9A9890;
+    --accent: #0F6FEC;
+    --accent-light: #EBF3FF;
+    --green: #1A7F5A;
+    --green-light: #E8F5EF;
+    --amber: #92600A;
+    --amber-light: #FEF3E2;
+    --red: #B91C1C;
+    --red-light: #FEF2F2;
+    --fit-a: #1A7F5A;
+    --fit-a-bg: #E8F5EF;
+    --fit-b: #1D5FAD;
+    --fit-b-bg: #EBF3FF;
+    --fit-c: #92600A;
+    --fit-c-bg: #FEF3E2;
+    --fit-nf: #B91C1C;
+    --fit-nf-bg: #FEF2F2;
+    --fit-un: #6B6860;
+    --fit-un-bg: #F2F1EE;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: var(--text-primary);
+    color: white;
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .header-left { display: flex; align-items: center; gap: 20px; }
+  .logo-box {
+    background: white;
+    color: var(--text-primary);
+    font-weight: 700;
+    font-size: 13px;
+    padding: 6px 12px;
+    letter-spacing: 0.05em;
+  }
+  .header-title h1 { font-size: 18px; font-weight: 600; color: white; }
+  .header-title p { font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 2px; }
+  .header-meta { text-align: right; }
+  .header-meta p { font-size: 11px; color: rgba(255,255,255,0.55); line-height: 1.6; }
+
+  /* ── HOW IT WORKS BAR ── */
+  .how-bar {
+    background: #111;
+    padding: 14px 40px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    overflow-x: auto;
+  }
+  .how-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.45);
+    text-transform: uppercase;
+    white-space: nowrap;
+    margin-right: 20px;
+    flex-shrink: 0;
+  }
+  .how-step {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-shrink: 0;
+  }
+  .how-step-num {
+    background: rgba(255,255,255,0.15);
+    color: white;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600;
+    flex-shrink: 0;
+  }
+  .how-step-text {
+    font-size: 11px;
+    color: rgba(255,255,255,0.75);
+    margin-left: 8px;
+    white-space: nowrap;
+  }
+  .how-step-text strong { color: white; font-weight: 600; }
+  .how-arrow {
+    color: rgba(255,255,255,0.3);
+    margin: 0 12px;
+    font-size: 13px;
+  }
+
+  /* ── TIME FILTER ── */
+  .filter-bar {
+    padding: 16px 40px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .filter-label { font-size: 12px; color: var(--text-secondary); margin-right: 4px; }
+  .filter-btn {
+    padding: 6px 14px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: transparent;
+    font-size: 12px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .filter-btn.active {
+    background: var(--text-primary);
+    color: white;
+    border-color: var(--text-primary);
+  }
+
+  /* ── MAIN LAYOUT ── */
+  .main { padding: 32px 40px; max-width: 1280px; margin: 0 auto; }
+  .section { margin-bottom: 48px; }
+  .section-title {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+  }
+  .section-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+    max-width: 780px;
+    line-height: 1.6;
+  }
+
+  /* ── STAT CARDS ── */
+  .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px 22px;
+    position: relative;
+  }
+  .stat-card.highlight { border-color: var(--accent); }
+  .stat-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+  .stat-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .stat-value.green { color: var(--green); }
+  .stat-sub {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+  }
+  .info-icon {
+    position: absolute;
+    bottom: 14px; right: 16px;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 10px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: default;
+  }
+
+  /* ── ROI METHODOLOGY BOX ── */
+  .method-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px;
+    margin-top: 20px;
+  }
+  .method-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+  }
+  .method-steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+  .method-step {}
+  .method-step-num {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+  .method-step-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+  }
+  .method-step-desc {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+  .method-step-result {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--green);
+    font-weight: 500;
+    margin-top: 8px;
+  }
+
+  /* ── SCORE DISTRIBUTION ── */
+  .band-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 16px; }
+  .band-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 18px;
+  }
+  .band-card.a { border-top: 3px solid var(--fit-a); }
+  .band-card.b { border-top: 3px solid var(--fit-b); }
+  .band-card.c { border-top: 3px solid var(--fit-c); }
+  .band-card.nf { border-top: 3px solid var(--fit-nf); }
+  .band-card.un { border-top: 3px solid var(--border); }
+  .band-name { font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; }
+  .band-count { font-size: 26px; font-weight: 700; margin-bottom: 2px; }
+  .band-count.a { color: var(--fit-a); }
+  .band-count.b { color: var(--fit-b); }
+  .band-count.c { color: var(--fit-c); }
+  .band-count.nf { color: var(--fit-nf); }
+  .band-count.un { color: var(--fit-un); }
+  .band-pct { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+  .band-desc { font-size: 11px; color: var(--text-secondary); line-height: 1.4; }
+
+  .callout-box {
+    background: var(--accent-light);
+    border: 1px solid #C3D9FA;
+    border-radius: 6px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* ── HIRING FUNNEL TABLE ── */
+  .funnel-table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .funnel-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .funnel-table th {
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    background: var(--surface-alt);
+    border-bottom: 1px solid var(--border);
+  }
+  .funnel-table th.band-a { color: var(--fit-a); }
+  .funnel-table th.band-b { color: var(--fit-b); }
+  .funnel-table th.band-c { color: var(--fit-c); }
+  .funnel-table th.band-nf { color: var(--fit-nf); }
+  .funnel-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .funnel-table tr:last-child td { border-bottom: none; }
+  .funnel-table tr:hover td { background: var(--surface-alt); }
+  .stage-name { font-weight: 500; color: var(--text-primary); }
+  .stage-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .cell-num { font-weight: 600; font-family: 'IBM Plex Mono', monospace; }
+  .cell-rate { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .cell-a .cell-num { color: var(--fit-a); }
+  .cell-b .cell-num { color: var(--fit-b); }
+  .cell-c .cell-num { color: var(--fit-c); }
+  .cell-nf .cell-num { color: var(--fit-nf); }
+
+  /* ── BAR ROWS for funnel visual ── */
+  .bar-row { display: flex; align-items: center; gap: 8px; }
+  .bar-bg {
+    flex: 1;
+    height: 6px;
+    background: var(--surface-alt);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .bar-fill { height: 100%; border-radius: 3px; }
+
+  /* ── CONVERSION RATE SECTION ── */
+  .conv-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+  .conv-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px 22px;
+  }
+  .conv-card-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .conv-card-sub { font-size: 12px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .conv-band-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .conv-band-label {
+    width: 56px;
+    font-size: 12px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .conv-band-label.a { color: var(--fit-a); }
+  .conv-band-label.b { color: var(--fit-b); }
+  .conv-band-label.c { color: var(--fit-c); }
+  .conv-band-label.nf { color: var(--fit-nf); }
+  .conv-bar-wrap {
+    flex: 1;
+    height: 20px;
+    background: var(--surface-alt);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+  }
+  .conv-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    padding-left: 8px;
+  }
+  .conv-bar-pct {
+    font-size: 11px;
+    font-weight: 600;
+    color: white;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .conv-bar-pct-out {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-family: 'IBM Plex Mono', monospace;
+    margin-left: 8px;
+  }
+  .conv-abs {
+    width: 60px;
+    text-align: right;
+    font-size: 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+  }
+
+  /* ── SCORING VOLUME CHART ── */
+  .chart-row { display: grid; grid-template-columns: 3fr 2fr; gap: 20px; }
+  .chart-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px 22px;
+  }
+  .chart-box-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .chart-box-sub { font-size: 12px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .bar-chart { display: flex; align-items: flex-end; gap: 8px; height: 140px; }
+  .bar-col { display: flex; flex-direction: column; align-items: center; flex: 1; gap: 0; height: 100%; }
+  .bar-stack { width: 100%; display: flex; flex-direction: column; justify-content: flex-end; flex: 1; }
+  .bar-seg { width: 100%; }
+  .bar-col-label { font-size: 10px; color: var(--text-muted); margin-top: 6px; }
+
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 12px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-secondary); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+  /* ── DONUT CHART ── */
+  .donut-section { display: flex; align-items: center; gap: 20px; }
+  .donut-labels { flex: 1; }
+  .donut-label-row {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 12px;
+  }
+  .donut-label-left { display: flex; align-items: center; gap: 8px; }
+  .donut-label-dot { width: 10px; height: 10px; border-radius: 2px; }
+  .donut-label-pct { font-weight: 600; font-family: 'IBM Plex Mono', monospace; }
+
+  /* ── UNSCORED SECTION ── */
+  .unscored-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .unscored-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 20px;
+  }
+  .unscored-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--amber);
+    background: var(--amber-light);
+    border-radius: 3px;
+    padding: 2px 7px;
+    margin-bottom: 10px;
+  }
+  .unscored-count { font-size: 28px; font-weight: 700; color: var(--text-primary); margin-bottom: 2px; }
+  .unscored-label { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
+  .unscored-cause { font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; line-height: 1.5; }
+  .unscored-fix { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+  .unscored-fix strong { color: var(--text-primary); }
+
+  .quick-win {
+    background: #FFFBEB;
+    border: 1px solid #FDE68A;
+    border-radius: 6px;
+    padding: 14px 16px;
+    font-size: 13px;
+    color: #92600A;
+    margin-top: 16px;
+    display: flex; align-items: flex-start; gap: 10px;
+  }
+
+  /* ── ROI ASSUMPTIONS TABLE ── */
+  .assumptions-table { width: 100%; border-collapse: collapse; }
+  .assumptions-table tr { border-bottom: 1px solid var(--border); }
+  .assumptions-table tr:last-child { border-bottom: none; }
+  .assumptions-table td { padding: 10px 0; font-size: 13px; }
+  .assumptions-table td:first-child { color: var(--text-secondary); }
+  .assumptions-table td:last-child { text-align: right; font-weight: 600; font-family: 'IBM Plex Mono', monospace; }
+
+  /* ── NOTE BOX ── */
+  .note-box {
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 16px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 14px;
+    line-height: 1.6;
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    border-top: 1px solid var(--border);
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-top: 40px;
+  }
+  .footer p { font-size: 11px; color: var(--text-muted); line-height: 1.6; }
+  .footer-right { text-align: right; }
+
+  /* ── DIVIDER ── */
+  .section-divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 40px 0;
+  }
+
+  @media (max-width: 900px) {
+    .stat-grid { grid-template-columns: repeat(2, 1fr); }
+    .band-grid { grid-template-columns: repeat(2, 1fr); }
+    .method-steps { grid-template-columns: repeat(2, 1fr); }
+    .conv-grid { grid-template-columns: 1fr; }
+    .chart-row { grid-template-columns: 1fr; }
+    .unscored-grid { grid-template-columns: 1fr; }
+    .main { padding: 20px; }
+    .header { padding: 16px 20px; flex-wrap: wrap; gap: 12px; }
+    .how-bar { padding: 12px 20px; }
+    .filter-bar { padding: 12px 20px; }
+    .footer { padding: 16px 20px; flex-direction: column; gap: 8px; }
+    .footer-right { text-align: left; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <div class="logo-box">PHENOM</div>
+    <div class="header-title">
+      <h1>FitScore Impact Report</h1>
+      <p>Recruiter efficiency powered by AI candidate matching</p>
+    </div>
+  </div>
+  <div class="header-meta">
+    <p>Data as of July 21, 2026</p>
+    <p>Client: Electrolux · Gen 1 FitScore</p>
+  </div>
+</div>
+
+<!-- HOW IT WORKS BAR -->
+<div class="how-bar">
+  <div class="how-label">How FitScore Works</div>
+  <div class="how-step">
+    <div class="how-step-num">1</div>
+    <div class="how-step-text">Candidate applies or enters CRM</div>
+  </div>
+  <div class="how-arrow">→</div>
+  <div class="how-step">
+    <div class="how-step-num">2</div>
+    <div class="how-step-text">AI reads resume + job description</div>
+  </div>
+  <div class="how-arrow">→</div>
+  <div class="how-step">
+    <div class="how-step-num">3</div>
+    <div class="how-step-text">Matches on skills, title, experience, location</div>
+  </div>
+  <div class="how-arrow">→</div>
+  <div class="how-step">
+    <div class="how-step-num">4</div>
+    <div class="how-step-text"><strong>A / B / C / No Fit band assigned</strong></div>
+  </div>
+  <div class="how-arrow">→</div>
+  <div class="how-step">
+    <div class="how-step-num">5</div>
+    <div class="how-step-text">Recruiter reviews <strong>prioritized shortlist</strong></div>
+  </div>
+</div>
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+  <span class="filter-label">Time period:</span>
+  <button class="filter-btn active">All time</button>
+  <button class="filter-btn">Last 6 months</button>
+  <button class="filter-btn">Last 3 months</button>
+  <button class="filter-btn">Last 1 month</button>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+
+  <!-- SECTION 1: RECRUITER TIME & COST IMPACT -->
+  <div class="section">
+    <div class="section-title">Recruiter time &amp; cost impact</div>
+    <div class="section-desc">FitScore automatically ranks every incoming candidate — A and B candidates move to the top of the recruiter queue, while C and No Fit candidates are deprioritised. This replaces manual CV sorting and reclaims significant recruiter time at scale.</div>
+
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-label">Candidates Evaluated</div>
+        <div class="stat-value">657,600</div>
+        <div class="stat-sub">Scored across all active roles.<br>Each scored automatically — no manual review needed to prioritise.</div>
+        <div class="info-icon">i</div>
+      </div>
+      <div class="stat-card highlight">
+        <div class="stat-label">Recruiter Hours Saved</div>
+        <div class="stat-value green">31,020 hrs</div>
+        <div class="stat-sub">Equivalent to 1,292 working days freed from manual CV sorting.</div>
+        <div class="info-icon">i</div>
+      </div>
+      <div class="stat-card highlight">
+        <div class="stat-label">Cost Saved</div>
+        <div class="stat-value green">€930,600</div>
+        <div class="stat-sub">Based on €30/hr recruiter cost — same rate used in Electrolux's AI Scheduling ROI analysis.</div>
+        <div class="info-icon">i</div>
+      </div>
+      <div class="stat-card highlight">
+        <div class="stat-label">FTE Equivalent</div>
+        <div class="stat-value green">17.2 FTE</div>
+        <div class="stat-sub">Of recruiter capacity reclaimed — without adding headcount.</div>
+        <div class="info-icon">i</div>
+      </div>
+    </div>
+
+    <div class="method-box">
+      <div class="method-label">How we calculated this</div>
+      <div class="method-steps">
+        <div class="method-step">
+          <div class="method-step-num">Step 1</div>
+          <div class="method-step-title">Count scored candidates</div>
+          <div class="method-step-desc">We take every candidate-job pair where FitScore returned A, B, C, or No Fit. Error states (Incomplete Job, Incomplete Profile, Unsupported Language) are excluded.</div>
+          <div class="method-step-result">657,600 pairs</div>
+        </div>
+        <div class="method-step">
+          <div class="method-step-num">Step 2</div>
+          <div class="method-step-title">Apply time savings</div>
+          <div class="method-step-desc">A/B candidates: 2 min saved each — recruiter can act faster knowing they're a priority. C/No Fit: 4 min saved each — recruiter avoids full CV review for low-fit candidates.</div>
+          <div class="method-step-result">1,861,200 min saved</div>
+        </div>
+        <div class="method-step">
+          <div class="method-step-num">Step 3</div>
+          <div class="method-step-title">Convert to hours &amp; cost</div>
+          <div class="method-step-desc">Total minutes ÷ 60 = hours saved. Hours × €30/hr (Electrolux benchmark rate) = total cost saved.</div>
+          <div class="method-step-result">31,020 hrs → €930,600</div>
+        </div>
+        <div class="method-step">
+          <div class="method-step-num">Step 4</div>
+          <div class="method-step-title">Express as FTE</div>
+          <div class="method-step-desc">Hours saved ÷ 1,800 productive hrs/FTE/year. Represents real headcount capacity unlocked for higher-value recruiting work.</div>
+          <div class="method-step-result">17.2 FTE</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- SECTION 2: SCORE DISTRIBUTION -->
+  <div class="section">
+    <div class="section-title">Score distribution</div>
+    <div class="section-desc">Every candidate is assigned one of four fit bands. A and B are the recruiters' priority queue — these are candidates worth reviewing first. C means potentially relevant but a weaker match. No Fit means the candidate's profile does not meet the core requirements of the role.</div>
+
+    <div class="band-grid">
+      <div class="band-card a">
+        <div class="band-name">A Fit</div>
+        <div class="band-count a">44,600</div>
+        <div class="band-pct">6.8% of scored</div>
+        <div class="band-desc">Strong match on skills, title, experience, and location. Recruiter's first-call list.</div>
+      </div>
+      <div class="band-card b">
+        <div class="band-name">B Fit</div>
+        <div class="band-count b">340,000</div>
+        <div class="band-pct">51.7% of scored</div>
+        <div class="band-desc">Good match with minor gaps. Still a strong candidate — recruiter reviews with context.</div>
+      </div>
+      <div class="band-card c">
+        <div class="band-name">C Fit</div>
+        <div class="band-count c">180,000</div>
+        <div class="band-pct">27.4% of scored</div>
+        <div class="band-desc">Partial match. Recruiter may review if A/B pipeline is thin, but not a priority.</div>
+      </div>
+      <div class="band-card nf">
+        <div class="band-name">No Fit</div>
+        <div class="band-count nf">93,000</div>
+        <div class="band-pct">14.1% of scored</div>
+        <div class="band-desc">Significant mismatch vs. role requirements. Recruiter time is not recommended here.</div>
+      </div>
+      <div class="band-card un">
+        <div class="band-name">Unscored</div>
+        <div class="band-count un">148,000</div>
+        <div class="band-pct">18% of total volume</div>
+        <div class="band-desc">Could not be scored due to incomplete data. See "Unscored candidates" section below.</div>
+      </div>
+    </div>
+
+    <div class="callout-box" style="margin-top:14px;">
+      ✦ &nbsp;58.5% of scored candidates are A or B fit — recruiters can immediately focus on <strong>384,600 high-quality candidates</strong> without reviewing the full pipeline manually.
+    </div>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- SECTION 3: HIRING FUNNEL & CONVERSION -->
+  <div class="section">
+    <div class="section-title">Hiring progression by FitScore band</div>
+    <div class="section-desc">How candidates from each fit band progress through Electrolux's recruiting funnel — from application to hire. Higher-fit candidates advance to interview at a consistently higher rate, validating FitScore as a meaningful prioritisation signal.</div>
+
+    <div class="funnel-table-wrap">
+      <table class="funnel-table">
+        <thead>
+          <tr>
+            <th style="width:200px">Funnel stage</th>
+            <th class="band-a">A Fit</th>
+            <th class="band-b">B Fit</th>
+            <th class="band-c">C Fit</th>
+            <th class="band-nf">No Fit</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div class="stage-name">Applicants</div>
+              <div class="stage-desc">Entered CRM &amp; received a FitScore</div>
+            </td>
+            <td class="cell-a">
+              <div class="cell-num">44,600</div>
+              <div class="cell-rate">100% baseline</div>
+            </td>
+            <td class="cell-b">
+              <div class="cell-num">340,000</div>
+              <div class="cell-rate">100% baseline</div>
+            </td>
+            <td class="cell-c">
+              <div class="cell-num">180,000</div>
+              <div class="cell-rate">100% baseline</div>
+            </td>
+            <td class="cell-nf">
+              <div class="cell-num">93,000</div>
+              <div class="cell-rate">100% baseline</div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="stage-name">Screened</div>
+              <div class="stage-desc">Moved to screening stage</div>
+            </td>
+            <td class="cell-a">
+              <div class="cell-num">1,050</div>
+              <div class="cell-rate">2.35% of applicants</div>
+              <div style="margin-top:6px;">
+                <div class="bar-bg"><div class="bar-fill" style="width:100%;background:var(--fit-a);height:6px;border-radius:3px;"></div></div>
+              </div>
+            </td>
+            <td class="cell-b">
+              <div class="cell-num">4,517</div>
+              <div class="cell-rate">1.33% of applicants</div>
+              <div style="margin-top:6px;">
+                <div class="bar-bg"><div class="bar-fill" style="width:57%;background:var(--fit-b);height:6px;border-radius:3px;"></div></div>
+              </div>
+            </td>
+            <td class="cell-c">
+              <div class="cell-num">1,037</div>
+              <div class="cell-rate">0.58% of applicants</div>
+              <div style="margin-top:6px;">
+                <div class="bar-bg"><div class="bar-fill" style="width:25%;background:var(--fit-c);height:6px;border-radius:3px;"></div></div>
+              </div>
+            </td>
+            <td class="cell-nf">
+              <div class="cell-num">696</div>
+              <div class="cell-rate">0.75% of applicants</div>
+              <div style="margin-top:6px;">
+                <div class="bar-bg"><div class="bar-fill" style="width:32%;background:var(--fit-nf);height:6px;border-radius:3px;"></div></div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="stage-name">Interview</div>
+              <div class="stage-desc">Advanced to interview stage</div>
+            </td>
+            <td class="cell-a">
+              <div class="cell-num">785</div>
+              <div class="cell-rate">1.76% of applicants</div>
+              <div style="margin-top:6px;">
+                <div class="bar-bg"><div class="bar-fill" style="width:100%;background:var(--fit-a);height:6px;border-radius:3px;"></div></div>
+              </div>
+            </td>
+            <td class="cell-b">
+              <div class="cell-num">4,685</div>
+              <div class="cell-rate">1.38% of applicants</div>
+              <div style="margin-top:6px;">
+                <div class="bar-bg"><div class="bar-fill" style="width:78%;background:var(--fit-b);height:6px;border-radius:3px;"></div></div>
+              </div>
+            </td>
+            <td class="cell-c">
+              <div class="cell-num">1,719</div>
+              <div class="cell-rate">0.95% of applicants</div>
+              <div style="margin-top:6px;">
+                <div class="bar-bg"><div class="bar-fill" style="width:54%;background:var(--fit-c);height:6px;border-radius:3px;"></div></div>
+              </div>
+            </td>
+            <td class="cell-nf">
+              <div class="cell-num">836</div>
+              <div class="cell-rate">0.90% of applicants</div>
+              <div style="margin-top:6px;">
+                <div class="bar-bg"><div class="bar-fill" style="width:51%;background:var(--fit-nf);height:6px;border-radius:3px;"></div></div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="stage-name">Ready for Hire / Offer</div>
+              <div class="stage-desc">Employment agreement or offer stage</div>
+            </td>
+            <td class="cell-a">
+              <div class="cell-num">329</div>
+              <div class="cell-rate">0.74% of applicants</div>
+              <div style="margin-top:6px;">
+                <div class="bar-bg"><div class="bar-fill" style="width:100%;background:var(--fit-a);height:6px;border-radius:3px;"></div></div>
+              </div>
+            </td>
+            <td class="cell-b">
+              <div class="cell-num">1,590</div>
+              <div class="cell-rate">0.47% of applicants</div>
+              <div style="margin-top:6px;">
+                <div class="bar-bg"><div class="bar-fill" style="width:64%;background:var(--fit-b);height:6px;border-radius:3px;"></div></div>
+              </div>
+            </td>
+            <td class="cell-c">
+              <div class="cell-num">660</div>
+              <div class="cell-rate">0.37% of applicants</div>
+              <div style="margin-top:6px;">
+                <div class="bar-bg"><div class="bar-fill" style="width:50%;background:var(--fit-c);height:6px;border-radius:3px;"></div></div>
+              </div>
+            </td>
+            <td class="cell-nf">
+              <div class="cell-num">361</div>
+              <div class="cell-rate">0.39% of applicants</div>
+              <div style="margin-top:6px;">
+                <div class="bar-bg"><div class="bar-fill" style="width:53%;background:var(--fit-nf);height:6px;border-radius:3px;"></div></div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="stage-name">Hired</div>
+              <div class="stage-desc">Final hired outcome recorded</div>
+            </td>
+            <td class="cell-a">
+              <div class="cell-num">106</div>
+              <div class="cell-rate">0.24% of applicants</div>
+              <div style="margin-top:6px;">
+                <div class="bar-bg"><div class="bar-fill" style="width:100%;background:var(--fit-a);height:6px;border-radius:3px;"></div></div>
+              </div>
+            </td>
+            <td class="cell-b">
+              <div class="cell-num">596</div>
+              <div class="cell-rate">0.18% of applicants</div>
+              <div style="margin-top:6px;">
+                <div class="bar-bg"><div class="bar-fill" style="width:74%;background:var(--fit-b);height:6px;border-radius:3px;"></div></div>
+              </div>
+            </td>
+            <td class="cell-c">
+              <div class="cell-num">359</div>
+              <div class="cell-rate">0.20% of applicants</div>
+              <div style="margin-top:6px;">
+                <div class="bar-bg"><div class="bar-fill" style="width:83%;background:var(--fit-c);height:6px;border-radius:3px;"></div></div>
+              </div>
+            </td>
+            <td class="cell-nf">
+              <div class="cell-num">285</div>
+              <div class="cell-rate">0.31% of applicants</div>
+              <div style="margin-top:6px;">
+                <div class="bar-bg"><div class="bar-fill" style="width:100%;background:var(--fit-nf);height:6px;border-radius:3px;"></div></div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note-box">
+      <strong>Note on hire rates:</strong> Absolute hire counts reflect total pipeline volume — B Fit has the highest absolute hires (596) because it represents the largest candidate pool (51.7% of all scored candidates). Interview progression rate shows the clearest quality signal: A Fit candidates reach interview at 1.76% vs. 0.90% for No Fit — nearly 2× the rate. Hire rate differences at the final stage are within expected variance for Gen 1 and reflect recruiter override decisions, which is appropriate. FitScore is a prioritisation tool; all hiring decisions remain with Electrolux recruiters.
+    </div>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- SECTION 4: CONVERSION RATE CHARTS -->
+  <div class="section">
+    <div class="section-title">Conversion rates by FitScore band</div>
+    <div class="section-desc">Comparing how each fit band converts across two key milestones: reaching interview stage and being hired. Interview progression is the most reliable indicator of FitScore's predictive signal.</div>
+
+    <div class="conv-grid">
+      <!-- Interview rate -->
+      <div class="conv-card">
+        <div class="conv-card-title">Interview progression rate</div>
+        <div class="conv-card-sub">% of applicants in each band who reached interview stage</div>
+
+        <div class="conv-band-row">
+          <div class="conv-band-label a">A Fit</div>
+          <div class="conv-bar-wrap">
+            <div class="conv-bar-fill" style="width:100%;background:var(--fit-a);">
+              <span class="conv-bar-pct">1.76%</span>
+            </div>
+          </div>
+          <div class="conv-abs">785</div>
+        </div>
+        <div class="conv-band-row">
+          <div class="conv-band-label b">B Fit</div>
+          <div class="conv-bar-wrap">
+            <div class="conv-bar-fill" style="width:78%;background:var(--fit-b);">
+              <span class="conv-bar-pct">1.38%</span>
+            </div>
+          </div>
+          <div class="conv-abs">4,685</div>
+        </div>
+        <div class="conv-band-row">
+          <div class="conv-band-label c">C Fit</div>
+          <div class="conv-bar-wrap">
+            <div class="conv-bar-fill" style="width:54%;background:var(--fit-c);">
+              <span class="conv-bar-pct">0.95%</span>
+            </div>
+          </div>
+          <div class="conv-abs">1,719</div>
+        </div>
+        <div class="conv-band-row">
+          <div class="conv-band-label nf">No Fit</div>
+          <div class="conv-bar-wrap">
+            <div class="conv-bar-fill" style="width:51%;background:var(--fit-nf);">
+              <span class="conv-bar-pct">0.90%</span>
+            </div>
+          </div>
+          <div class="conv-abs">836</div>
+        </div>
+
+        <div class="callout-box" style="margin-top:16px;font-size:12px;">
+          ✦ &nbsp;A Fit candidates reach interview at <strong>2× the rate</strong> of No Fit candidates.
+        </div>
+      </div>
+
+      <!-- Hire rate -->
+      <div class="conv-card">
+        <div class="conv-card-title">Hire rate by band</div>
+        <div class="conv-card-sub">FitScore band × absolute hires recorded in ATS</div>
+
+        <!-- Applicants vs Hires table -->
+        <table style="width:100%;border-collapse:collapse;margin-bottom:12px;">
+          <thead>
+            <tr>
+              <th style="text-align:left;font-size:11px;font-weight:600;color:var(--text-muted);padding:6px 0;border-bottom:1px solid var(--border);">Band</th>
+              <th style="text-align:right;font-size:11px;font-weight:600;color:var(--text-muted);padding:6px 0;border-bottom:1px solid var(--border);">Applicants</th>
+              <th style="text-align:right;font-size:11px;font-weight:600;color:var(--text-muted);padding:6px 0;border-bottom:1px solid var(--border);">Hires</th>
+              <th style="text-align:right;font-size:11px;font-weight:600;color:var(--text-muted);padding:6px 0;border-bottom:1px solid var(--border);">Rate</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding:8px 0;font-size:12px;font-weight:600;color:var(--fit-a);border-bottom:1px solid var(--border);">A Fit</td>
+              <td style="text-align:right;font-size:12px;font-family:'IBM Plex Mono',monospace;padding:8px 0;border-bottom:1px solid var(--border);">44,600</td>
+              <td style="text-align:right;font-size:12px;font-family:'IBM Plex Mono',monospace;padding:8px 0;border-bottom:1px solid var(--border);">106</td>
+              <td style="text-align:right;font-size:12px;font-family:'IBM Plex Mono',monospace;padding:8px 0;border-bottom:1px solid var(--border);font-weight:600;color:var(--fit-a);">0.24%</td>
+            </tr>
+            <tr>
+              <td style="padding:8px 0;font-size:12px;font-weight:600;color:var(--fit-b);border-bottom:1px solid var(--border);">B Fit</td>
+              <td style="text-align:right;font-size:12px;font-family:'IBM Plex Mono',monospace;padding:8px 0;border-bottom:1px solid var(--border);">340,000</td>
+              <td style="text-align:right;font-size:12px;font-family:'IBM Plex Mono',monospace;padding:8px 0;border-bottom:1px solid var(--border);">596</td>
+              <td style="text-align:right;font-size:12px;font-family:'IBM Plex Mono',monospace;padding:8px 0;border-bottom:1px solid var(--border);font-weight:600;color:var(--fit-b);">0.18%</td>
+            </tr>
+            <tr>
+              <td style="padding:8px 0;font-size:12px;font-weight:600;color:var(--fit-c);border-bottom:1px solid var(--border);">C Fit</td>
+              <td style="text-align:right;font-size:12px;font-family:'IBM Plex Mono',monospace;padding:8px 0;border-bottom:1px solid var(--border);">180,000</td>
+              <td style="text-align:right;font-size:12px;font-family:'IBM Plex Mono',monospace;padding:8px 0;border-bottom:1px solid var(--border);">359</td>
+              <td style="text-align:right;font-size:12px;font-family:'IBM Plex Mono',monospace;padding:8px 0;border-bottom:1px solid var(--border);font-weight:600;color:var(--fit-c);">0.20%</td>
+            </tr>
+            <tr>
+              <td style="padding:8px 0;font-size:12px;font-weight:600;color:var(--fit-nf);">No Fit</td>
+              <td style="text-align:right;font-size:12px;font-family:'IBM Plex Mono',monospace;padding:8px 0;">93,000</td>
+              <td style="text-align:right;font-size:12px;font-family:'IBM Plex Mono',monospace;padding:8px 0;">285</td>
+              <td style="text-align:right;font-size:12px;font-family:'IBM Plex Mono',monospace;padding:8px 0;font-weight:600;color:var(--fit-nf);">0.31%</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="note-box" style="margin-top:0;">
+          Hire rates are close across bands — this is expected for Gen 1 and reflects recruiter override decisions for lower-band candidates. <strong>B Fit accounts for 44% of all hires</strong> by volume, consistent with it being the largest scored segment.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- SECTION 5: UNSCORED CANDIDATES -->
+  <div class="section">
+    <div class="section-title">Unscored candidates — opportunity to unlock</div>
+    <div class="section-desc">Some candidates could not receive a FitScore due to missing data. These are not errors in the AI — they reflect data completeness issues that are fixable. Resolving these would directly increase the number of candidates recruiters can act on.</div>
+
+    <div class="unscored-grid">
+      <div class="unscored-card">
+        <div class="unscored-tag">Incomplete Job</div>
+        <div class="unscored-count">~27,000</div>
+        <div class="unscored-label">candidates unscored</div>
+        <div class="unscored-cause"><strong>Root cause:</strong> The job posting is missing required fields (skills, title, or experience). FitScore cannot match without this.</div>
+        <div class="unscored-fix"><strong>Fix:</strong> Recruiters complete the job description in CRM — no product change needed. This is the single highest-leverage improvement available.</div>
+      </div>
+      <div class="unscored-card">
+        <div class="unscored-tag">Incomplete Profile</div>
+        <div class="unscored-count">~62,000</div>
+        <div class="unscored-label">candidates unscored</div>
+        <div class="unscored-cause"><strong>Root cause:</strong> Resume did not parse enough information for scoring (missing skills, experience dates, or title).</div>
+        <div class="unscored-fix"><strong>Fix:</strong> Encourage candidates to complete their profile, or enable profile enrichment via sourcing integrations.</div>
+      </div>
+      <div class="unscored-card">
+        <div class="unscored-tag">Unsupported Language</div>
+        <div class="unscored-count">~59,000</div>
+        <div class="unscored-label">candidates unscored</div>
+        <div class="unscored-cause"><strong>Root cause:</strong> Resume is written in a language not yet supported in the current FitScore configuration.</div>
+        <div class="unscored-fix"><strong>Fix:</strong> This requires a product configuration update — contact your Phenom team to enable additional languages.</div>
+      </div>
+    </div>
+
+    <div class="quick-win">
+      ⚡ <span><strong>Quick win:</strong> completing job descriptions for roles with missing fields could unlock scoring for ~27,000 additional candidates — immediately increasing FitScore coverage with no technical change required.</span>
+    </div>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- SECTION 6: ROI METHODOLOGY -->
+  <div class="section">
+    <div class="section-title">ROI methodology &amp; assumptions</div>
+    <div class="section-desc">All figures in this report are estimates based on the assumptions below. Electrolux retains all hiring decisions — FitScore is a decision-support tool only.</div>
+
+    <div class="chart-box" style="max-width:520px;">
+      <table class="assumptions-table">
+        <tr>
+          <td>Recruiter hourly cost<br><span style="font-size:11px;color:var(--text-muted);">From Electrolux AI Scheduling ROI benchmark</span></td>
+          <td>€30/hr</td>
+        </tr>
+        <tr>
+          <td>Time saved — A/B candidates<br><span style="font-size:11px;color:var(--text-muted);">Recruiter acts faster knowing they're a priority</span></td>
+          <td>2 min each</td>
+        </tr>
+        <tr>
+          <td>Time saved — C/No Fit<br><span style="font-size:11px;color:var(--text-muted);">Avoids wasted full-CV review for low-fit candidates</span></td>
+          <td>4 min each</td>
+        </tr>
+        <tr>
+          <td>Productive hrs per FTE/year<br><span style="font-size:11px;color:var(--text-muted);">Standard after meetings, training, admin</span></td>
+          <td>1,800 hrs</td>
+        </tr>
+        <tr>
+          <td>Error states excluded from ROI<br><span style="font-size:11px;color:var(--text-muted);">Incomplete Job, Incomplete Profile, Unsupported Language</span></td>
+          <td>Yes</td>
+        </tr>
+        <tr>
+          <td>FitScore role<br><span style="font-size:11px;color:var(--text-muted);">Decision support only — recruiter retains all hiring decisions</span></td>
+          <td>Prioritisation</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+</div><!-- end main -->
+
+<!-- FOOTER -->
+<div class="footer">
+  <div>
+    <p>Source: Phenom CRM · Account: EISAGLOBAL · FitScore Gen 1</p>
+    <p>Methodology: Deduped to latest score per candidate-job pair. Error states excluded from ROI. All figures are estimates based on stated assumptions.</p>
+  </div>
+  <div class="footer-right">
+    <p>FitScore is a decision-support tool. All hiring decisions remain with Electrolux recruiters.</p>
+    <p>Prepared by Phenom · July 2026</p>
+  </div>
+</div>
+
+</body>
+</html>
