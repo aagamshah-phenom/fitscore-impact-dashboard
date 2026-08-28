@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Fit Score Settings — Phenom CRM</title>
+<style>
+:root {
+  --purple: #5A31E0;
+  --purple-soft: #EFEBFF;
+  --green-dark: #1C5D4E;
+  --text: #22262E;
+  --text-2: #5A6270;
+  --text-3: #8A909C;
+  --border: #E4E7EC;
+  --border-2: #D3D8E0;
+  --bg: #F4F5F8;
+  --white: #FFFFFF;
+  --amber-bg: #FFF6E5;
+  --amber-border: #F0D19B;
+  --amber-text: #8A5A00;
+  --warn-bg: #FEF3F2;
+  --warn-border: #FECDCA;
+  --warn-text: #B42318;
+  --rec-bg: #F0FDF4;
+  --rec-border: #A7F3D0;
+  --rec-text: #065F46;
+  --a-bg: #1C5D4E;
+  --nofit-bg: #3D3D3D;
+  --radius: 8px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app { display: flex; flex-direction: column; height: 100vh; background: var(--white); }
+
+.topbar {
+  height: 52px; flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 14px;
+  padding: 0 16px; background: var(--white);
+}
+.logo {
+  width: 28px; height: 28px; border-radius: 6px;
+  background: var(--purple); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 14px; flex-shrink: 0;
+}
+.topbar-product {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 13.5px; color: var(--text); font-weight: 500;
+}
+.search {
+  flex: 1; max-width: 400px; margin: 0 auto;
+  height: 32px; border: 1px solid var(--border-2); border-radius: 16px;
+  display: flex; align-items: center; gap: 8px; padding: 0 12px;
+  color: var(--text-3); font-size: 13px; background: var(--bg);
+}
+.topbar-right { display: flex; align-items: center; gap: 16px; margin-left: auto; color: var(--text-2); }
+.avatar { width: 26px; height: 26px; border-radius: 50%; background: #D8CFF7; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: var(--purple); }
+
+.body { display: flex; flex: 1; min-height: 0; overflow: hidden; }
+
+.rail {
+  width: 46px; flex-shrink: 0; border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; align-items: center;
+  padding: 14px 0; gap: 20px; color: #9AA0AC; background: var(--white);
+}
+.rail-icon { opacity: 0.65; }
+.rail-icon.active { opacity: 1; color: var(--purple); }
+
+.sidenav {
+  width: 200px; flex-shrink: 0; border-right: 1px solid var(--border);
+  padding: 16px 10px; overflow-y: auto; background: var(--white);
+}
+.nav-item { padding: 6px 11px; border-radius: 6px; font-size: 13px; color: var(--text-2); cursor: default; margin-bottom: 1px; }
+.nav-item:hover { background: var(--bg); color: var(--text); }
+.nav-item.active { background: var(--purple-soft); color: var(--purple); font-weight: 600; }
+.nav-sep { height: 1px; background: var(--border); margin: 12px 4px; }
+.nav-group { font-size: 11.5px; font-weight: 700; color: var(--text-3); padding: 6px 11px 3px; letter-spacing: 0.4px; text-transform: uppercase; }
+
+.main { flex: 1; min-width: 0; overflow-y: auto; }
+.main-inner { max-width: 860px; padding: 24px 36px 100px; }
+
+.crumbs { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--text-3); }
+.crumbs a { color: var(--purple); text-decoration: none; }
+
+.page-head { display: flex; align-items: center; margin-top: 8px; gap: 12px; flex-wrap: wrap; }
+h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; }
+.head-actions { margin-left: auto; display: flex; gap: 10px; }
+
+.btn {
+  height: 32px; padding: 0 16px; border-radius: 6px; font-size: 13px;
+  font-weight: 600; cursor: pointer; border: 1px solid transparent;
+  display: inline-flex; align-items: center; gap: 6px; font-family: inherit;
+  transition: background 0.12s;
+}
+.btn-outline { border-color: var(--border-2); color: var(--text-2); background: var(--white); }
+.btn-outline:hover { border-color: var(--purple); color: var(--purple); }
+.btn-primary { background: var(--green-dark); color: #fff; border-color: var(--green-dark); }
+.btn-primary:hover { background: #155044; }
+.btn-sm { height: 30px; padding: 0 14px; font-size: 12.5px; }
+
+/* ── Tabs ── */
+.tabs { display: flex; gap: 24px; margin-top: 20px; border-bottom: 1px solid var(--border); }
+.tab {
+  padding: 0 0 11px; font-size: 13.5px; color: var(--text-2);
+  cursor: pointer; border: none; border-bottom: 2px solid transparent; margin-bottom: -1px;
+  background: none; font-family: inherit;
+  display: inline-flex; align-items: center; gap: 6px; transition: color 0.12s;
+}
+.tab:hover { color: var(--text); }
+.tab.active { color: var(--text); font-weight: 600; border-bottom-color: var(--purple); }
+.panel { display: none; padding-top: 22px; }
+.panel.active { display: block; }
+.panel-lede { font-size: 13.5px; color: var(--text-2); margin-bottom: 20px; max-width: 680px; line-height: 1.6; }
+
+/* ── Pill badges ── */
+.pill-rec {
+  font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px;
+  padding: 2px 7px; border-radius: 10px; white-space: nowrap;
+  background: var(--rec-bg); color: var(--rec-text); border: 1px solid var(--rec-border);
+}
+.pill-soon {
+  font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px;
+  padding: 2px 7px; border-radius: 10px; white-space: nowrap;
+  background: var(--amber-bg); color: var(--amber-text); border: 1px solid var(--amber-border);
+}
+
+/* ── Master card ── */
+.master-card {
+  border: 1px solid var(--border-2); border-radius: var(--radius);
+  background: #FCFCFD; padding: 16px 18px;
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; margin-bottom: 10px;
+}
+.master-card-label { font-size: 14.5px; font-weight: 700; }
+.master-card-desc { font-size: 12.5px; color: var(--text-3); margin-top: 3px; max-width: 600px; }
+
+/* ── Section cards ── */
+.section { border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 10px; background: var(--white); overflow: hidden; }
+.section.open > .section-body { display: block; }
+.section-head { display: flex; align-items: center; gap: 10px; padding: 14px 18px; cursor: pointer; user-select: none; }
+.section-head:hover { background: #FAFAFC; }
+.chev { flex-shrink: 0; color: var(--text-3); transition: transform 0.15s ease; }
+.section.open .section-head .chev { transform: rotate(90deg); }
+.section-titles { flex: 1; min-width: 0; }
+.section-title { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.section-sub { font-size: 12.5px; color: var(--text-3); margin-top: 2px; }
+.section-body { display: none; padding: 0 18px 18px; }
+.section-divider { height: 1px; background: var(--border); margin-bottom: 16px; }
+
+/* ── Setting rows ── */
+.setting { display: flex; align-items: flex-start; gap: 20px; padding: 13px 0; border-bottom: 1px solid var(--border); }
+.setting:last-child { border-bottom: none; }
+.setting-info { flex: 1; min-width: 0; }
+.setting-label { font-size: 13.5px; font-weight: 600; }
+.setting-desc { font-size: 12.5px; color: var(--text-3); margin-top: 3px; max-width: 560px; line-height: 1.55; }
+.setting-ctrl { flex-shrink: 0; padding-top: 2px; }
+
+/* ── Switch ── */
+.switch {
+  position: relative; width: 38px; height: 22px;
+  border-radius: 11px; background: #CDD2DA;
+  cursor: pointer; transition: background 0.15s; border: none; padding: 0; display: block; flex-shrink: 0;
+}
+.switch::after {
+  content: ""; position: absolute; top: 3px; left: 3px;
+  width: 16px; height: 16px; border-radius: 50%; background: #fff;
+  transition: transform 0.15s; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+.switch.on { background: var(--purple); }
+.switch.on::after { transform: translateX(16px); }
+.switch.big { width: 44px; height: 25px; border-radius: 13px; }
+.switch.big::after { width: 19px; height: 19px; }
+.switch.big.on::after { transform: translateX(19px); }
+.switch.locked { background: #E1E4E9; cursor: not-allowed; opacity: 0.6; }
+.switch.locked::after { background: #f0f0f0; }
+
+/* ── Radio group ── */
+.radios { border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.radio { display: flex; gap: 12px; align-items: flex-start; padding: 13px 15px; cursor: pointer; border-top: 1px solid var(--border); transition: background 0.1s; }
+.radio:first-child { border-top: none; }
+.radio:hover { background: #FAFAFC; }
+.radio.selected { background: #F8F6FF; }
+.radio-dot { width: 15px; height: 15px; border-radius: 50%; flex-shrink: 0; margin-top: 2px; border: 1.5px solid var(--border-2); display: flex; align-items: center; justify-content: center; }
+.radio.selected .radio-dot { border-color: var(--purple); }
+.radio.selected .radio-dot::after { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--purple); }
+.radio-content { flex: 1; min-width: 0; }
+.radio-label { font-size: 13.5px; font-weight: 500; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.radio.selected .radio-label { font-weight: 600; }
+.radio-desc { font-size: 12.5px; color: var(--text-3); margin-top: 3px; max-width: 560px; line-height: 1.55; }
+.radio-warn { display: none; margin-top: 10px; }
+.radio.selected .radio-warn { display: block; }
+
+/* ── Notes ── */
+.note { border-radius: 6px; padding: 10px 12px; font-size: 12.5px; line-height: 1.55; }
+.note-warn { background: var(--warn-bg); border: 1px solid var(--warn-border); color: var(--warn-text); }
+.note-amber { background: var(--amber-bg); border: 1px solid var(--amber-border); color: var(--amber-text); }
+.note-gate { background: #F3F0FF; border: 1px solid #D8CFF7; color: #452399; margin-bottom: 16px; display: none; }
+.note-gate.show { display: block; }
+
+.gated { opacity: 0.4; pointer-events: none; user-select: none; }
+
+/* ── Dimension rows ── */
+.dim-meta { display: flex; align-items: center; margin-bottom: 14px; font-size: 13px; color: var(--text-2); }
+.dim-meta strong { color: var(--text); }
+.dim-meta-right { margin-left: auto; font-size: 12.5px; color: var(--text-3); }
+
+.dim-row { border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 8px; background: var(--white); overflow: hidden; }
+.dim-row.open { border-color: var(--border-2); }
+.dim-row-head { display: flex; align-items: center; gap: 12px; padding: 13px 16px; }
+.dim-toggle-area { display: flex; align-items: center; gap: 11px; flex: 1; min-width: 0; cursor: pointer; }
+.dim-title { font-size: 13.5px; font-weight: 600; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.dim-sum { font-size: 12.5px; color: var(--text-3); margin-top: 2px; }
+.dim-body { display: none; padding: 0 16px 16px 39px; }
+.dim-row.open .dim-body { display: block; }
+.dim-body-desc { font-size: 12.5px; color: var(--text-3); max-width: 600px; line-height: 1.6; margin-bottom: 10px; }
+
+/* ── Location prox sub-controls ── */
+.sub-controls { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
+.sub-row { display: flex; align-items: center; gap: 10px; margin-top: 6px; flex-wrap: wrap; }
+.sub-label-small { font-size: 12px; color: var(--text-3); min-width: 110px; }
+.inp { height: 32px; border: 1px solid var(--border-2); border-radius: 5px; padding: 0 10px; font-size: 13px; font-family: inherit; color: var(--text); outline: none; }
+.inp:focus { border-color: var(--purple); }
+.inp-num { width: 72px; text-align: right; }
+.seg { display: inline-flex; border: 1px solid var(--border-2); border-radius: 5px; overflow: hidden; }
+.seg button { height: 30px; padding: 0 14px; background: none; border: none; font-size: 12.5px; font-family: inherit; color: var(--text-2); cursor: pointer; transition: background 0.1s; }
+.seg button:hover { background: var(--bg); }
+.seg button.on { background: var(--purple-soft); color: var(--purple); font-weight: 600; }
+
+/* ── Rules tab ── */
+.rule-card { border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 12px; background: var(--white); overflow: hidden; }
+.rule-card.open { border-color: var(--border-2); }
+
+.rule-card-head { display: flex; align-items: center; gap: 12px; padding: 14px 18px; cursor: pointer; user-select: none; transition: background 0.1s; }
+.rule-card-head:hover { background: #FAFAFC; }
+.rule-chev { flex-shrink: 0; color: var(--text-3); transition: transform 0.15s; }
+.rule-card.open .rule-chev { transform: rotate(90deg); }
+
+/* Fit band badge — mirrors the screenshot */
+.band-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 9px 3px 7px; border-radius: 5px;
+  font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0;
+}
+.band-badge svg { flex-shrink: 0; }
+.band-a { background: var(--a-bg); }
+.band-nofit { background: var(--nofit-bg); }
+
+.rule-card-title { font-size: 13.5px; font-weight: 600; flex: 1; min-width: 0; }
+
+.rule-card-body { display: none; border-top: 1px solid var(--border); padding: 16px 18px 18px; }
+.rule-card.open .rule-card-body { display: block; }
+
+.rule-section-label { font-size: 12px; font-weight: 600; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 10px; }
+
+/* Condition builder row */
+.cond-builder { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+.cond-select {
+  height: 32px; border: 1px solid var(--border-2); border-radius: 5px;
+  padding: 0 8px; font-size: 13px; font-family: inherit; color: var(--text);
+  background: var(--white); outline: none; cursor: not-allowed; opacity: 0.7;
+  appearance: none; -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%238A909C' stroke-width='1.3' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 8px center; padding-right: 26px;
+}
+.cond-val-box {
+  height: 32px; border: 1px solid var(--border-2); border-radius: 5px;
+  padding: 0 10px; font-size: 13px; font-family: inherit; color: var(--text);
+  background: var(--white); outline: none; cursor: not-allowed; opacity: 0.7;
+}
+.cond-seg { display: inline-flex; border: 1px solid var(--border-2); border-radius: 5px; overflow: hidden; }
+.cond-seg button {
+  height: 30px; padding: 0 13px; background: none; border: none;
+  font-size: 12.5px; font-family: inherit; color: var(--text-2); cursor: not-allowed;
+}
+.cond-seg button.selected { background: var(--purple-soft); color: var(--purple); font-weight: 600; }
+
+.add-cond-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 12.5px; font-weight: 600; color: var(--purple);
+  background: none; border: none; cursor: not-allowed; opacity: 0.5; padding: 4px 0; font-family: inherit;
+}
+
+.rule-foot { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); }
+.btn-cancel { height: 30px; padding: 0 14px; font-size: 12.5px; background: none; border: 1px solid var(--border-2); border-radius: 5px; color: var(--text-2); cursor: not-allowed; opacity: 0.5; font-family: inherit; }
+.btn-save { height: 30px; padding: 0 14px; font-size: 12.5px; background: var(--purple); color: #fff; border: none; border-radius: 5px; cursor: not-allowed; opacity: 0.5; font-family: inherit; font-weight: 600; }
+
+/* ── Modal ── */
+.overlay { display: none; position: fixed; inset: 0; background: rgba(34,38,46,0.45); z-index: 100; align-items: center; justify-content: center; }
+.overlay.show { display: flex; }
+.modal { background: var(--white); border-radius: 10px; width: 440px; max-width: 95vw; box-shadow: 0 20px 60px rgba(0,0,0,0.18); overflow: hidden; }
+.modal-head { padding: 20px 22px 16px; border-bottom: 1px solid var(--border); }
+.modal-title { font-size: 16px; font-weight: 700; }
+.modal-sub { font-size: 13px; color: var(--text-2); margin-top: 4px; }
+.modal-body { padding: 18px 22px; }
+.modal-body p { font-size: 13.5px; color: var(--text-2); line-height: 1.6; margin-bottom: 14px; }
+.modal-body p:last-child { margin-bottom: 0; }
+.modal-foot { padding: 14px 22px 18px; display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid var(--border); }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="logo">P</div>
+    <div class="topbar-product">
+      Phenom Test US
+      <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M3 4.5L6 8l3-3.5" stroke="#8A909C" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Recruiter experience
+      <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M3 4.5L6 8l3-3.5" stroke="#8A909C" stroke-width="1.3" stroke-linecap="round"/></svg>
+    </div>
+    <div class="search">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.6" stroke="#8A909C" stroke-width="1.4"/><path d="M10.5 10.5L14 14" stroke="#8A909C" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Search
+    </div>
+    <div class="topbar-right">
+      <svg width="17" height="17" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <svg width="17" height="17" viewBox="0 0 20 20" fill="none"><path d="M10 3a4.5 4.5 0 00-4.5 4.5c0 4-1.5 5-1.5 5h12s-1.5-1-1.5-5A4.5 4.5 0 0010 3z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M8.6 15a1.6 1.6 0 002.8 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <svg width="17" height="17" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.2" stroke="currentColor" stroke-width="1.4"/><path d="M8.4 8a1.7 1.7 0 113 1c-.6.5-1.4.8-1.4 1.8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="10" cy="14" r=".8" fill="currentColor"/></svg>
+      <div class="avatar">AS</div>
+    </div>
+  </div>
+
+  <div class="body">
+
+    <!-- Rail -->
+    <div class="rail">
+      <svg class="rail-icon" width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M3.5 8.5L10 3.5l6.5 5v7.5a1 1 0 01-1 1h-11a1 1 0 01-1-1V8.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+      <svg class="rail-icon" width="18" height="18" viewBox="0 0 20 20" fill="none"><rect x="3.5" y="4.5" width="13" height="9" rx="1.2" stroke="currentColor" stroke-width="1.4"/><path d="M7.5 16.5h5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <svg class="rail-icon" width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="2.8" stroke="currentColor" stroke-width="1.4"/><path d="M4.5 16c.6-2.8 2.8-4.2 5.5-4.2s4.9 1.4 5.5 4.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <svg class="rail-icon active" width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M10 3.5l6 2.3v4.4c0 3.4-2.5 5.6-6 6.3-3.5-.7-6-2.9-6-6.3V5.8l6-2.3z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+      <svg class="rail-icon" width="18" height="18" viewBox="0 0 20 20" fill="none"><rect x="3.5" y="5" width="13" height="11" rx="1.4" stroke="currentColor" stroke-width="1.4"/><path d="M6.5 3.5v3M13.5 3.5v3M3.5 9h13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+    </div>
+
+    <!-- Sidenav -->
+    <div class="sidenav">
+      <div class="nav-item">Feature flags</div>
+      <div class="nav-item">My account</div>
+      <div class="nav-item">Application fields</div>
+      <div class="nav-item active">Fit Score</div>
+      <div class="nav-sep"></div>
+      <div class="nav-group">Screening</div>
+      <div class="nav-item">Questionnaire Builder</div>
+      <div class="nav-item">General Settings</div>
+      <div class="nav-item">Questionnaire Assignments</div>
+      <div class="nav-item">Auto Deletion</div>
+      <div class="nav-item">Voice Agent <span style="font-size:10px;background:#EFEBFF;color:#5A31E0;padding:1px 5px;border-radius:4px;font-weight:700;margin-left:2px;">Beta</span></div>
+      <div class="nav-sep"></div>
+      <div class="nav-group">Interview Scorecards</div>
+      <div class="nav-item">Scorecards</div>
+      <div class="nav-item">Question library</div>
+      <div class="nav-item">General settings</div>
+    </div>
+
+    <!-- Main -->
+    <div class="main">
+      <div class="main-inner">
+
+        <div class="crumbs"><a href="#">Settings</a> <span>›</span> <span>Fit Score</span></div>
+
+        <div class="page-head">
+          <h1>Fit Score</h1>
+          <div class="head-actions">
+            <button class="btn btn-outline">Discard changes</button>
+            <button class="btn btn-primary">Save &amp; publish</button>
+          </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+          <button class="tab active" data-tab="general">General Settings</button>
+          <button class="tab" data-tab="dimensions">Dimensions</button>
+          <button class="tab" data-tab="rules">Rules <span class="pill-soon">Coming soon</span></button>
+        </div>
+
+
+        <!-- ════ TAB 1: GENERAL SETTINGS ════ -->
+        <div class="panel active" id="panel-general">
+
+          <div class="master-card">
+            <div>
+              <div class="master-card-label">Fit Score enabled</div>
+              <div class="master-card-desc">Turn Fit Score on for this tenant. When off, no scores are calculated or stored, and the Fit Score card is hidden from all recruiters. All settings below become inactive.</div>
+            </div>
+            <button class="switch big on" onclick="toggleMaster(this)"></button>
+          </div>
+
+          <div class="note note-gate" id="gate-banner">Fit Score is turned off. Enable it above to configure scoring settings.</div>
+
+          <div id="gate-content">
+
+            <!-- Score visibility -->
+            <div class="section open" id="sec-visibility">
+              <div class="section-head" onclick="toggleSection('sec-visibility')">
+                <svg class="chev" width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5L8 6l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <div class="section-titles">
+                  <div class="section-title">Score visibility</div>
+                  <div class="section-sub">Control whether recruiters can see Fit Score in the CRM.</div>
+                </div>
+              </div>
+              <div class="section-body">
+                <div class="section-divider"></div>
+                <div class="setting">
+                  <div class="setting-info">
+                    <div class="setting-label">Show Fit Score to recruiters</div>
+                    <div class="setting-desc">When off, Fit Score bands (A / B / C / No Fit) and the Fit Score card are hidden from the recruiter view in the CRM. Scores are still calculated in the background. Use during compliance reviews or pre-launch periods.</div>
+                  </div>
+                  <div class="setting-ctrl"><button class="switch on" onclick="flip(this)"></button></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Score recalculation -->
+            <div class="section open" id="sec-recalc">
+              <div class="section-head" onclick="toggleSection('sec-recalc')">
+                <svg class="chev" width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5L8 6l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <div class="section-titles">
+                  <div class="section-title">Score recalculation</div>
+                  <div class="section-sub">Decide when a candidate's Fit Score is allowed to change after it has first been assigned.</div>
+                </div>
+              </div>
+              <div class="section-body">
+                <div class="section-divider"></div>
+                <div class="radios" id="recalc-radios">
+
+                  <div class="radio" onclick="pickRadio(this,'recalc-radios')">
+                    <div class="radio-dot"></div>
+                    <div class="radio-content">
+                      <div class="radio-label">Dynamic</div>
+                      <div class="radio-desc">Scores update continuously. Any change to a candidate's profile or to the job — including job title, description, matching criteria, years of experience, or location — triggers a fresh calculation for all affected candidates.</div>
+                    </div>
+                  </div>
+
+                  <div class="radio" onclick="pickRadio(this,'recalc-radios')">
+                    <div class="radio-dot"></div>
+                    <div class="radio-content">
+                      <div class="radio-label">Lock after first score</div>
+                      <div class="radio-desc">A candidate's score for a job is permanently locked once first assigned. No changes — to the candidate's profile or to the job — will trigger a rescore. Use when strict score stability is required for compliance or audit purposes.</div>
+                      <div class="radio-warn note note-warn">
+                        <strong>Use with care.</strong> Candidates will never see their score change — even when the job description materially changes. This may affect match quality over time and is not the Phenom-recommended approach.
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="radio selected" onclick="pickRadio(this,'recalc-radios')">
+                    <div class="radio-dot"></div>
+                    <div class="radio-content">
+                      <div class="radio-label">
+                        Lock after first score, rescore on job changes
+                        <span class="pill-rec">Recommended</span>
+                      </div>
+                      <div class="radio-desc">A candidate's score is locked once first assigned and does not change if they update their profile. However, any change to the job — including title, description, matching criteria, years of experience, or location — automatically rescores all candidates for that job, keeping match quality accurate.</div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /gate-content -->
+        </div><!-- /panel-general -->
+
+
+        <!-- ════ TAB 2: DIMENSIONS ════ -->
+        <div class="panel" id="panel-dimensions">
+          <p class="panel-lede">
+            Turn individual scoring dimensions on or off for your whole tenant. Weightings vary by job type and are managed by Phenom — disabling a dimension removes it entirely from scoring. Changes apply to new scoring events only; scores already assigned are not recalculated.
+          </p>
+
+          <div id="gate-content-dims">
+            <div class="dim-meta">
+              <span><strong id="dim-count">4</strong> of 8 dimensions active</span>
+              <span class="dim-meta-right">4 dimensions coming soon</span>
+            </div>
+            <div id="dims-container"></div>
+          </div>
+        </div>
+
+
+        <!-- ════ TAB 3: RULES ════ -->
+        <div class="panel" id="panel-rules">
+          <p class="panel-lede">
+            Rules override scores for conditions that must always be enforced — regardless of how a candidate scores on other dimensions. Each rule is grouped by the Fit Score outcome it produces. Rules apply across all jobs in the tenant.
+          </p>
+
+          <div class="note note-amber" style="margin-bottom:20px;">
+            Rules configuration is coming soon. The examples below show what will be possible. Express interest if you have specific requirements and we'll be in touch.
+            <div style="margin-top:10px;">
+              <button class="btn btn-outline btn-sm" onclick="openModal('rules-modal')">Express interest</button>
+            </div>
+          </div>
+
+          <!-- Rule card: A / Good Fit -->
+          <div class="rule-card open" id="rule-a">
+            <div class="rule-card-head" onclick="toggleRule('rule-a')">
+              <svg class="rule-chev" width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5L8 6l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <div class="band-badge band-a">
+                <!-- star icon -->
+                <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1.5l1.2 2.8 3 .3-2.2 2 .7 3L6 8.1 3.3 9.6l.7-3L1.8 4.6l3-.3L6 1.5z" fill="#fff"/></svg>
+                A
+              </div>
+              <div class="rule-card-title">Fit Score — Good Fit</div>
+              <button class="switch locked" style="margin-left:auto;"></button>
+            </div>
+            <div class="rule-card-body">
+              <div class="rule-section-label">Set Good Fit (A) when</div>
+              <div class="cond-builder">
+                <select class="cond-select" style="width:190px;" disabled>
+                  <option>Distance from job location</option>
+                </select>
+                <select class="cond-select" style="width:150px;" disabled>
+                  <option>is less than or equal to</option>
+                </select>
+                <input class="cond-val-box" style="width:60px;" type="number" value="50" disabled/>
+                <select class="cond-select" style="width:80px;" disabled>
+                  <option>miles</option>
+                  <option>km</option>
+                </select>
+              </div>
+              <button class="add-cond-btn" disabled>
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                Add condition
+              </button>
+              <div class="rule-foot">
+                <button class="btn-cancel" disabled>Cancel</button>
+                <button class="btn-save" disabled>Save</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Rule card: No Fit -->
+          <div class="rule-card open" id="rule-nofit">
+            <div class="rule-card-head" onclick="toggleRule('rule-nofit')">
+              <svg class="rule-chev" width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5L8 6l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <div class="band-badge band-nofit">
+                <!-- X icon -->
+                <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M3 3l6 6M9 3l-6 6" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>
+                No Fit
+              </div>
+              <div class="rule-card-title">No Fit</div>
+              <button class="switch locked" style="margin-left:auto;"></button>
+            </div>
+            <div class="rule-card-body">
+              <div class="rule-section-label">Set No Fit when</div>
+              <div class="cond-builder">
+                <select class="cond-select" style="width:190px;" disabled>
+                  <option>Work authorisation</option>
+                </select>
+                <select class="cond-select" style="width:100px;" disabled>
+                  <option>is</option>
+                </select>
+                <div class="cond-seg">
+                  <button disabled>Yes</button>
+                  <button class="selected" disabled>No</button>
+                </div>
+              </div>
+              <button class="add-cond-btn" disabled>
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                Add condition
+              </button>
+              <div class="rule-foot">
+                <button class="btn-cancel" disabled>Cancel</button>
+                <button class="btn-save" disabled>Save</button>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /panel-rules -->
+
+      </div><!-- /main-inner -->
+    </div><!-- /main -->
+  </div><!-- /body -->
+</div><!-- /app -->
+
+
+<!-- Modals -->
+<div class="overlay" id="rules-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">Rules — Express Interest</div>
+      <div class="modal-sub">Tell us what hard requirements you need to enforce.</div>
+    </div>
+    <div class="modal-body">
+      <p>Rules let you set conditions that override Fit Scores — for example, automatically marking a candidate as No Fit if they don't meet work authorisation requirements, or setting Good Fit only for candidates within a certain distance.</p>
+      <p>Expressing interest helps us understand which rule types matter most and identify design partners for early access. Your account team will reach out with next steps.</p>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline btn-sm" onclick="closeModal('rules-modal')">Cancel</button>
+      <button class="btn btn-primary btn-sm" onclick="registerInterest('rules-modal','Rules Configuration')">Register interest</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="dim-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="dim-modal-title">Dimension — Express Interest</div>
+      <div class="modal-sub">We'll reach out when this dimension is ready for broader rollout.</div>
+    </div>
+    <div class="modal-body">
+      <p id="dim-modal-body"></p>
+      <p style="font-size:12.5px;color:var(--text-3);">No configuration changes will be made to your tenant. We'll contact your account team with next steps.</p>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline btn-sm" onclick="closeModal('dim-modal')">Cancel</button>
+      <button class="btn btn-primary btn-sm" onclick="registerInterest('dim-modal', currentDimName)">Register interest</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" style="display:none;position:fixed;bottom:24px;right:24px;background:#1C5D4E;color:#fff;padding:12px 18px;border-radius:8px;font-size:13px;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,0.18);z-index:200;max-width:320px;line-height:1.5;"></div>
+
+
+<script>
+// ── Dimensions data ───────────────────────────────────────
+const DIMS = [
+  {
+    id:'title', name:'Job Title Match', on:true, soon:false,
+    sum:"Scores how closely candidate job titles match the role.",
+    desc:"Compares a candidate's recent job titles against the job's primary title and any variants added by the recruiter. Uses the three most recent titles, with the most recent weighted highest."
+  },
+  {
+    id:'experience', name:'Experience Match', on:true, soon:false,
+    sum:"Scores years of experience against the job's stated range.",
+    desc:"Compares the candidate's total years of experience against the minimum and maximum stated in the job's matching criteria. Disable to remove experience entirely from scoring — candidates are then evaluated on skills, title alignment, and location only. Takes effect for new scoring events; scores already assigned are not recalculated."
+  },
+  {
+    id:'location', name:'Location Match', on:true, soon:false,
+    sum:"Scores candidate location against the job location.",
+    desc:"Scores the proximity between the candidate's location and the job location.",
+    extra:`
+      <div class="setting" style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);border-bottom:none;">
+        <div class="setting-info">
+          <div class="setting-label">Treat each EU country independently</div>
+          <div class="setting-desc">When on, each EU country is scored independently — a candidate in Spain is not location-matched to a job in Germany. This is the recommended setting for tenants with country-specific hiring within the EU.</div>
+        </div>
+        <div class="setting-ctrl"><button class="switch on" onclick="flip(this)"></button></div>
+      </div>`
+  },
+  {
+    id:'skills', name:'Skill Fit', on:true, soon:false,
+    sum:"Matches candidate skills against the job's required skills.",
+    desc:"Compares candidate skills against the skills in the job's matching criteria. Skills flagged as must-have by the recruiter carry more weight and a higher penalty when missing."
+  },
+  {
+    id:'education', name:'Education', on:false, soon:true,
+    sum:"Scores candidates against the education level required by the job.",
+    desc:"When enabled, candidates who do not meet the education level required by the job will score lower. Only applies when the job description explicitly specifies an education requirement.",
+    soonDesc:"Education scoring is in development. We are working with design partners on how education weightings should vary by role type. Expressing interest helps us identify the right use cases and rollout sequence."
+  },
+  {
+    id:'licenses', name:'Licenses & Certifications', on:false, soon:true,
+    sum:"Scores candidates against credentials required by the job.",
+    desc:"When enabled, candidates who do not hold the certifications or licenses required by the job will score lower. Only applies when the job description explicitly requires a credential.",
+    soonDesc:"Currently piloting with select customers in credentialed industries. Expressing interest helps us expand the rollout to the right organisations."
+  },
+  {
+    id:'workauth', name:'Work Authorisation', on:false, soon:true,
+    sum:"Scores candidates against visa and work permit requirements.",
+    desc:"When enabled, candidates who do not meet the work authorisation or visa requirements stated in the job will score lower. Only applies when the job description explicitly states a work authorisation requirement.",
+    soonDesc:"Work authorisation scoring is in development. Expressing interest will add your organisation to our early access list."
+  },
+  {
+    id:'industry', name:'Industry Expertise', on:false, soon:true,
+    sum:"Scores candidates on domain and industry background alignment.",
+    desc:"When enabled, candidates whose industry or domain background does not align with what the job requires will score lower. Only applies when the job description explicitly specifies an industry or domain.",
+    soonDesc:"Industry expertise scoring is in development. Expressing interest will connect you with our team to discuss your specific use case."
+  }
+];
+
+function renderDims() {
+  const host = document.getElementById('dims-container');
+  host.innerHTML = '';
+  DIMS.forEach(d => {
+    const div = document.createElement('div');
+    div.className = 'dim-row' + (d.id === 'location' ? ' open' : '');
+    div.id = 'dim-' + d.id;
+
+    const ctrl = d.soon
+      ? `<button class="switch locked"></button>`
+      : `<button class="switch ${d.on?'on':''}" onclick="flipDim(this);event.stopPropagation();"></button>`;
+
+    const pill = d.soon ? `<span class="pill-soon">Coming soon</span>` : '';
+
+    let body = `<div class="dim-body-desc">${d.desc}</div>`;
+    if (d.extra) body += d.extra;
+    if (d.soon) {
+      body += `<div class="note note-amber" style="margin-top:12px;">
+        ${d.soonDesc}
+        <div style="margin-top:10px;">
+          <button class="btn btn-outline btn-sm" onclick="openDimModal('${d.name.replace(/'/g,"\\'")}','${d.soonDesc.replace(/'/g,"\\'")}')">Express interest</button>
+        </div>
+      </div>`;
+    }
+
+    div.innerHTML = `
+      <div class="dim-row-head">
+        <div class="dim-toggle-area" onclick="toggleDimRow('dim-${d.id}')">
+          <svg class="chev" width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5L8 6l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div>
+            <div class="dim-title">${d.name} ${pill}</div>
+            <div class="dim-sum">${d.sum}</div>
+          </div>
+        </div>
+        ${ctrl}
+      </div>
+      <div class="dim-body">${body}</div>`;
+    host.appendChild(div);
+  });
+  updateDimCount();
+}
+
+function toggleDimRow(id) { document.getElementById(id).classList.toggle('open'); }
+function flipDim(sw) { sw.classList.toggle('on'); updateDimCount(); }
+function updateDimCount() {
+  const on = document.querySelectorAll('#dims-container .switch.on:not(.locked)').length;
+  document.getElementById('dim-count').textContent = on;
+}
+renderDims();
+
+// ── Tabs ──────────────────────────────────────────────────
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.onclick = () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+  };
+});
+
+// ── Master toggle ─────────────────────────────────────────
+function toggleMaster(sw) {
+  sw.classList.toggle('on');
+  const off = !sw.classList.contains('on');
+  document.getElementById('gate-content').classList.toggle('gated', off);
+  document.getElementById('gate-content-dims').classList.toggle('gated', off);
+  document.getElementById('gate-banner').classList.toggle('show', off);
+}
+
+function toggleSection(id) { document.getElementById(id).classList.toggle('open'); }
+function toggleRule(id) { document.getElementById(id).classList.toggle('open'); }
+function flip(sw) { sw.classList.toggle('on'); }
+
+function pickRadio(el, groupId) {
+  document.getElementById(groupId).querySelectorAll('.radio').forEach(r => r.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+// ── Modals ────────────────────────────────────────────────
+let currentDimName = '';
+function openModal(id) { document.getElementById(id).classList.add('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+function openDimModal(name, desc) {
+  currentDimName = name;
+  document.getElementById('dim-modal-title').textContent = name + ' — Express Interest';
+  document.getElementById('dim-modal-body').textContent = desc;
+  openModal('dim-modal');
+}
+document.querySelectorAll('.overlay').forEach(ov => {
+  ov.addEventListener('click', e => { if (e.target === ov) ov.classList.remove('show'); });
+});
+function registerInterest(modalId, featureName) {
+  closeModal(modalId);
+  const t = document.getElementById('toast');
+  t.textContent = `Interest registered for "${featureName}". Your account team will be in touch.`;
+  t.style.display = 'block';
+  setTimeout(() => { t.style.display = 'none'; }, 4000);
+}
+</script>
+
+</body>
+</html>
