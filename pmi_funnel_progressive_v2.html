@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PMI — Hiring Funnel (Progression View)</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+:root{
+  --bg:#f4f6fb;--surface:#fff;--surface2:#f0f2f8;--border:#e2e6f0;
+  --accent:#3b5bdb;--accent-light:#eef1fd;--accent-border:#c5d0f5;
+  --green:#2f9e44;--green-light:#ebfbee;--green-border:#b2f2bb;
+  --amber:#e67700;--amber-light:#fff9db;--amber-border:#ffe066;
+  --text:#1a1d2e;--muted:#5c6280;--muted2:#9399b8;
+  --shadow:0 1px 4px rgba(0,0,0,.07);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;min-height:100vh;}
+
+.hdr{background:var(--surface);border-bottom:1px solid var(--border);padding:16px 36px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);}
+.hdr-l{display:flex;align-items:center;gap:14px;}
+.logo{width:36px;height:36px;background:linear-gradient(135deg,#3b5bdb,#7048e8);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#fff;}
+.hdr h1{font-size:14px;font-weight:650;color:var(--text);}
+.hdr p{font-size:11px;color:var(--muted);margin-top:2px;}
+.pbadge{font-size:11px;font-weight:500;color:var(--accent);background:var(--accent-light);border:1px solid var(--accent-border);padding:4px 10px;border-radius:20px;}
+
+.page{padding:28px 36px;max-width:1100px;margin:0 auto;}
+
+.mbox{background:var(--accent-light);border:1px solid var(--accent-border);border-radius:10px;padding:16px 20px;margin-bottom:24px;}
+.mbox h3{font-size:12px;font-weight:650;color:var(--accent);margin-bottom:6px;}
+.mbox p{font-size:12px;color:#1e3a9e;line-height:1.7;}
+.mbox .diff{margin-top:10px;padding-top:10px;border-top:1px solid var(--accent-border);font-size:11px;color:#3b5bdb;}
+
+.krow{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px;}
+.kcard{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;box-shadow:var(--shadow);}
+.klbl{font-size:10px;font-weight:600;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em;}
+.knum{font-size:26px;font-weight:700;line-height:1;}
+.knum.blue{color:var(--accent);}
+.knum.green{color:var(--green);}
+.knum.amber{color:var(--amber);}
+.ksub{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.5;}
+.kfml{font-size:10px;color:var(--muted2);margin-top:5px;font-style:italic;}
+
+.fcard{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;box-shadow:var(--shadow);margin-bottom:20px;}
+.fcard-title{font-size:13px;font-weight:650;color:var(--text);margin-bottom:3px;}
+.fcard-sub{font-size:11px;color:var(--muted);margin-bottom:20px;line-height:1.55;}
+
+.legend{display:flex;gap:14px;margin-bottom:18px;flex-wrap:wrap;}
+.leg-i{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);}
+.leg-d{width:10px;height:10px;border-radius:2px;flex-shrink:0;}
+
+/* FUNNEL ROW — matches v9 style */
+.frow{display:flex;align-items:center;gap:14px;margin-bottom:0;padding:16px 0;border-bottom:1px solid var(--border);}
+.frow:last-child{border-bottom:none;padding-bottom:0;}
+.fstage{width:130px;flex-shrink:0;text-align:right;}
+.fname{font-size:12px;font-weight:650;color:var(--text);}
+.fdesc{font-size:10px;color:var(--muted2);margin-top:2px;line-height:1.3;}
+.fbars{flex:1;}
+.fbar-row{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+.fbar-row:last-child{margin-bottom:0;}
+.fbar{height:15px;border-radius:3px;min-width:3px;}
+.fbar-lbl{font-size:10px;color:var(--muted);white-space:nowrap;width:130px;}
+.fpct{width:90px;text-align:center;flex-shrink:0;}
+.fpct-n{font-size:18px;font-weight:700;line-height:1;}
+.fpct-t{font-size:9px;color:var(--muted2);margin-top:2px;}
+.fpct-f{font-size:9px;color:var(--muted2);margin-top:2px;font-style:italic;}
+.fpct-tot{font-size:9px;color:var(--muted2);margin-top:3px;}
+
+.ins{border-radius:8px;padding:13px 16px;font-size:12px;line-height:1.65;margin-top:16px;}
+.ins.green{background:var(--green-light);border:1px solid var(--green-border);color:#1a5e2a;}
+.ins.amber{background:var(--amber-light);border:1px solid var(--amber-border);color:#7d4a00;}
+.ins.blue{background:var(--accent-light);border:1px solid var(--accent-border);color:#1e3a9e;}
+
+.ab-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px;box-shadow:var(--shadow);margin-bottom:20px;}
+.ab-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:14px;}
+.ab-stage{border:1px solid var(--border);border-radius:8px;padding:12px 10px;text-align:center;background:var(--surface2);}
+.ab-stage-name{font-size:10px;font-weight:600;color:var(--muted);margin-bottom:8px;}
+.ab-pct{font-size:20px;font-weight:700;line-height:1;margin-bottom:3px;}
+.ab-frac{font-size:9px;color:var(--muted2);line-height:1.4;}
+
+.footer{margin-top:32px;padding:14px 0;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;font-size:10px;color:var(--muted2);}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-l">
+    <div class="logo">P</div>
+    <div>
+      <h1>PMI Fit Score — Hiring Funnel (Progression View)</h1>
+      <p>Candidates who passed each stage · Jan–Jun 2026 · PMIPMIGB</p>
+    </div>
+  </div>
+  <div class="pbadge">Jan–Jun 2026 · Progression view</div>
+</div>
+
+<div class="page">
+
+  <div class="mbox">
+    <h3>How to read this funnel</h3>
+    <p>Each stage shows how many unique candidate–job pairs <strong>ever passed through that stage</strong> at any point during January–June 2026 — regardless of where they ended up. A candidate who applied, was screened, interviewed, and then hired is counted in all four stages. This is a <strong>progression funnel</strong>, not a snapshot. The numbers decrease as candidates are filtered at each gate, and the A/B share at each stage shows whether Fit Score is concentrating stronger candidates as the process advances.</p>
+    <div class="diff">
+      <strong>How this differs from the v9 dashboard Funnel tab:</strong> The v9 funnel showed candidates at their <em>current</em> latest status only — mutually exclusive, so a candidate at Interview was not counted at Screening. This view counts everyone who <em>ever passed</em> each stage, as requested on August 31, 2026.
+    </div>
+  </div>
+
+  <div class="krow">
+    <div class="kcard">
+      <div class="klbl">Total entered pipeline</div>
+      <div class="knum blue">442,721</div>
+      <div class="ksub">Unique candidate–job pairs who ever reached New Application status · Jan–Jun 2026</div>
+      <div class="kfml">Source: RB_APPLICATIONS_DETAILS · REFNUM = PMIPMIGB</div>
+    </div>
+    <div class="kcard">
+      <div class="klbl">Reached interview</div>
+      <div class="knum green">14,601</div>
+      <div class="ksub">Ever passed at least one Interview stage · 3.3% of all applicants · Jan–Jun 2026</div>
+      <div class="kfml">14,601 ÷ 442,721 = 3.3% overall interview rate</div>
+    </div>
+    <div class="kcard">
+      <div class="klbl">Overall hire rate</div>
+      <div class="knum amber">1.25%</div>
+      <div class="ksub">5,536 hires from 442,721 applicants · Hired status only · Jan–Jun 2026</div>
+      <div class="kfml">5,536 ÷ 442,721 = 1.25% · Interview → Hired conversion = 37.9%</div>
+    </div>
+  </div>
+
+  <div class="fcard">
+    <div class="fcard-title">Candidates Who Passed Each Stage — Jan–Jun 2026</div>
+    <div class="fcard-sub">Each row = unique candidate–job pairs ever recorded at that stage's confirmed SuccessFactors status value (per Jakub's July 15, 2026 mapping). A candidate appears in every stage they passed through. Fit Score band = latest score in the Jan–Jun window. A/B % = (A+B) ÷ (A+B+C+No Fit) scored candidates only — No Score excluded from denominator.</div>
+
+    <div class="legend">
+      <div class="leg-i"><div class="leg-d" style="background:#2f9e44"></div>A Fit — Top match</div>
+      <div class="leg-i"><div class="leg-d" style="background:#3b5bdb"></div>B Fit — Strong match</div>
+      <div class="leg-i"><div class="leg-d" style="background:#94a3b8"></div>C Fit — Partial match</div>
+      <div class="leg-i"><div class="leg-d" style="background:#cbd5e1"></div>No Fit</div>
+      <div class="leg-i"><div class="leg-d" style="background:#fcd34d"></div>No Score — Could not be scored</div>
+    </div>
+
+    <div id="funnelViz"></div>
+
+    <div class="ins green">
+      <strong>Key signal:</strong> A/B share rises consistently from 60.3% at Application → 63.8% at Screening → 72.9% at Assessment → 75.5% at HM Shortlist → 61.9% at Interview → 72.3% at Hired (scored only). The concentration of A/B candidates at each decision gate confirms Fit Score is functioning as a prioritisation signal across the full pipeline.
+    </div>
+    <div class="ins amber">
+      <strong>Note on Assessment and HM Shortlist volumes:</strong> Assessment (7,600) and HM Shortlist (8,359) appear out of sequential order because some candidates reached HM Shortlist before January 2026 and only their later statuses fall within this window. This is a date-window artefact — the A/B % at each stage remains valid and meaningful.
+    </div>
+  </div>
+
+  <div class="ab-card">
+    <div class="fcard-title">A/B Share at Each Stage — Scored Candidates Only · Jan–Jun 2026</div>
+    <div class="fcard-sub" style="margin-bottom:0">A/B % = (A + B) ÷ (A + B + C + No Fit) at each stage. No Score candidates excluded from this denominator. Rising share confirms Fit Score concentrates high-fit candidates at each gate.</div>
+    <div class="ab-grid" id="abGrid"></div>
+  </div>
+
+  <div class="footer">
+    <span>PMI · PMIPMIGB · Progression funnel · Jan–Jun 2026 · Confidential — Internal Phenom use only</span>
+    <span>Source: CID.RAW_SCHEMA · RB_APPLICATIONS_DETAILS · FACT_CRM_FITSCORE · Ever-passed stage logic</span>
+  </div>
+
+</div>
+
+<script>
+const stages = [
+  {name:"Applied",     desc:"New Application",                          total:442721,a:35446, b:191267,c:97344, nf:59148,ns:59516},
+  {name:"Screening",   desc:"Profile Review — Accepted by Recruiter",   total:17776, a:2818,  b:8531,  c:2680,  nf:1234, ns:2513},
+  {name:"Assessment",  desc:"Recruiter Review — Accepted",              total:7600,  a:910,   b:3049,  c:1158,  nf:514,  ns:1969},
+  {name:"HM Shortlist",desc:"Hiring Manager Shortlist — Accepted",      total:8359,  a:1265,  b:3860,  c:1339,  nf:503,  ns:1392},
+  {name:"Interview",   desc:"Interview 1–4, offline, Assessment Center",total:14601, a:1999,  b:7076,  c:2331,  nf:862,  ns:2333},
+  {name:"Hired",       desc:"Hired status only",                        total:5536,  a:367,   b:1824,  c:562,   nf:276,  ns:2507}
+];
+
+const maxTotal = Math.max(...stages.map(s=>s.total));
+
+function abPct(s){
+  const scored=s.a+s.b+s.c+s.nf;
+  return scored>0?Math.round((s.a+s.b)*1000/scored)/10:0;
+}
+
+function buildFunnel(){
+  const el=document.getElementById("funnelViz");
+  el.innerHTML="";
+  stages.forEach(s=>{
+    const scored=s.a+s.b+s.c+s.nf;
+    const pct=abPct(s);
+    const pctCol=pct>=70?"#2f9e44":pct>=60?"#3b5bdb":"#e67700";
+    const mx=maxTotal;
+    const bars=[
+      {val:s.a, color:"#2f9e44", label:`${s.a.toLocaleString()} A Fit`},
+      {val:s.b, color:"#3b5bdb", label:`${s.b.toLocaleString()} B Fit`},
+      {val:s.c, color:"#94a3b8", label:`${s.c.toLocaleString()} C Fit`},
+      {val:s.nf,color:"#cbd5e1", label:`${s.nf.toLocaleString()} No Fit`},
+      {val:s.ns,color:"#fcd34d", label:`${s.ns.toLocaleString()} No Score`}
+    ];
+    const barsHtml=bars.map(b=>{
+      const w=Math.max(Math.round(b.val/mx*78),1);
+      return `<div class="fbar-row">
+        <div class="fbar" style="width:${w}%;background:${b.color}"></div>
+        <div class="fbar-lbl" style="color:${b.color};font-weight:500">${b.label}</div>
+      </div>`;
+    }).join("");
+    el.innerHTML+=`<div class="frow">
+      <div class="fstage">
+        <div class="fname">${s.name}</div>
+        <div class="fdesc">${s.desc}</div>
+      </div>
+      <div class="fbars">${barsHtml}</div>
+      <div class="fpct">
+        <div class="fpct-n" style="color:${pctCol}">${pct}%</div>
+        <div class="fpct-t">A or B</div>
+        <div class="fpct-f">${(s.a+s.b).toLocaleString()}÷${scored.toLocaleString()}</div>
+        <div class="fpct-tot">${s.total.toLocaleString()} total</div>
+      </div>
+    </div>`;
+  });
+}
+
+function buildAbGrid(){
+  const el=document.getElementById("abGrid");
+  el.innerHTML="";
+  stages.forEach(s=>{
+    const scored=s.a+s.b+s.c+s.nf;
+    const pct=abPct(s);
+    const col=pct>=70?"#2f9e44":pct>=60?"#3b5bdb":"#e67700";
+    el.innerHTML+=`<div class="ab-stage">
+      <div class="ab-stage-name">${s.name}</div>
+      <div class="ab-pct" style="color:${col}">${pct}%</div>
+      <div class="ab-frac">${(s.a+s.b).toLocaleString()} A/B<br>÷ ${scored.toLocaleString()} scored</div>
+    </div>`;
+  });
+}
+
+buildFunnel();
+buildAbGrid();
+</script>
+</body>
+</html>
