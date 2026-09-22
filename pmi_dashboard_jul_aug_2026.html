@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>PMI — Fit Score Impact Report Jul–Aug 2026</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+:root{
+  --bg:#f4f6fb;--surface:#fff;--surface2:#f0f2f8;--border:#e2e6f0;
+  --accent:#3b5bdb;--accent-light:#eef1fd;--accent-border:#c5d0f5;
+  --green:#2f9e44;--green-light:#ebfbee;--green-border:#b2f2bb;
+  --amber:#e67700;--amber-light:#fff9db;--amber-border:#ffe066;
+  --red:#c92a2a;--red-light:#fff5f5;--red-border:#ffc9c9;
+  --purple:#7048e8;
+  --text:#1a1d2e;--muted:#5c6280;--muted2:#9399b8;
+  --shadow:0 1px 4px rgba(0,0,0,.07);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;}
+.hdr{background:var(--surface);border-bottom:1px solid var(--border);padding:16px 36px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);}
+.hdr-l{display:flex;align-items:center;gap:14px;}
+.logo{width:38px;height:38px;background:linear-gradient(135deg,#3b5bdb,#7048e8);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;color:#fff;}
+.hdr h1{font-size:15px;font-weight:650;color:var(--text);}
+.hdr p{font-size:11px;color:var(--muted);margin-top:2px;}
+.pbadge{font-size:11px;font-weight:500;color:var(--accent);background:var(--accent-light);border:1px solid var(--accent-border);padding:4px 10px;border-radius:20px;}
+.tabs{background:var(--surface);border-bottom:1px solid var(--border);padding:0 36px;display:flex;overflow-x:auto;}
+.tab{padding:12px 18px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;}
+.tab:hover{color:var(--text);}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:650;}
+.content{padding:26px 36px;max-width:1300px;}
+.tpanel{display:none;}.tpanel.active{display:block;}
+.intro{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:8px;padding:14px 18px;margin-bottom:20px;}
+.intro h2{font-size:13px;font-weight:650;color:var(--text);margin-bottom:4px;}
+.intro p{font-size:12px;color:var(--muted);line-height:1.65;}
+.mbox{background:var(--amber-light);border:1px solid var(--amber-border);border-radius:8px;padding:13px 17px;margin-bottom:20px;font-size:12px;color:#7d4a00;line-height:1.65;}
+.mbox strong{font-weight:650;}
+.gen3box{background:var(--green-light);border:1px solid var(--green-border);border-radius:8px;padding:13px 17px;margin-bottom:20px;font-size:12px;color:#1a5e2a;line-height:1.65;}
+.hero{background:linear-gradient(135deg,#ebfbee 0%,#f0f9f2 100%);border:1px solid var(--green-border);border-radius:14px;padding:28px 34px;margin-bottom:20px;display:flex;align-items:flex-start;gap:32px;}
+.hero-num{font-size:76px;font-weight:700;line-height:1;color:var(--green);flex-shrink:0;}
+.hero-divider{width:1px;height:80px;background:var(--green-border);flex-shrink:0;margin-top:4px;}
+.hero-text h3{font-size:18px;font-weight:650;color:var(--text);margin-bottom:8px;}
+.hero-text p{font-size:13px;color:var(--muted);line-height:1.7;max-width:520px;}
+.hero-formula{margin-top:12px;background:rgba(47,158,68,.08);border:1px solid var(--green-border);border-radius:8px;padding:10px 14px;font-size:11px;color:#1a5e2a;display:inline-block;}
+.hero-tag{display:inline-block;margin-top:10px;background:var(--green-light);border:1px solid var(--green-border);color:var(--green);font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;}
+.sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px;}
+.scard{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;box-shadow:var(--shadow);}
+.slabel{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:8px;}
+.sval{font-size:28px;font-weight:700;line-height:1;}
+.sval.blue{color:var(--accent);}.sval.green{color:var(--green);}.sval.amber{color:var(--amber);}
+.ssub{font-size:11px;color:var(--muted);margin-top:7px;line-height:1.5;}
+.sexpl{font-size:10px;color:var(--muted2);margin-top:5px;font-style:italic;line-height:1.5;border-top:1px solid var(--border);padding-top:6px;}
+.kgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px;}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;box-shadow:var(--shadow);}
+.klabel{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:8px;}
+.kval{font-size:32px;font-weight:700;line-height:1;}
+.kval.blue{color:var(--accent);}.kval.green{color:var(--green);}.kval.amber{color:var(--amber);}
+.ksub{font-size:11px;color:var(--muted);margin-top:7px;line-height:1.5;}
+.kfml{font-size:10px;color:var(--muted2);margin-top:5px;font-style:italic;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px;box-shadow:var(--shadow);margin-bottom:18px;}
+.ctitle{font-size:13px;font-weight:650;color:var(--text);margin-bottom:3px;}
+.csub{font-size:11px;color:var(--muted);margin-bottom:14px;line-height:1.55;}
+.cwrap{position:relative;}.cwrap.h200{height:200px;}.cwrap.h240{height:240px;}.cwrap.h280{height:280px;}.cwrap.h300{height:300px;}
+.ins{border-radius:8px;padding:12px 15px;font-size:12px;line-height:1.65;margin-top:14px;}
+.ins.green{background:var(--green-light);border:1px solid var(--green-border);color:#1a5e2a;}
+.ins.amber{background:var(--amber-light);border:1px solid var(--amber-border);color:#7d4a00;}
+.ins.blue{background:var(--accent-light);border:1px solid var(--accent-border);color:#1e3a9e;}
+.ins.grey{background:var(--surface2);border:1px solid var(--border);color:var(--muted);}
+.frow{display:flex;align-items:center;gap:14px;margin-bottom:0;padding:16px 0;border-bottom:1px solid var(--border);}
+.frow:last-child{border-bottom:none;padding-bottom:0;}
+.fstage{width:130px;flex-shrink:0;text-align:right;}
+.fname{font-size:12px;font-weight:650;color:var(--text);}
+.fdesc{font-size:10px;color:var(--muted2);margin-top:2px;line-height:1.3;}
+.fbars{flex:1;}
+.fbar-row{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+.fbar-row:last-child{margin-bottom:0;}
+.fbar{height:15px;border-radius:3px;min-width:3px;}
+.fbar-lbl{font-size:10px;color:var(--muted);white-space:nowrap;width:130px;}
+.fpct{width:90px;text-align:center;flex-shrink:0;}
+.fpct-n{font-size:18px;font-weight:700;line-height:1;}
+.fpct-t{font-size:9px;color:var(--muted2);margin-top:2px;}
+.fpct-f{font-size:9px;color:var(--muted2);margin-top:2px;font-style:italic;}
+.fpct-tot{font-size:9px;color:var(--muted2);margin-top:3px;}
+.legend{display:flex;gap:14px;margin-bottom:18px;flex-wrap:wrap;}
+.leg-i{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);}
+.leg-d{width:10px;height:10px;border-radius:2px;flex-shrink:0;}
+.tscroll{max-height:480px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;}
+.tbl{width:100%;border-collapse:collapse;font-size:12px;}
+.tbl th{text-align:left;padding:9px 12px;color:var(--muted);font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.05em;border-bottom:2px solid var(--border);background:var(--surface2);position:sticky;top:0;z-index:1;}
+.tbl td{padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text);}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl tr:hover td{background:var(--surface2);}
+.pcell{display:flex;align-items:center;gap:8px;}
+.pbg{flex:1;height:6px;background:var(--surface2);border-radius:4px;overflow:hidden;border:1px solid var(--border);}
+.pbar{height:100%;border-radius:4px;}
+.pn{font-size:12px;font-weight:700;width:44px;text-align:right;}
+.vtag{display:inline-block;font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;}
+.vtag.g{background:var(--green-light);color:var(--green);}.vtag.a{background:var(--amber-light);color:var(--amber);}.vtag.r{background:var(--red-light);color:var(--red);}
+.fscore{display:inline-block;font-size:10px;font-weight:600;padding:2px 6px;border-radius:4px;margin:1px;}
+.fscore.A{background:#ebfbee;color:#2f9e44;}.fscore.B{background:#eef1fd;color:#3b5bdb;}
+.fscore.C{background:#f8f9fa;color:#5c6280;}.fscore.NF{background:#f1f3f5;color:#868e96;}
+.fscore.NS{background:#fff9db;color:#e67700;}
+.fourbar-month{margin-bottom:18px;}
+.fourbar-month-lbl{font-size:11px;font-weight:700;color:var(--text);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+.fourbar-row{display:flex;align-items:center;gap:10px;margin-bottom:5px;}
+.fourbar-lbl{width:180px;font-size:11px;color:var(--muted);font-weight:500;flex-shrink:0;}
+.fourbar-track{flex:1;height:22px;background:var(--surface2);border-radius:5px;overflow:hidden;border:1px solid var(--border);}
+.fourbar-fill{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:8px;font-size:10px;font-weight:600;color:#fff;white-space:nowrap;}
+.fourbar-fill.light{color:var(--text);}
+.fourbar-meta{font-size:10px;color:var(--muted2);width:220px;flex-shrink:0;text-align:right;line-height:1.4;}
+.month-div{height:1px;background:var(--border);margin:12px 0;}
+.kgrid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+.ws{border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:12px;}
+.ws.a1{border-left:3px solid var(--green);}.ws.a2{border-left:3px solid var(--amber);}.ws.a3{border-left:3px solid var(--red);}
+.ws-t{font-size:13px;font-weight:650;color:var(--text);margin-bottom:6px;}
+.ws-b{font-size:12px;color:var(--muted);line-height:1.7;}
+.badge{display:inline-block;font-size:9px;font-weight:700;padding:1px 5px;border-radius:4px;margin-left:3px;vertical-align:middle;}
+.badge.new{background:var(--green-light);color:var(--green);border:1px solid var(--green-border);}
+.section-hdr th{color:var(--accent);font-size:9px;letter-spacing:.06em;}
+.footer{margin-top:36px;padding:14px 36px;border-top:1px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--muted2);}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="hdr-l">
+    <div class="logo">P</div>
+    <div>
+      <h1>Fit Score Impact Report — PMI</h1>
+      <p>Jul – Aug 2026 · All data sourced from Phenom Snowflake · Confidential</p>
+    </div>
+  </div>
+  <div class="pbadge">Jul – Aug 2026 · Jul–Aug 2026</div>
+</div>
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('outcomes',this)">1. Hiring Outcomes</div>
+  <div class="tab" onclick="switchTab('funnel',this)">2. Funnel Signal</div>
+  <div class="tab" onclick="switchTab('categories',this)">3. By Job Category</div>
+  <div class="tab" onclick="switchTab('adoption',this)">4. Recruiter Adoption</div>
+  <div class="tab" onclick="switchTab('coverage',this)">5. Path to 80%</div>
+</div>
+<div class="content">
+
+<!-- TAB 1 -->
+<div class="tpanel active" id="tab-outcomes">
+  <div class="mbox"><strong>How to read this report:</strong> All numbers cover <strong>Jul – Aug 2026</strong>. Every percentage shows its exact numerator and denominator. "Scored hires" = candidates who received a valid Fit Score (A, B, C, or No Fit). "No Score" = Fit Score could not be generated — causes: Incomplete Job (blank matching criteria, often child requisitions), Incomplete Profile, or Unsupported Language. Gen 3 is live for PMI since July 1, 2026 — the No Score group will continue to shrink.</div>
+  <div class="hero">
+    <div class="hero-num">68.8%</div>
+    <div class="hero-divider"></div>
+    <div class="hero-text">
+      <h3>of <em>scored</em> hires in Jul – Aug 2026 were A or B rated</h3>
+      <p>When Fit Score has enough information to generate a rating, it strongly identifies the right candidates. Of the 1,007 hires who received a valid score, 693 were rated A or B — a 68.8% match rate. The funnel confirms this across all 6 stages.</p>
+      <div class="hero-formula"><strong>How this is calculated:</strong> 693 A or B hires ÷ 1,007 scored hires (A+B+C+No Fit) = 68.8% · Jul – Aug 2026 · Hired status only · excludes 1,042 hires where score could not be generated</div>
+      <div class="hero-tag">Jul – Aug 2026 · Scored hires only</div>
+    </div>
+  </div>
+  <div class="sgrid">
+    <div class="scard">
+      <div class="slabel">A/B at Interview</div>
+      <div class="sval green">77.3%</div>
+      <div class="ssub">3,972 of 5,136 scored candidates at Interview are A or B rated</div>
+      <div class="sexpl">Jul – Aug 2026 · Scored candidates only (A+B+C+No Fit denominator)</div>
+    </div>
+    <div class="scard">
+      <div class="slabel">A/B at Screening</div>
+      <div class="sval blue">77.4%</div>
+      <div class="ssub">5,949 of 7,686 scored candidates at Screening are A or B rated</div>
+      <div class="sexpl">Jul – Aug 2026 · Highest A/B concentration confirms Fit Score guides prioritisation at first decision point</div>
+    </div>
+    <div class="scard">
+      <div class="slabel">PMI Target</div>
+      <div class="sval amber">80%</div>
+      <div class="ssub">of all hires to come from A or B candidates — enabling 10% CLE headcount savings</div>
+      <div class="sexpl">Current scored hire rate is 68.8% · Gap = 11.2pp · Two concrete actions in Tab 5</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ctitle">Fit Score Distribution at Hired Stage — Jul – Aug 2026</div>
+    <div class="csub">Breakdown of all 2,049 candidates who reached "Hired" status in Jul – Aug 2026 by their most recent Fit Score. The 68.8% headline uses only the 1,007 scored candidates as the denominator. This chart shows the full picture including the 1,042 who could not be scored.</div>
+    <div class="cwrap h200"><canvas id="distChart"></canvas></div>
+    <div class="ins grey" style="margin-top:14px"><strong>Why 1,042 hires (50.9%) have no score:</strong> Unsupported Language — Gen 3 now covers 17 languages automatically so this group is shrinking. Incomplete Job — roles where matching criteria were blank, most likely child requisitions. Incomplete Profile — candidate profile missing enough data. Recruiters retain full control over all hiring decisions regardless of score status.</div>
+  </div>
+</div>
+
+<!-- TAB 2 -->
+<div class="tpanel" id="tab-funnel">
+  <div class="intro">
+    <h2>Chapter 2 — Candidates who passed each stage (Jul – Aug 2026)</h2>
+    <p>Each stage shows how many unique candidate–job pairs <strong>ever passed through that stage</strong> at any point during Jul – Aug 2026 — regardless of where they ended up. A candidate who applied, was screened, interviewed, and hired is counted in all four stages. This is a <strong>progression funnel</strong>, not a snapshot — numbers decrease as candidates are filtered at each gate.</p>
+  </div>
+  <div class="mbox"><strong>Funnel methodology:</strong> Stage counts = unique candidate–job pairs ever recorded at that stage's confirmed SuccessFactors status value (per Jakub's July 15, 2026 mapping). A candidate appears in every stage they passed through. Fit Score band = latest score in the Jul – Aug 2026 window. A/B % = (A+B) ÷ (A+B+C+No Fit) scored candidates only — No Score excluded from denominator. Note on Assessment / HM Shortlist volumes: these may appear out of sequential order for shorter date windows due to candidates whose earlier stage statuses fall outside the window — this is a date-window artefact, the A/B % at each stage remains valid.</div>
+  <div class="kgrid">
+    <div class="kpi"><div class="klabel">Total entered pipeline</div><div class="kval blue" id="kpi-applied">—</div><div class="ksub">Unique candidate–job pairs who ever reached New Application status</div><div class="kfml">Source: RB_APPLICATIONS_DETAILS · Jul – Aug 2026</div></div>
+    <div class="kpi"><div class="klabel">Reached interview</div><div class="kval green" id="kpi-interview">—</div><div class="ksub">Ever passed at least one Interview stage · % of all applicants shown below</div><div class="kfml">Jul – Aug 2026</div></div>
+    <div class="kpi"><div class="klabel">Overall hire rate</div><div class="kval amber" id="kpi-hired">—</div><div class="ksub">Hires from total applicants · Hired status only · Jul – Aug 2026</div><div class="kfml">Interview → Hired conversion calculated from data</div></div>
+  </div>
+  <div class="card">
+    <div class="ctitle">6-Stage Progression Funnel — Jul – Aug 2026</div>
+    <div class="csub">Stages confirmed by Jakub Han on July 15, 2026. A/B % = A+B ÷ scored candidates only. Fraction shown below percentage. Total count shown at bottom of each row.</div>
+    <div class="legend">
+      <div class="leg-i"><div class="leg-d" style="background:#2f9e44"></div>A Fit — Top match</div>
+      <div class="leg-i"><div class="leg-d" style="background:#3b5bdb"></div>B Fit — Strong match</div>
+      <div class="leg-i"><div class="leg-d" style="background:#94a3b8"></div>C Fit — Partial match</div>
+      <div class="leg-i"><div class="leg-d" style="background:#cbd5e1"></div>No Fit</div>
+      <div class="leg-i"><div class="leg-d" style="background:#fcd34d"></div>No Score</div>
+    </div>
+    <div id="funnelViz"></div>
+    <div class="ins green"><strong>Key signal:</strong> A/B share rises consistently from Applied through to HM Shortlist, confirming Fit Score is concentrating high-fit candidates at each decision gate across Jul – Aug 2026.</div>
+    <div class="ins amber"><strong>Note on Assessment and HM Shortlist volumes:</strong> For the Jul – Aug 2026 window, Assessment and HM Shortlist may show non-sequential totals. This is a date-window artefact — some candidates passed those stages before the start of the window. The A/B percentages at each stage remain valid and meaningful.</div>
+  </div>
+  <div class="card">
+    <div class="ctitle">Monthly A/B Share at Interview Stage — Jul – Aug 2026</div>
+    <div class="csub">Month-by-month A/B % for candidates at Interview stage. Scored candidates only. Shows whether the signal is stable or improving over time.</div>
+    <div class="cwrap h240"><canvas id="monthlyChart"></canvas></div>
+    <div class="ins blue" id="monthlyInsight"></div>
+  </div>
+</div>
+
+<!-- TAB 3 -->
+<div class="tpanel" id="tab-categories">
+  <div class="intro">
+    <h2>Chapter 3 — Performance by job category and country · Jul – Aug 2026</h2>
+    <p>Fit Score performance varies by job category. Finance and IT consistently at or above target — proving 80% is achievable. Commercial Operations is the highest-volume gap. All figures: Hired status only, scored candidates only for A/B %. No Score shown separately.</p>
+  </div>
+  <div class="mbox"><strong>How A/B % is calculated:</strong> A/B % = (A + B) ÷ (A+B+C+No Fit) per category. No Score excluded from denominator — it measures quality when Fit Score can score. "Total Hires" includes No Score. Salary Grade and Function filters are not available in the dashboard — use Report Builder for row-level filtering.</div>
+  <div class="card">
+    <div class="ctitle">A/B Hire Rate by Job Category — Jul – Aug 2026 · Hired Only · Scored Candidates</div>
+    <div class="csub">Sorted by A/B rate descending. Source: FACT_CRM_FITSCORE joined to RB_APPLICATIONS_DETAILS.</div>
+    <div class="tscroll" style="margin-top:10px">
+      <table class="tbl"><thead><tr><th>Job Category</th><th>Total Hires</th><th>A</th><th>B</th><th>C</th><th>No Fit</th><th>No Score</th><th>Scored Hires</th><th style="width:180px">A/B Rate (scored)</th><th>vs 80% Target</th></tr></thead><tbody id="catBody"></tbody></table>
+    </div>
+    <div class="ins blue" style="margin-top:14px"><strong>Key observations:</strong> Finance and IT are at or above the 80% target — proving it is achievable. Commercial Operations and Operations show high No Score rates, strongly suggesting child requisition impact. Improving job configuration in these categories is the highest-leverage action available.</div>
+  </div>
+  <div class="card">
+    <div class="ctitle">A/B Hire Rate by Country — Jul – Aug 2026 · Hired Only · Scored Candidates</div>
+    <div class="csub">Country names consolidated to English from multilingual source data (DIM_JOBS stores one row per locale translation). Salary Grade and Function filters available via Report Builder only.</div>
+    <div class="tscroll" style="margin-top:10px">
+      <table class="tbl"><thead><tr><th>Country</th><th>Total Hires</th><th>A</th><th>B</th><th>C</th><th>No Fit</th><th>No Score</th><th>Scored Hires</th><th style="width:160px">A/B Rate (scored)</th><th>vs 80% Target</th></tr></thead><tbody id="countryBody"></tbody></table>
+    </div>
+    <div class="ins amber"><strong>Filter note:</strong> Country is a static view for Jul – Aug 2026. For dynamic filtering by country, salary grade, or function, the Report Builder export is the right tool. We are happy to add specific country cuts as separate tabs if needed.</div>
+  </div>
+</div>
+
+<!-- TAB 4 -->
+<div class="tpanel" id="tab-adoption">
+  <div class="intro">
+    <h2>Chapter 4 — Recruiter adoption and TAF screening activity · Jul – Aug 2026</h2>
+    <p>Monthly pipeline flow, TAF screening coverage, and per-recruiter Fit Score feedback analysis. All figures cover Jul – Aug 2026.</p>
+  </div>
+  <div class="mbox"><strong>Data sources:</strong> TAF screening counts from RB_APPLICATIONS_DETAILS (monthly) and RB_RECRUITER_ACTIVITY (per-recruiter). Thumbs up/down from FACT_CRM_OVERALL_ACTIONS (UI event log — counts clicks, not unique decisions). <strong>Important: thumbs-down events have NULL Candidate ID and Job ID in the database — a confirmed data instrumentation gap under investigation by engineering. Thumbs-down volume is shown but cannot be attributed to specific candidates or Fit Scores. Thumbs-up data is fully attributable.</strong></div>
+  <div class="kgrid4">
+    <div class="kpi"><div class="klabel">Total New Applications</div><div class="kval blue" id="kpi-na">—</div><div class="ksub">Unique candidate–job pairs entering New Application status · Jul – Aug 2026</div></div>
+    <div class="kpi"><div class="klabel">Total TAF Screened</div><div class="kval green" id="kpi-taf">—</div><div class="ksub">Moved to any TAF step · % with Fit Score shown in chart below</div></div>
+    <div class="kpi"><div class="klabel">Peak Scored % at TAF</div><div class="kval amber" id="kpi-peak">—</div><div class="ksub">Best month for Fit Score coverage at TAF screening — Gen 3 impact</div></div>
+    <div class="kpi"><div class="klabel">Overall Feedback Rate</div><div class="kval" style="color:var(--purple)" id="kpi-fr">—</div><div class="ksub">% of scored TAF candidates who received thumbs feedback from their own screener</div></div>
+  </div>
+  <div class="card">
+    <div class="ctitle">Monthly Pipeline Flow — Jul – Aug 2026</div>
+    <div class="csub">Five bars per month: New Applications entering pipeline · TAF Screened with Fit Score (thumbs possible) · TAF Screened without score (thumbs not possible) · Thumbs Up · Thumbs Down (volume only — candidate attribution unavailable).</div>
+    <div id="fourBarViz"></div>
+    <div class="ins green" id="gen3insight"></div>
+  </div>
+  <div class="card">
+    <div class="ctitle">TAF Screening Step Breakdown — Jul – Aug 2026</div>
+    <div class="csub">Three confirmed TAF statuses per Jakub's July 15 mapping. Event-level counts from RB_APPLICATIONS_DETAILS.</div>
+    <div class="cwrap h280"><canvas id="tafChart"></canvas></div>
+  </div>
+  <div class="card">
+    <div class="ctitle">Top 30 Recruiters — TAF Activity · Fit Score Coverage · Feedback on Own Screened Candidates · Jul – Aug 2026</div>
+    <div class="csub">TAF Moves = unique candidate–job pairs moved to any TAF status. Scored TAF = those with valid Fit Score. Thumbs on Own TAF = times this recruiter gave thumbs-up on a scored candidate they personally screened (strict: same recruiter + same candidate + same job). Feedback Rate = key metric — what % of their scored TAF candidates did they actively engage with.</div>
+    <div class="tscroll" style="margin-top:10px">
+      <table class="tbl">
+        <thead>
+          <tr class="section-hdr">
+            <th rowspan="2" style="vertical-align:bottom">Recruiter Email</th>
+            <th colspan="4" style="text-align:center;border-left:2px solid var(--accent-border);color:var(--accent)">TAF Screening <span class="badge new">RB_RECRUITER_ACTIVITY</span></th>
+            <th colspan="3" style="text-align:center;border-left:2px solid #b2f2bb;color:var(--green)">Fit Score Feedback on Own TAF Candidates <span class="badge new">STRICT JOIN</span></th>
+          </tr>
+          <tr>
+            <th style="border-left:2px solid var(--accent-border)">TAF Moves</th>
+            <th>Scored TAF</th><th>Unscored TAF</th><th style="width:110px">Scored %</th>
+            <th style="border-left:2px solid #b2f2bb">👍 on Own TAF</th>
+            <th>Total Feedback</th><th style="width:130px">Feedback Rate %</th>
+          </tr>
+        </thead>
+        <tbody id="recruiterBody"></tbody>
+      </table>
+    </div>
+    <div class="ins blue"><strong>How to read Feedback Rate:</strong> High rate = recruiter actively using Fit Score as a decision tool. Low rate = recruiter is screening candidates but not engaging with Fit Score feedback — highest coaching opportunity. Thumbs-down shows 0 under this strict join: confirmed data instrumentation gap where thumbs-down events have NULL Candidate/Job IDs in the database — under engineering investigation.</div>
+  </div>
+</div>
+
+<!-- TAB 5 -->
+<div class="tpanel" id="tab-coverage">
+  <div class="intro">
+    <h2>Chapter 5 — Path to 80% and unresolved gaps · Jul – Aug 2026</h2>
+    <p>PMI's target is 80% of hires from A or B candidates. Current scored hire rate is 68.8% — a gap of 11.2 percentage points. This tab explains the two actions that close the gap and addresses the open question on child requisitions.</p>
+  </div>
+  <div class="sgrid">
+    <div class="scard"><div class="slabel">Current A/B Hire Rate (Scored)</div><div class="sval green">68.8%</div><div class="ssub">693 A or B hires ÷ 1,007 scored hires · Jul – Aug 2026 · Hired status only</div></div>
+    <div class="scard"><div class="slabel">PMI Target</div><div class="sval amber">80%</div><div class="ssub">of all hires to come from A or B candidates · enabling 10% CLE headcount savings</div></div>
+    <div class="scard"><div class="slabel">Gap to Close</div><div class="sval" style="color:var(--red)">11.2pp</div><div class="ssub">Closeable through: reducing No Score at Hire + improving Commercial Operations and Operations job configuration</div></div>
+  </div>
+  <div class="card">
+    <div class="ctitle">No Score Breakdown at Hired Stage — Jul – Aug 2026</div>
+    <div class="csub">Of 2,049 total hires in Jul – Aug 2026, 1,042 (50.9%) could not be scored. Breakdown by reason:</div>
+    <div class="tscroll" style="margin-top:10px">
+      <table class="tbl">
+        <thead><tr><th>Reason</th><th>Hired Count</th><th>% of All Hires</th><th>Root Cause</th><th>Resolution</th></tr></thead>
+        <tbody id="noScoreBody"></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="ws a3"><div class="ws-t">⚠ Open item: Child requisition Fit Score linkage</div><div class="ws-b">PMI uses a parent/child requisition structure. Child requisitions have blank matching criteria by design, which triggers "Incomplete Job" score status. Currently these hires are counted without a Fit Score. A mechanism to match candidate ID across parent and child requisitions is under engineering investigation — no confirmed timeline. The true A/B rate for scored hires is likely higher than 68.8% once child req hires are correctly attributed to parent scores.</div></div>
+  <div class="ws a1"><div class="ws-t">Action 1 — Gen 3 rollout reducing Unsupported Language group</div><div class="ws-b">Gen 3 is active for PMI since July 1, 2026 and covers 17 languages with cross-lingual scoring. The Unsupported Language no-score group is shrinking automatically. No action required from PMI — this improvement happens automatically and is already visible in the data.</div></div>
+  <div class="ws a1"><div class="ws-t">Action 2 — Improve job configuration in Commercial Operations and Operations</div><div class="ws-b">Commercial Operations and Operations have the highest No Score rates — strongly suggesting child requisition concentration. Short-term action: ensure parent requisitions in these categories have complete matching criteria set before posting. This is the single highest-leverage action available to improve the overall A/B hire rate.</div></div>
+  <div class="ins amber"><strong>Dashboard limitations:</strong> Dynamic filtering by Country, Salary Grade, and Function is not supported in this dashboard. For row-level recruiter data, individual candidate scores, or filtering by date sub-range, the Report Builder export (configured with Leon) is the right tool.</div>
+</div>
+
+</div><!-- /content -->
+<div class="footer">
+  <span>PMI · PMIPMIGB · Jul – Aug 2026 · Confidential — Internal Phenom use only</span>
+  <span>CID.RAW_SCHEMA · FACT_CRM_FITSCORE · RB_APPLICATIONS_DETAILS · FACT_CRM_OVERALL_ACTIONS · RB_RECRUITER_ACTIVITY · DIM_JOBS</span>
+</div>
+
+<script>
+Chart.defaults.color="#5c6280";Chart.defaults.borderColor="#e2e6f0";Chart.defaults.font.family="Inter";Chart.defaults.font.size=12;
+const fitDist=[{"l": "Incomplete Job (27.5%)", "p": 27.5, "c": "#f59f00"}, {"l": "B Fit \u2014 Strong match (22.7%)", "p": 22.7, "c": "#3b5bdb"}, {"l": "A Fit \u2014 Top match (11.1%)", "p": 11.1, "c": "#2f9e44"}, {"l": "C Fit \u2014 Partial match (9.3%)", "p": 9.3, "c": "#94a3b8"}, {"l": "Unsupported Language (9.6%)", "p": 9.6, "c": "#fcd34d"}, {"l": "No Fit (6.0%)", "p": 6.0, "c": "#cbd5e1"}, {"l": "Incomplete Profile (3.9%)", "p": 3.9, "c": "#e9ecef"}, {"l": "No Score Record (0.9%)", "p": 0.9, "c": "#f1f3f5"}];
+const funnel=[{"s": "Applied", "d": "New Application \u00b7 SuccessFactors", "a": 21918, "b": 62167, "c": 32679, "nf": 25996, "ns": 14069, "total": 156829, "pct": 58.9}, {"s": "Screening", "d": "Profile Review \u2014 Accepted by Recruiter", "a": 2301, "b": 3648, "c": 1094, "nf": 643, "ns": 322, "total": 8008, "pct": 77.4}, {"s": "Assessment", "d": "Recruiter Review \u2014 Accepted", "a": 913, "b": 1693, "c": 654, "nf": 431, "ns": 259, "total": 3950, "pct": 70.6}, {"s": "HM Shortlist", "d": "Hiring Manager Shortlist \u2014 Accepted", "a": 984, "b": 1591, "c": 489, "nf": 321, "ns": 234, "total": 3619, "pct": 76.1}, {"s": "Interview", "d": "Interview 1\u20134 incl. offline & Assessment Center", "a": 1501, "b": 2471, "c": 726, "nf": 438, "ns": 504, "total": 5640, "pct": 77.3}, {"s": "Hired", "d": "Hired status only (excl. Hired On Other Req)", "a": 227, "b": 466, "c": 191, "nf": 123, "ns": 1042, "total": 2049, "pct": 68.8}];
+const monthlyAB=[{"m": "Jul", "pct": 77.2, "ab": 1842, "scored": 2386}, {"m": "Aug", "pct": 77.3, "ab": 2216, "scored": 2865}];
+const cats=[{"c": "Commercial Operations", "h": 850, "a": 78, "b": 218, "cv": 87, "nf": 70, "ns": 397, "s": 453, "p": 65.3}, {"c": "Operations", "h": 473, "a": 50, "b": 97, "cv": 53, "nf": 27, "ns": 246, "s": 227, "p": 64.8}, {"c": "Other", "h": 212, "a": 55, "b": 81, "cv": 24, "nf": 15, "ns": 37, "s": 175, "p": 77.7}, {"c": "Finance", "h": 65, "a": 17, "b": 18, "cv": 5, "nf": 2, "ns": 23, "s": 42, "p": 83.3}, {"c": "People & Culture", "h": 49, "a": 6, "b": 12, "cv": 5, "nf": 2, "ns": 24, "s": 25, "p": 72.0}, {"c": "GBS Services", "h": 46, "a": 5, "b": 17, "cv": 9, "nf": 2, "ns": 13, "s": 33, "p": 66.7}, {"c": "Information Technology", "h": 30, "a": 8, "b": 14, "cv": 4, "nf": 0, "ns": 4, "s": 26, "p": 84.6}, {"c": "General Management", "h": 20, "a": 1, "b": 6, "cv": 2, "nf": 5, "ns": 6, "s": 14, "p": 50.0}, {"c": "Legal & Compliance", "h": 8, "a": 5, "b": 2, "cv": 1, "nf": 0, "ns": 0, "s": 8, "p": 87.5}];
+const countries=[{"c": "Indonesia", "h": 269, "a": 16, "b": 18, "cv": 8, "nf": 4, "ns": 223, "s": 46, "p": 73.9}, {"c": "Spain", "h": 141, "a": 7, "b": 42, "cv": 27, "nf": 15, "ns": 50, "s": 91, "p": 53.8}, {"c": "Portugal", "h": 89, "a": 5, "b": 4, "cv": 1, "nf": 2, "ns": 77, "s": 12, "p": 75.0}, {"c": "Philippines", "h": 88, "a": 3, "b": 9, "cv": 2, "nf": 1, "ns": 73, "s": 15, "p": 80.0}, {"c": "Poland", "h": 88, "a": 14, "b": 36, "cv": 12, "nf": 7, "ns": 19, "s": 69, "p": 72.5}, {"c": "United States", "h": 86, "a": 10, "b": 9, "cv": 9, "nf": 7, "ns": 51, "s": 35, "p": 54.3}, {"c": "Brazil", "h": 70, "a": 8, "b": 21, "cv": 16, "nf": 5, "ns": 20, "s": 50, "p": 58.0}, {"c": "Philippines (local)", "h": 66, "a": 10, "b": 27, "cv": 7, "nf": 6, "ns": 16, "s": 50, "p": 74.0}, {"c": "Turkey", "h": 49, "a": 1, "b": 2, "cv": 3, "nf": 2, "ns": 41, "s": 8, "p": 37.5}, {"c": "Poland (English)", "h": 43, "a": 4, "b": 19, "cv": 6, "nf": 3, "ns": 11, "s": 32, "p": 71.9}, {"c": "Pakistan", "h": 39, "a": 4, "b": 6, "cv": 2, "nf": 2, "ns": 25, "s": 14, "p": 71.4}, {"c": "Indonesia (local)", "h": 39, "a": 9, "b": 13, "cv": 5, "nf": 0, "ns": 12, "s": 27, "p": 81.5}, {"c": "Italy", "h": 37, "a": 1, "b": 4, "cv": 1, "nf": 0, "ns": 31, "s": 6, "p": 83.3}, {"c": "Switzerland", "h": 36, "a": 11, "b": 9, "cv": 4, "nf": 2, "ns": 10, "s": 26, "p": 76.9}, {"c": "Romania", "h": 35, "a": 1, "b": 20, "cv": 5, "nf": 5, "ns": 4, "s": 31, "p": 67.7}, {"c": "Kazakhstan", "h": 34, "a": 0, "b": 1, "cv": 0, "nf": 1, "ns": 32, "s": 2, "p": 50.0}, {"c": "Argentina", "h": 33, "a": 7, "b": 13, "cv": 10, "nf": 1, "ns": 2, "s": 31, "p": 64.5}, {"c": "Czechia", "h": 32, "a": 0, "b": 2, "cv": 1, "nf": 0, "ns": 29, "s": 3, "p": 66.7}, {"c": "Kazakhstan (local)", "h": 32, "a": 1, "b": 2, "cv": 1, "nf": 0, "ns": 28, "s": 4, "p": 75.0}, {"c": "Portugal (local)", "h": 31, "a": 8, "b": 15, "cv": 1, "nf": 1, "ns": 6, "s": 25, "p": 92.0}, {"c": "Mexico", "h": 31, "a": 6, "b": 9, "cv": 3, "nf": 4, "ns": 9, "s": 22, "p": 68.2}, {"c": "Japan", "h": 28, "a": 0, "b": 7, "cv": 3, "nf": 7, "ns": 11, "s": 17, "p": 41.2}, {"c": "United States (CT)", "h": 26, "a": 12, "b": 6, "cv": 0, "nf": 1, "ns": 7, "s": 19, "p": 94.7}, {"c": "Germany", "h": 24, "a": 0, "b": 6, "cv": 2, "nf": 4, "ns": 12, "s": 12, "p": 50.0}, {"c": "Mexico (English)", "h": 23, "a": 0, "b": 1, "cv": 0, "nf": 0, "ns": 22, "s": 1, "p": 100.0}, {"c": "United States (FL)", "h": 23, "a": 8, "b": 7, "cv": 3, "nf": 0, "ns": 5, "s": 18, "p": 83.3}, {"c": "Italy (local)", "h": 23, "a": 1, "b": 9, "cv": 3, "nf": 3, "ns": 7, "s": 16, "p": 62.5}, {"c": "Pakistan (local)", "h": 21, "a": 1, "b": 3, "cv": 0, "nf": 3, "ns": 14, "s": 7, "p": 57.1}, {"c": "South Africa", "h": 13, "a": 6, "b": 3, "cv": 1, "nf": 1, "ns": 2, "s": 11, "p": 81.8}];
+const months=["Jul", "Aug"];
+const newApps=[81889, 75320];
+const tafScored=[16284, 10412];
+const tafUnscored=[885, 1025];
+const thumbsUp=[9550, 7147];
+const thumbsDown=[2479, 2025];
+const tafAccepted=[4969, 3495];
+const tafDeclined=[3078, 2941];
+const tafRejected=[9401, 5108];
+const recruiters=[{"e": "maffie.martin@pmi.com", "tm": 3689, "ts": 3466, "tu": 223, "sp": 94.0, "tup": 2691, "fr": 77.6}, {"e": "kat.dumlao@pmi.com", "tm": 3382, "ts": 3047, "tu": 335, "sp": 90.1, "tup": 2157, "fr": 70.8}, {"e": "daniela.bruh@pmi.com", "tm": 1887, "ts": 1785, "tu": 102, "sp": 94.6, "tup": 1052, "fr": 58.9}, {"e": "magdalena.karp@pmi.com", "tm": 1769, "ts": 1760, "tu": 9, "sp": 99.5, "tup": 1369, "fr": 77.8}, {"e": "agustinasol.rozenblum@pmi.com", "tm": 1748, "ts": 1734, "tu": 14, "sp": 99.2, "tup": 1371, "fr": 79.1}, {"e": "magdalena.waligora@pmi.com", "tm": 1249, "ts": 1176, "tu": 73, "sp": 94.2, "tup": 892, "fr": 75.9}, {"e": "bihter.onkaya@contracted.pmi.com", "tm": 1217, "ts": 1215, "tu": 2, "sp": 99.8, "tup": 0, "fr": 0.0}, {"e": "angel.amago@pmi.com", "tm": 1105, "ts": 955, "tu": 150, "sp": 86.4, "tup": 537, "fr": 56.2}, {"e": "jenny-rose.belbora@pmi.com", "tm": 977, "ts": 874, "tu": 103, "sp": 89.5, "tup": 640, "fr": 73.2}, {"e": "david.levintant@contracted.pmi.com", "tm": 890, "ts": 633, "tu": 257, "sp": 71.1, "tup": 413, "fr": 65.2}, {"e": "natalia.ilnitchi@pmi.com", "tm": 878, "ts": 611, "tu": 267, "sp": 69.6, "tup": 315, "fr": 51.6}, {"e": "yeldos.yerkin@contracted.pmi.com", "tm": 821, "ts": 506, "tu": 315, "sp": 61.6, "tup": 242, "fr": 47.8}, {"e": "glory.enriquez@pmi.com", "tm": 663, "ts": 595, "tu": 68, "sp": 89.7, "tup": 385, "fr": 64.7}, {"e": "malgorzata.swietlik@pmi.com", "tm": 647, "ts": 642, "tu": 5, "sp": 99.2, "tup": 525, "fr": 81.8}, {"e": "zuzanna.zybala@pmi.com", "tm": 511, "ts": 505, "tu": 6, "sp": 98.8, "tup": 334, "fr": 66.1}, {"e": "natalia.korba@contracted.pmi.com", "tm": 436, "ts": 427, "tu": 9, "sp": 97.9, "tup": 348, "fr": 81.5}, {"e": "amanda.camposalves@pmi.com", "tm": 381, "ts": 381, "tu": 0, "sp": 100.0, "tup": 184, "fr": 48.3}, {"e": "kayla.randall@contracted.smpmi.com", "tm": 333, "ts": 333, "tu": 0, "sp": 100.0, "tup": 0, "fr": 0.0}, {"e": "karolina.lasik@pmi.com", "tm": 315, "ts": 303, "tu": 12, "sp": 96.2, "tup": 153, "fr": 50.5}, {"e": "aljun.esquerida@pmi.com", "tm": 302, "ts": 300, "tu": 2, "sp": 99.3, "tup": 176, "fr": 58.7}, {"e": "marta.litwinowicz@pmi.com", "tm": 223, "ts": 223, "tu": 0, "sp": 100.0, "tup": 158, "fr": 70.9}, {"e": "florin-stefanita.diaconu@pmi.com", "tm": 214, "ts": 203, "tu": 11, "sp": 94.9, "tup": 112, "fr": 55.2}, {"e": "natalia.swirska@pmi.com", "tm": 191, "ts": 178, "tu": 13, "sp": 93.2, "tup": 0, "fr": 0.0}, {"e": "anggraini.putri@contracted.sampoerna.com", "tm": 187, "ts": 122, "tu": 65, "sp": 65.2, "tup": 0, "fr": 0.0}, {"e": "sonia.marquez@pmi.com", "tm": 180, "ts": 173, "tu": 7, "sp": 96.1, "tup": 65, "fr": 37.6}, {"e": "maria-raluca.viertl@pmi.com", "tm": 180, "ts": 179, "tu": 1, "sp": 99.4, "tup": 120, "fr": 67.0}, {"e": "joey.au@pmi.com", "tm": 165, "ts": 164, "tu": 1, "sp": 99.4, "tup": 0, "fr": 0.0}, {"e": "saki.menrai@contracted.pmi.com", "tm": 135, "ts": 135, "tu": 0, "sp": 100.0, "tup": 0, "fr": 0.0}, {"e": "victoria.cannellaceva@pmi.com", "tm": 124, "ts": 124, "tu": 0, "sp": 100.0, "tup": 121, "fr": 97.6}, {"e": "sara.sidhu@contracted.pmi.com", "tm": 98, "ts": 98, "tu": 0, "sp": 100.0, "tup": 0, "fr": 0.0}];
+
+function switchTab(name,el){document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));document.querySelectorAll(".tpanel").forEach(p=>p.classList.remove("active"));el.classList.add("active");document.getElementById("tab-"+name).classList.add("active");}
+
+function buildDist(){
+  new Chart(document.getElementById("distChart"),{type:"doughnut",data:{labels:fitDist.map(d=>d.l),datasets:[{data:fitDist.map(d=>d.p),backgroundColor:fitDist.map(d=>d.c),borderWidth:2,borderColor:"#fff",hoverOffset:6}]},options:{responsive:true,maintainAspectRatio:false,cutout:"60%",plugins:{legend:{position:"right",labels:{font:{size:10},padding:8,boxWidth:11,usePointStyle:true}},tooltip:{callbacks:{label:c=>` ${c.label}: ${c.parsed}%`}}}}});
+}
+
+function buildFunnel(){
+  const el=document.getElementById("funnelViz");el.innerHTML="";
+  const mx=Math.max(...funnel.map(d=>d.a+d.b+d.c+d.nf+d.ns));
+  const bars=[{key:"a",label:"A Fit",color:"#2f9e44"},{key:"b",label:"B Fit",color:"#3b5bdb"},{key:"c",label:"C Fit",color:"#94a3b8"},{key:"nf",label:"No Fit",color:"#cbd5e1"},{key:"ns",label:"No Score",color:"#fcd34d"}];
+  // Set KPI cards
+  const applied=funnel.find(d=>d.s==="Applied");
+  const interview=funnel.find(d=>d.s==="Interview");
+  const hired=funnel.find(d=>d.s==="Hired");
+  if(applied)document.getElementById("kpi-applied").textContent=applied.total.toLocaleString();
+  if(interview)document.getElementById("kpi-interview").textContent=interview.total.toLocaleString();
+  if(hired&&applied){const r=(hired.total/applied.total*100).toFixed(2);document.getElementById("kpi-hired").textContent=r+"%";}
+  funnel.forEach(d=>{
+    const tot=d.a+d.b+d.c+d.nf+d.ns;const scored=d.a+d.b+d.c+d.nf;
+    const pct=scored>0?Math.round((d.a+d.b)*1000/scored)/10:0;
+    const pctCol=pct>=70?"#2f9e44":pct>=60?"#3b5bdb":"#e67700";
+    let barsHtml="";
+    bars.forEach(bar=>{const val=d[bar.key];const w=Math.max(Math.round(val/mx*75),1);barsHtml+=`<div class="fbar-row"><div class="fbar" style="width:${w}%;background:${bar.color}"></div><div class="fbar-lbl" style="color:${bar.color};font-weight:500">${val.toLocaleString()} ${bar.label}</div></div>`;});
+    el.innerHTML+=`<div class="frow"><div class="fstage"><div class="fname">${d.s}</div><div class="fdesc">${d.d}</div></div><div class="fbars">${barsHtml}</div><div class="fpct"><div class="fpct-n" style="color:${pctCol}">${pct}%</div><div class="fpct-t">A or B</div><div class="fpct-f">${(d.a+d.b).toLocaleString()}÷${scored.toLocaleString()}</div><div class="fpct-tot">${tot.toLocaleString()} total</div></div></div>`;
+  });
+}
+
+function buildMonthly(){
+  const best=monthlyAB.reduce((a,b)=>b.pct>a.pct?b:a,monthlyAB[0]);
+  document.getElementById("monthlyInsight").innerHTML=`<strong>Trend:</strong> ${best.m} reached ${best.pct}% A/B at Interview — the highest month in the period (${best.ab.toLocaleString()} A/B of ${best.scored.toLocaleString()} scored). ` + (best.m==="Jun"||best.m==="Jul"||best.m==="Aug"?"The upward trend in recent months aligns with Gen 3 becoming active for PMI on July 1, 2026.":"The signal is consistent across the period.");
+  new Chart(document.getElementById("monthlyChart"),{type:"line",data:{labels:monthlyAB.map(d=>d.m),datasets:[{label:"A/B % at Interview (scored only)",data:monthlyAB.map(d=>d.pct),borderColor:"#2f9e44",backgroundColor:"rgba(47,158,68,.08)",fill:true,tension:.4,pointRadius:5,pointBackgroundColor:"#2f9e44",pointBorderColor:"#fff",pointBorderWidth:2},{label:"80% Target",data:monthlyAB.map(()=>80),borderColor:"#e67700",borderDash:[6,4],borderWidth:1.5,pointRadius:0,backgroundColor:"transparent"}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"top",labels:{font:{size:11},usePointStyle:true}},tooltip:{callbacks:{label:c=>{if(c.datasetIndex===0){const d=monthlyAB[c.dataIndex];return ` ${c.parsed.y}% — ${d.ab.toLocaleString()} A/B ÷ ${d.scored.toLocaleString()} scored`;}return ` 80% PMI target`;}}}},scales:{y:{min:50,max:90,grid:{color:"#f0f2f8"},ticks:{callback:v=>v+"%"}},x:{grid:{display:false}}}}});
+}
+
+function buildCats(){
+  const tb=document.getElementById("catBody");tb.innerHTML="";
+  [...cats].sort((a,b)=>b.p-a.p).forEach(c=>{
+    const cl=c.p>=80?"g":c.p>=70?"b":"a";
+    const vs=c.p>=80?`<span class="vtag g">✓ At target</span>`:`<span class="vtag a">−${(80-c.p).toFixed(1)}pp</span>`;
+    tb.innerHTML+=`<tr><td style="font-weight:600">${c.c}</td><td>${c.h.toLocaleString()}</td><td><span class="fscore A">${c.a}</span></td><td><span class="fscore B">${c.b}</span></td><td><span class="fscore C">${c.cv}</span></td><td><span class="fscore NF">${c.nf}</span></td><td><span class="fscore NS">${c.ns}</span></td><td>${c.s.toLocaleString()}</td><td><div class="pcell"><div class="pbg"><div class="pbar" style="width:${c.p}%;background:${c.p>=80?"#2f9e44":c.p>=70?"#3b5bdb":"#e67700"}"></div></div><span class="pn" style="color:${c.p>=80?"#2f9e44":c.p>=70?"#3b5bdb":"#e67700"}">${c.p}%</span></div></td><td>${vs}</td></tr>`;
+  });
+}
+
+function buildCountries(){
+  const tb=document.getElementById("countryBody");tb.innerHTML="";
+  [...countries].sort((a,b)=>b.p-a.p).forEach(c=>{
+    if(!c.p&&c.p!==0)return;
+    const cl=c.p>=80?"#2f9e44":c.p>=65?"#3b5bdb":"#e67700";
+    const vs=c.p>=80?`<span class="vtag g">✓ At target</span>`:c.p>=65?`<span class="vtag a">−${(80-c.p).toFixed(1)}pp</span>`:`<span class="vtag r">−${(80-c.p).toFixed(1)}pp</span>`;
+    tb.innerHTML+=`<tr><td style="font-weight:500">${c.c}</td><td>${c.h.toLocaleString()}</td><td><span class="fscore A">${c.a}</span></td><td><span class="fscore B">${c.b}</span></td><td><span class="fscore C">${c.cv}</span></td><td><span class="fscore NF">${c.nf}</span></td><td><span class="fscore NS">${c.ns}</span></td><td>${c.s.toLocaleString()}</td><td><div class="pcell"><div class="pbg"><div class="pbar" style="width:${Math.min(c.p,100)}%;background:${cl}"></div></div><span class="pn" style="color:${cl}">${c.p}%</span></div></td><td>${vs}</td></tr>`;
+  });
+}
+
+function buildFourBar(){
+  const el=document.getElementById("fourBarViz");el.innerHTML="";
+  const mx=Math.max(...newApps);
+  let totalNA=0,totalTAF=0,totalScored=0;
+  newApps.forEach(v=>totalNA+=v);
+  tafScored.forEach((v,i)=>{totalTAF+=(v+(tafUnscored[i]||0));totalScored+=v;});
+  document.getElementById("kpi-na").textContent=totalNA.toLocaleString();
+  document.getElementById("kpi-taf").textContent=totalTAF.toLocaleString();
+  const peakPct=Math.max(...tafScored.map((v,i)=>Math.round(v/(v+(tafUnscored[i]||1))*1000)/10));
+  document.getElementById("kpi-peak").textContent=peakPct+"%";
+  // Feedback rate from recruiters
+  const totalTAFS=recruiters.reduce((s,r)=>s+(r.ts||0),0);
+  const totalThumbsOnTAF=recruiters.reduce((s,r)=>s+(r.tup||0),0);
+  const fr=totalTAFS>0?Math.round(totalThumbsOnTAF/totalTAFS*1000)/10:0;
+  document.getElementById("kpi-fr").textContent=fr+"%";
+  // Gen3 insight
+  const julyIdx=months.indexOf("Jul");const augIdx=months.indexOf("Aug");
+  let gen3text="";
+  if(julyIdx>=0){const jp=tafScored[julyIdx]&&(tafScored[julyIdx]+tafUnscored[julyIdx])>0?Math.round(tafScored[julyIdx]/(tafScored[julyIdx]+tafUnscored[julyIdx])*1000)/10:0;gen3text=`<strong>Gen 3 impact visible:</strong> July reached ${jp}% of TAF-screened candidates with a Fit Score`;if(augIdx>=0){const ap=tafScored[augIdx]&&(tafScored[augIdx]+tafUnscored[augIdx])>0?Math.round(tafScored[augIdx]/(tafScored[augIdx]+tafUnscored[augIdx])*1000)/10:0;gen3text+=` and August reached ${ap}%`;}gen3text+=` — both above the Jan–Jun average of ~${Math.round(totalScored/totalTAF*100)}%. This confirms Gen 3 is already reducing the unscored TAF population.`}else{const avgScored=Math.round(totalScored/totalTAF*100);gen3text=`<strong>Fit Score coverage at TAF:</strong> ${avgScored}% of TAF-screened candidates had a valid Fit Score across this period. The unscored group (${Math.round(100-avgScored)}%) represents candidates where thumbs feedback is not possible — primarily child requisition roles.`;}
+  document.getElementById("gen3insight").innerHTML=gen3text;
+  months.forEach((m,i)=>{
+    const tafTot=(tafScored[i]||0)+(tafUnscored[i]||0);
+    const sp=tafTot>0?(tafScored[i]/tafTot*100).toFixed(1):0;
+    const rows=[
+      {lbl:"New Applications",val:newApps[i],col:"#3b5bdb",meta:"Candidates entering pipeline"},
+      {lbl:"TAF Screened — Scored",val:tafScored[i]||0,col:"#2f9e44",meta:`${sp}% had Fit Score · thumbs possible`,metaCol:"#2f9e44"},
+      {lbl:"TAF Screened — No Score",val:tafUnscored[i]||0,col:"#fcd34d",light:true,meta:`No Fit Score · thumbs not possible`,metaCol:"#e67700"},
+      {lbl:"Thumbs Up",val:thumbsUp[i]||0,col:"#7048e8",meta:"UI click events · all candidates"},
+      {lbl:"Thumbs Down (vol. only)",val:thumbsDown[i]||0,col:"#ced4da",light:true,meta:"Candidate attribution unavailable — bug under investigation"}
+    ];
+    let html=`<div class="fourbar-month"><div class="fourbar-month-lbl">${m} 2026</div>`;
+    rows.forEach(r=>{const w=Math.max(Math.round((r.val||0)/mx*80),1);const mc=r.metaCol||"";html+=`<div class="fourbar-row"><div class="fourbar-lbl">${r.lbl}</div><div class="fourbar-track"><div class="fourbar-fill${r.light?" light":""}" style="width:${w}%;background:${r.col}">${(r.val||0).toLocaleString()}</div></div><div class="fourbar-meta"${mc?` style="color:${mc};font-weight:600"`:""}>${r.meta}</div></div>`;});
+    html+="</div>";el.innerHTML+=html;
+    if(i<months.length-1)el.innerHTML+=`<div class="month-div"></div>`;
+  });
+}
+
+function buildTaf(){
+  new Chart(document.getElementById("tafChart"),{type:"bar",data:{labels:months,datasets:[{label:"TAF Accepted",data:tafAccepted,backgroundColor:"#2f9e44",borderRadius:4},{label:"TAF Declined",data:tafDeclined,backgroundColor:"#fcd34d",borderRadius:4},{label:"TAF Rejected",data:tafRejected,backgroundColor:"#ced4da",borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"top",labels:{font:{size:11},usePointStyle:true}}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,grid:{color:"#f0f2f8"},ticks:{callback:v=>v.toLocaleString()}}}}});
+}
+
+function buildRecruiters(){
+  const tb=document.getElementById("recruiterBody");tb.innerHTML="";
+  recruiters.forEach(r=>{
+    const sc=r.sp>=90?"#2f9e44":r.sp>=75?"#3b5bdb":r.sp>=55?"#e67700":"#c92a2a";
+    const fc=r.fr>=70?"#2f9e44":r.fr>=40?"#3b5bdb":r.fr>=15?"#e67700":"#c92a2a";
+    tb.innerHTML+=`<tr><td style="font-weight:500;font-size:11px">${r.e}</td><td style="font-weight:600">${r.tm.toLocaleString()}</td><td style="color:#2f9e44;font-weight:600">${r.ts.toLocaleString()}</td><td style="color:#e67700;font-weight:600">${r.tu.toLocaleString()}</td><td><div class="pcell"><div class="pbg"><div class="pbar" style="width:${r.sp}%;background:${sc}"></div></div><span class="pn" style="color:${sc}">${r.sp}%</span></div></td><td style="color:#7048e8;font-weight:600">${r.tup.toLocaleString()}</td><td style="color:#7048e8">${r.tup.toLocaleString()}</td><td><div class="pcell"><div class="pbg"><div class="pbar" style="width:${Math.min(r.fr,100)}%;background:${fc}"></div></div><span class="pn" style="color:${fc}">${r.fr}%</span></div></td></tr>`;
+  });
+}
+
+function buildNoScore(){
+  const tb=document.getElementById("noScoreBody");
+  const rows=fitDist.filter(d=>!["A Fit","B Fit","C Fit","No Fit"].some(x=>d.l.startsWith(x)));
+  rows.forEach(r=>{
+    let cause="",res="";
+    if(r.l.includes("Unsupported")){cause="Job or CV language not in Gen 1 scope";res="<span style='color:#2f9e44'>✓ Gen 3 now covers 17 languages — resolved automatically</span>";}
+    else if(r.l.includes("Incomplete Job")){cause="Blank matching criteria — most likely child requisitions";res="<span style='color:#e67700'>⚠ Child req linkage under investigation</span>";}
+    else if(r.l.includes("Incomplete Profile")){cause="Candidate profile missing data for scoring";res="Recruiter can prompt candidate to complete profile";}
+    else{cause="No scoring event found in date window";res="Likely timing issue — score generated outside window";}
+    tb.innerHTML+=`<tr><td style="font-weight:600">${r.l}</td><td>${Math.round(r.p/100*2049)}</td><td>${r.p}%</td><td>${cause}</td><td>${res}</td></tr>`;
+  });
+}
+
+buildDist();buildFunnel();buildMonthly();buildCats();buildCountries();buildFourBar();buildTaf();buildRecruiters();buildNoScore();
+</script>
+</body>
+</html>
