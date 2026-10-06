@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BSWH Patient Services — Fit Score Configuration</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue: #2563EB;
+      --blue-hover: #1D4ED8;
+      --blue-light: #EFF6FF;
+      --green: #166534;
+      --green-btn: #14532D;
+      --green-hover: #0F3D22;
+      --grey-50: #F9FAFB;
+      --grey-100: #F3F4F6;
+      --grey-200: #E5E7EB;
+      --grey-300: #D1D5DB;
+      --grey-400: #9CA3AF;
+      --grey-500: #6B7280;
+      --grey-600: #4B5563;
+      --grey-700: #374151;
+      --grey-800: #1F2937;
+      --grey-900: #111827;
+      --purple: #7C3AED;
+      --purple-bg: #F3E8FF;
+      --red: #DC2626;
+      --amber: #D97706;
+      --radius: 8px;
+      --sidebar-w: 220px;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    html, body { height: 100%; font-family: var(--font); font-size: 14px; color: var(--grey-800); background: #F7F7F8; line-height: 1.45; -webkit-font-smoothing: antialiased; }
+    button, input, select, textarea { font-family: inherit; }
+    .app { display: flex; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar { width: var(--sidebar-w); flex-shrink: 0; background: var(--grey-100); border-right: 1px solid var(--grey-200); padding: 20px 0 32px; overflow-y: auto; position: sticky; top: 0; height: 100vh; }
+    .sidebar-brand { padding: 0 16px 20px; font-size: 13px; font-weight: 600; color: var(--grey-700); }
+    .sidebar-section { margin-bottom: 18px; }
+    .sidebar-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--grey-400); padding: 0 16px 6px; }
+    .nav-item { display: flex; align-items: center; gap: 8px; padding: 8px 16px; margin: 1px 8px; border-radius: 6px; font-size: 13px; color: var(--grey-700); text-decoration: none; cursor: default; transition: background 0.12s; }
+    .nav-item:hover { background: rgba(0,0,0,0.04); }
+    .nav-item.active { background: var(--blue); color: #fff; font-weight: 500; }
+    .nav-item svg { width: 16px; height: 16px; flex-shrink: 0; opacity: 0.7; }
+    .nav-item.active svg { opacity: 1; }
+
+    /* Main */
+    .main { flex: 1; min-width: 0; display: flex; flex-direction: column; background: #F7F7F8; }
+
+    /* Topbar */
+    .topbar { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 24px 40px 0; background: #fff; }
+    .topbar-left { flex: 1; min-width: 0; }
+    .breadcrumb { font-size: 12px; color: var(--grey-500); margin-bottom: 6px; }
+    .breadcrumb a { color: var(--grey-500); text-decoration: none; }
+    .breadcrumb span { color: var(--grey-700); }
+    .page-title { font-size: 22px; font-weight: 600; color: var(--grey-900); letter-spacing: -0.02em; margin-bottom: 16px; }
+    .topbar-actions { display: flex; gap: 10px; padding-top: 4px; flex-shrink: 0; }
+
+    /* Buttons */
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; padding: 0 16px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid transparent; transition: background 0.15s, border-color 0.15s, color 0.15s; white-space: nowrap; }
+    .btn:active { transform: scale(0.98); }
+    .btn-outline { background: #fff; border-color: var(--grey-300); color: var(--grey-700); }
+    .btn-outline:hover { background: var(--grey-50); border-color: var(--grey-400); }
+    .btn-publish { background: var(--green-btn); color: #fff; }
+    .btn-publish:hover { background: var(--green-hover); }
+    .btn-primary { background: var(--blue); color: #fff; }
+    .btn-primary:hover { background: var(--blue-hover); }
+    .btn-ghost { background: transparent; color: var(--grey-600); }
+    .btn-ghost:hover { background: var(--grey-100); color: var(--grey-800); }
+    .btn-sm { height: 32px; padding: 0 14px; font-size: 13px; }
+    .btn-link { background: none; border: none; color: var(--blue); font-size: 13px; font-weight: 500; cursor: pointer; padding: 4px 0; display: inline-flex; align-items: center; gap: 4px; }
+    .btn-link:hover { text-decoration: underline; }
+
+    /* Bucket bar */
+    .bucket-bar { display: flex; align-items: center; padding: 0 40px; background: #fff; border-bottom: 1px solid var(--grey-200); min-height: 48px; gap: 0; }
+    .bucket-bar-label { font-size: 12px; font-weight: 500; color: var(--grey-500); margin-right: 12px; flex-shrink: 0; }
+    .bucket-tabs { display: flex; gap: 4px; }
+    .bucket-btn { display: inline-flex; align-items: center; gap: 6px; padding: 5px 14px; border-radius: 5px; font-size: 13px; font-weight: 500; color: var(--grey-600); border: 1px solid var(--grey-200); background: #fff; cursor: pointer; transition: all 0.13s; white-space: nowrap; }
+    .bucket-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-light); }
+    .bucket-btn.active { border-color: var(--blue); background: var(--blue); color: #fff; }
+    .bucket-exp { font-size: 11px; opacity: 0.75; }
+
+    /* Tabs */
+    .tabs { display: flex; padding: 0 40px; background: #fff; border-bottom: 1px solid var(--grey-200); }
+    .tab { position: relative; padding: 12px 16px; font-size: 14px; font-weight: 500; color: var(--grey-500); background: none; border: none; cursor: pointer; transition: color 0.15s; }
+    .tab:hover { color: var(--grey-700); }
+    .tab.active { color: var(--blue); }
+    .tab.active::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--blue); border-radius: 2px 2px 0 0; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; width: 100%; }
+
+    /* Content */
+    .content { flex: 1; width: 100%; padding: 28px 40px 56px; }
+    .panel-intro { font-size: 14px; color: var(--grey-600); margin-bottom: 8px; line-height: 1.55; }
+    .panel-meta { font-size: 13px; color: var(--grey-500); margin-bottom: 20px; }
+    .panel-meta .warn { color: var(--amber); font-weight: 500; margin-left: 8px; }
+
+    /* Factor rows */
+    .factor-list { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+    .factor-row { width: 100%; border: 1px solid var(--grey-200); border-radius: 10px; background: #fff; overflow: hidden; }
+    .factor-header { display: flex; align-items: center; gap: 12px; padding: 16px 20px; cursor: pointer; user-select: none; background: #fff; transition: background 0.12s; }
+    .factor-header:hover { background: var(--grey-50); }
+    .factor-row.open .factor-header { border-bottom: 1px solid var(--grey-200); }
+    .chevron { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; color: var(--grey-400); flex-shrink: 0; transition: transform 0.2s; }
+    .factor-row.open .chevron, .rule-card.open .chevron { transform: rotate(90deg); color: var(--grey-600); }
+    .factor-name { flex: 1; font-size: 14px; font-weight: 500; color: var(--grey-800); }
+    .factor-row.inactive .factor-name { color: var(--grey-400); }
+
+    /* Weight control */
+    .weight-control { display: flex; align-items: center; border: 1px solid var(--grey-300); border-radius: 6px; background: #fff; overflow: hidden; height: 32px; }
+    .weight-control:focus-within { border-color: var(--blue); box-shadow: 0 0 0 2px rgba(37,99,235,0.15); }
+    .weight-input { width: 48px; height: 100%; border: none; text-align: center; font-size: 13px; font-weight: 500; color: var(--grey-800); background: transparent; outline: none; -moz-appearance: textfield; }
+    .weight-input::-webkit-outer-spin-button, .weight-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+    .weight-suffix { font-size: 12px; color: var(--grey-500); padding-right: 6px; user-select: none; }
+    .weight-arrows { display: flex; flex-direction: column; border-left: 1px solid var(--grey-200); height: 100%; }
+    .weight-arrow { flex: 1; width: 22px; border: none; background: var(--grey-50); color: var(--grey-500); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; line-height: 1; }
+    .weight-arrow:hover { background: var(--grey-200); color: var(--grey-700); }
+    .weight-arrow:first-child { border-bottom: 1px solid var(--grey-200); }
+
+    .factor-body { display: none; padding: 20px 24px 24px; background: #fff; }
+    .factor-row.open .factor-body { display: block; }
+    .factor-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--grey-100); }
+
+    /* Toggle */
+    .toggle { position: relative; width: 40px; height: 22px; flex-shrink: 0; cursor: pointer; }
+    .toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .toggle-track { position: absolute; inset: 0; background: var(--grey-300); border-radius: 11px; transition: background 0.2s; }
+    .toggle-thumb { position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; background: #fff; border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,0.2); transition: transform 0.2s; }
+    .toggle input:checked + .toggle-track { background: var(--blue); }
+    .toggle input:checked + .toggle-track .toggle-thumb { transform: translateX(18px); }
+
+    /* Context */
+    .context-label-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .context-label { font-size: 13px; font-weight: 500; color: var(--grey-700); }
+    .ai-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 500; color: var(--purple); background: var(--purple-bg); padding: 2px 8px; border-radius: 10px; }
+    .ai-badge svg { width: 12px; height: 12px; }
+    .context-textarea { width: 100%; min-height: 140px; padding: 12px 14px; border: 1px solid var(--grey-300); border-radius: 6px; font-size: 13px; line-height: 1.55; color: var(--grey-800); resize: vertical; background: #fff; transition: border-color 0.15s, box-shadow 0.15s; }
+    .context-textarea:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,0.12); }
+
+    /* Form sections */
+    .form-section { margin-bottom: 22px; }
+    .form-section:last-of-type { margin-bottom: 0; }
+    .form-section-title { font-size: 13px; font-weight: 600; color: var(--grey-800); margin-bottom: 10px; }
+    .radio-group { display: flex; flex-direction: column; gap: 10px; }
+    .radio-group.horizontal { flex-direction: row; flex-wrap: wrap; gap: 16px; }
+    .radio-option { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--grey-700); cursor: pointer; }
+    .radio-option input[type="radio"] { width: 16px; height: 16px; accent-color: var(--blue); cursor: pointer; flex-shrink: 0; }
+    .radius-inline { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .radius-input { width: 56px; height: 28px; border: 1px solid var(--grey-300); border-radius: 4px; text-align: center; font-size: 13px; padding: 0 6px; }
+    .unit-select { height: 28px; border: 1px solid var(--grey-300); border-radius: 4px; font-size: 13px; padding: 0 6px; background: #fff; color: var(--grey-700); }
+
+    /* Tags */
+    .tag-input-wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 8px 10px; border: 1px solid var(--grey-300); border-radius: 6px; background: #fff; min-height: 42px; cursor: text; transition: border-color 0.15s, box-shadow 0.15s; }
+    .tag-input-wrap:focus-within { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,0.12); }
+    .tag { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px 3px 10px; background: var(--grey-100); border: 1px solid var(--grey-200); border-radius: 4px; font-size: 12px; font-weight: 500; color: var(--grey-700); line-height: 1.4; }
+    .tag-remove { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border: none; background: transparent; color: var(--grey-400); cursor: pointer; border-radius: 2px; font-size: 14px; line-height: 1; padding: 0; }
+    .tag-remove:hover { color: var(--grey-700); background: var(--grey-200); }
+    .tag-text-input { flex: 1; min-width: 120px; border: none; outline: none; font-size: 13px; color: var(--grey-800); background: transparent; padding: 4px 2px; }
+    .tag-text-input::placeholder { color: var(--grey-400); }
+
+    /* Rules */
+    .rules-list { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+    .rule-card { width: 100%; border: 1px solid var(--grey-200); border-radius: 10px; overflow: hidden; background: #fff; }
+    .rule-header { display: flex; align-items: center; gap: 12px; padding: 16px 20px; cursor: pointer; user-select: none; background: #fff; }
+    .rule-header:hover { background: var(--grey-50); }
+    .rule-card.open .rule-header { border-bottom: 1px solid var(--grey-200); }
+    .rule-badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 4px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+    .rule-badge.no-fit { background: var(--grey-200); color: var(--grey-600); }
+    .rule-title { flex: 1; font-size: 14px; font-weight: 500; color: var(--grey-800); }
+    .rule-body { display: none; padding: 20px 24px 24px; }
+    .rule-card.open .rule-body { display: block; }
+    .rule-when { font-size: 13px; font-weight: 500; color: var(--grey-700); margin-bottom: 12px; }
+    .condition-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; padding: 10px 12px; background: var(--grey-50); border: 1px solid var(--grey-200); border-radius: 6px; }
+    .cond-select, .cond-input { height: 32px; border: 1px solid var(--grey-300); border-radius: 4px; font-size: 13px; padding: 0 8px; background: #fff; color: var(--grey-800); }
+    .cond-select { min-width: 160px; }
+    .cond-trash { margin-left: auto; width: 32px; height: 32px; border: none; background: transparent; color: var(--grey-400); cursor: pointer; border-radius: 4px; display: flex; align-items: center; justify-content: center; }
+    .cond-trash:hover { background: #FEE2E2; color: var(--red); }
+
+    /* Instructions */
+    .instr-card { width: 100%; background: #fff; border: 1px solid var(--grey-200); border-radius: 10px; padding: 28px 28px 8px; }
+    .instr-section { margin-bottom: 28px; }
+    .instr-title { font-size: 15px; font-weight: 600; color: var(--grey-900); margin-bottom: 4px; }
+    .instr-sub { font-size: 13px; color: var(--grey-500); margin-bottom: 12px; line-height: 1.5; }
+    .instr-textarea { width: 100%; min-height: 120px; padding: 14px 16px; border: 1px solid var(--grey-300); border-radius: 6px; font-size: 13px; line-height: 1.6; color: var(--grey-800); resize: vertical; }
+    .instr-textarea:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,0.12); }
+
+    /* Toast */
+    .toast { position: fixed; bottom: 28px; right: 28px; background: var(--grey-900); color: #fff; padding: 12px 18px; border-radius: 8px; font-size: 13px; font-weight: 500; box-shadow: 0 8px 24px rgba(0,0,0,0.18); display: flex; align-items: center; gap: 8px; z-index: 1000; opacity: 0; transform: translateY(12px); pointer-events: none; transition: opacity 0.25s, transform 0.25s; }
+    .toast.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    .toast svg { width: 16px; height: 16px; color: #4ADE80; flex-shrink: 0; }
+
+    @media (max-width: 900px) {
+      .sidebar { display: none; }
+      .content, .topbar, .tabs, .bucket-bar { padding-left: 20px; padding-right: 20px; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-brand">Settings</div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">General</div>
+      <a class="nav-item" href="#">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4.5h12M2 8h12M2 11.5h12"/></svg>
+        Feature flags
+      </a>
+      <a class="nav-item" href="#">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="5.5" r="2.5"/><path d="M3 13.5c0-2.5 2.2-4 5-4s5 1.5 5 4"/></svg>
+        My account
+      </a>
+      <a class="nav-item" href="#">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2.5" y="2.5" width="11" height="11" rx="1.5"/><path d="M5 6h6M5 8.5h4M5 11h5"/></svg>
+        Application fields
+      </a>
+      <a class="nav-item active" href="#">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.5l1.8 3.6 4 .6-2.9 2.8.7 4L8 10.7l-3.6 1.8.7-4L2.2 5.7l4-.6L8 1.5z"/></svg>
+        Fit Scores
+      </a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Interview scorecards</div>
+      <a class="nav-item" href="#">Scorecard templates</a>
+      <a class="nav-item" href="#">Competencies</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Scheduling</div>
+      <a class="nav-item" href="#">Interview types</a>
+      <a class="nav-item" href="#">Availability</a>
+      <a class="nav-item" href="#">Rooms &amp; locations</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Screening</div>
+      <a class="nav-item" href="#">Knockout questions</a>
+      <a class="nav-item" href="#">Assessments</a>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="breadcrumb"><a href="#">Fit Scores</a> &gt; <span>Patient Services — Personalized Fit Score</span></div>
+        <h1 class="page-title" id="page-title">Patient Services — B1 (2–5 yrs)</h1>
+      </div>
+      <div class="topbar-actions">
+        <button type="button" class="btn btn-outline" id="btn-preview">Preview</button>
+        <button type="button" class="btn btn-publish" id="btn-publish">Publish</button>
+      </div>
+    </header>
+
+    <div class="bucket-bar">
+      <span class="bucket-bar-label">Experience bucket</span>
+      <div class="bucket-tabs">
+        <button class="bucket-btn active" data-bucket="b1">B1 <span class="bucket-exp">2–5 yrs</span></button>
+        <button class="bucket-btn" data-bucket="b2">B2 <span class="bucket-exp">5–10 yrs</span></button>
+        <button class="bucket-btn" data-bucket="b3">B3 <span class="bucket-exp">10–15 yrs</span></button>
+        <button class="bucket-btn" data-bucket="b4">B4 <span class="bucket-exp">15+ yrs</span></button>
+      </div>
+    </div>
+
+    <nav class="tabs" role="tablist">
+      <button type="button" class="tab active" data-tab="criteria">Criteria &amp; Context</button>
+      <button type="button" class="tab" data-tab="rules">Rules</button>
+      <button type="button" class="tab" data-tab="instructions">Instructions</button>
+    </nav>
+
+    <div class="content">
+
+      
+      <div class="tab-panel active" id="panel-criteria">
+        <p class="panel-meta">
+          <span id="active-count">7 of 8 factors active</span> &nbsp;|&nbsp; Total weight: <span id="total-weight">100%</span>
+        </p>
+        <div class="factor-list">
+
+          
+          <div class="factor-row" data-factor="job-title">
+            <div class="factor-header">
+              <span class="chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 2l4 4-4 4"/></svg></span>
+              <span class="factor-name">Job Title Match</span>
+              <div class="weight-control" onclick="event.stopPropagation()">
+                <input type="number" class="weight-input" value="10" min="0" max="100" data-weight />
+                <span class="weight-suffix">%</span>
+                <div class="weight-arrows">
+                  <button type="button" class="weight-arrow" data-dir="up">▴</button>
+                  <button type="button" class="weight-arrow" data-dir="down">▾</button>
+                </div>
+              </div>
+              <label class="toggle" onclick="event.stopPropagation()">
+                <input type="checkbox" checked data-toggle />
+                <span class="toggle-track"><span class="toggle-thumb"></span></span>
+              </label>
+            </div>
+            <div class="factor-body">
+              <div class="context-label-row">
+                <span class="context-label">Scoring context</span>
+                <span class="ai-badge"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l1.2 3.5L12.5 6 9.2 7.5 8 11 6.8 7.5 3.5 6l3.3-1.5L8 1zm5 7l.7 2 2 .5-2 .5-.7 2-.7-2-2-.5 2-.5.7-2zM3 9l.5 1.5L5 11l-1.5.5L3 13l-.5-1.5L1 11l1.5-.5L3 9z"/></svg>AI Generated</span>
+              </div>
+              <textarea class="context-textarea" id="ctx-job-title"></textarea>
+              <div class="factor-actions">
+                <button type="button" class="btn btn-ghost btn-sm btn-cancel">Cancel</button>
+                <button type="button" class="btn btn-primary btn-sm btn-save">Save</button>
+              </div>
+            </div>
+          </div>
+
+          
+          <div class="factor-row open" data-factor="experience">
+            <div class="factor-header">
+              <span class="chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 2l4 4-4 4"/></svg></span>
+              <span class="factor-name">Experience Match</span>
+              <div class="weight-control" onclick="event.stopPropagation()">
+                <input type="number" class="weight-input" value="25" min="0" max="100" data-weight />
+                <span class="weight-suffix">%</span>
+                <div class="weight-arrows">
+                  <button type="button" class="weight-arrow" data-dir="up">▴</button>
+                  <button type="button" class="weight-arrow" data-dir="down">▾</button>
+                </div>
+              </div>
+              <label class="toggle" onclick="event.stopPropagation()">
+                <input type="checkbox" checked data-toggle />
+                <span class="toggle-track"><span class="toggle-thumb"></span></span>
+              </label>
+            </div>
+            <div class="factor-body">
+              <div class="context-label-row">
+                <span class="context-label">Scoring context</span>
+                <span class="ai-badge"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l1.2 3.5L12.5 6 9.2 7.5 8 11 6.8 7.5 3.5 6l3.3-1.5L8 1zm5 7l.7 2 2 .5-2 .5-.7 2-.7-2-2-.5 2-.5.7-2zM3 9l.5 1.5L5 11l-1.5.5L3 13l-.5-1.5L1 11l1.5-.5L3 9z"/></svg>AI Generated</span>
+              </div>
+              <textarea class="context-textarea" id="ctx-experience"></textarea>
+              <div class="factor-actions">
+                <button type="button" class="btn btn-ghost btn-sm btn-cancel">Cancel</button>
+                <button type="button" class="btn btn-primary btn-sm btn-save">Save</button>
+              </div>
+            </div>
+          </div>
+
+          
+          <div class="factor-row" data-factor="location">
+            <div class="factor-header">
+              <span class="chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 2l4 4-4 4"/></svg></span>
+              <span class="factor-name">Location Match</span>
+              <div class="weight-control" onclick="event.stopPropagation()">
+                <input type="number" class="weight-input" value="10" min="0" max="100" data-weight />
+                <span class="weight-suffix">%</span>
+                <div class="weight-arrows">
+                  <button type="button" class="weight-arrow" data-dir="up">▴</button>
+                  <button type="button" class="weight-arrow" data-dir="down">▾</button>
+                </div>
+              </div>
+              <label class="toggle" onclick="event.stopPropagation()">
+                <input type="checkbox" checked data-toggle />
+                <span class="toggle-track"><span class="toggle-thumb"></span></span>
+              </label>
+            </div>
+            <div class="factor-body">
+              <div class="form-section">
+                <div class="form-section-title">Job Location Distance</div>
+                <div class="radio-group">
+                  <label class="radio-option"><input type="radio" name="loc-distance" value="not-relevant" /> Not Relevant</label>
+                  <label class="radio-option">
+                    <input type="radio" name="loc-distance" value="radius" checked />
+                    <span class="radius-inline">Within <input type="number" class="radius-input" value="10" min="0" /> <select class="unit-select"><option>Miles</option><option>Km</option></select> → A score &nbsp;|&nbsp; 11–20 mi → B &nbsp;|&nbsp; 21+ mi → C</span>
+                  </label>
+                  <label class="radio-option"><input type="radio" name="loc-distance" value="country" /> Within Job Country</label>
+                </div>
+              </div>
+              <div class="form-section">
+                <div class="form-section-title">Work model</div>
+                <div class="radio-group horizontal">
+                  <label class="radio-option"><input type="radio" name="work-model" value="onsite" checked /> Onsite</label>
+                  <label class="radio-option"><input type="radio" name="work-model" value="hybrid" /> Hybrid</label>
+                  <label class="radio-option"><input type="radio" name="work-model" value="remote" /> Remote</label>
+                </div>
+              </div>
+              <div class="form-section">
+                <div class="form-section-title">Primary site</div>
+                <div class="tag-input-wrap" data-tags='["Dallas, TX", "Waco, TX", "Round Rock, TX", "Temple, TX", "Frisco, TX", "Plano, TX"]'>
+                  <input type="text" class="tag-text-input" placeholder="Add location..." />
+                </div>
+              </div>
+              <div class="factor-actions">
+                <button type="button" class="btn btn-ghost btn-sm btn-cancel">Cancel</button>
+                <button type="button" class="btn btn-primary btn-sm btn-save">Save</button>
+              </div>
+            </div>
+          </div>
+
+          
+          <div class="factor-row" data-factor="skill">
+            <div class="factor-header">
+              <span class="chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 2l4 4-4 4"/></svg></span>
+              <span class="factor-name">Skill Fit</span>
+              <div class="weight-control" onclick="event.stopPropagation()">
+                <input type="number" class="weight-input" value="30" min="0" max="100" data-weight />
+                <span class="weight-suffix">%</span>
+                <div class="weight-arrows">
+                  <button type="button" class="weight-arrow" data-dir="up">▴</button>
+                  <button type="button" class="weight-arrow" data-dir="down">▾</button>
+                </div>
+              </div>
+              <label class="toggle" onclick="event.stopPropagation()">
+                <input type="checkbox" checked data-toggle />
+                <span class="toggle-track"><span class="toggle-thumb"></span></span>
+              </label>
+            </div>
+            <div class="factor-body">
+              <div class="form-section">
+                <div class="form-section-title">Must-have skills</div>
+                <div class="tag-input-wrap" id="skills-must" data-tags="[]"><input type="text" class="tag-text-input" placeholder="Add skill..." /></div>
+              </div>
+              <div class="form-section">
+                <div class="form-section-title">Nice-to-have skills</div>
+                <div class="tag-input-wrap" id="skills-nice" data-tags="[]"><input type="text" class="tag-text-input" placeholder="Add skill..." /></div>
+              </div>
+              <div class="factor-actions">
+                <button type="button" class="btn btn-ghost btn-sm btn-cancel">Cancel</button>
+                <button type="button" class="btn btn-primary btn-sm btn-save">Save</button>
+              </div>
+            </div>
+          </div>
+
+          
+          <div class="factor-row" data-factor="education">
+            <div class="factor-header">
+              <span class="chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 2l4 4-4 4"/></svg></span>
+              <span class="factor-name">Education</span>
+              <div class="weight-control" onclick="event.stopPropagation()">
+                <input type="number" class="weight-input" value="5" min="0" max="100" data-weight />
+                <span class="weight-suffix">%</span>
+                <div class="weight-arrows">
+                  <button type="button" class="weight-arrow" data-dir="up">▴</button>
+                  <button type="button" class="weight-arrow" data-dir="down">▾</button>
+                </div>
+              </div>
+              <label class="toggle" onclick="event.stopPropagation()">
+                <input type="checkbox" checked data-toggle />
+                <span class="toggle-track"><span class="toggle-thumb"></span></span>
+              </label>
+            </div>
+            <div class="factor-body">
+              <div class="context-label-row">
+                <span class="context-label">Scoring context</span>
+                <span class="ai-badge"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l1.2 3.5L12.5 6 9.2 7.5 8 11 6.8 7.5 3.5 6l3.3-1.5L8 1zm5 7l.7 2 2 .5-2 .5-.7 2-.7-2-2-.5 2-.5.7-2zM3 9l.5 1.5L5 11l-1.5.5L3 13l-.5-1.5L1 11l1.5-.5L3 9z"/></svg>AI Generated</span>
+              </div>
+              <textarea class="context-textarea" id="ctx-education"></textarea>
+              <div class="factor-actions">
+                <button type="button" class="btn btn-ghost btn-sm btn-cancel">Cancel</button>
+                <button type="button" class="btn btn-primary btn-sm btn-save">Save</button>
+              </div>
+            </div>
+          </div>
+
+          
+          <div class="factor-row" data-factor="certs">
+            <div class="factor-header">
+              <span class="chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 2l4 4-4 4"/></svg></span>
+              <span class="factor-name">Licenses &amp; Certifications</span>
+              <div class="weight-control" onclick="event.stopPropagation()">
+                <input type="number" class="weight-input" value="5" min="0" max="100" data-weight />
+                <span class="weight-suffix">%</span>
+                <div class="weight-arrows">
+                  <button type="button" class="weight-arrow" data-dir="up">▴</button>
+                  <button type="button" class="weight-arrow" data-dir="down">▾</button>
+                </div>
+              </div>
+              <label class="toggle" onclick="event.stopPropagation()">
+                <input type="checkbox" checked data-toggle />
+                <span class="toggle-track"><span class="toggle-thumb"></span></span>
+              </label>
+            </div>
+            <div class="factor-body">
+              <div class="context-label-row">
+                <span class="context-label">Scoring context</span>
+                <span class="ai-badge"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l1.2 3.5L12.5 6 9.2 7.5 8 11 6.8 7.5 3.5 6l3.3-1.5L8 1zm5 7l.7 2 2 .5-2 .5-.7 2-.7-2-2-.5 2-.5.7-2zM3 9l.5 1.5L5 11l-1.5.5L3 13l-.5-1.5L1 11l1.5-.5L3 9z"/></svg>AI Generated</span>
+              </div>
+              <textarea class="context-textarea" id="ctx-certs"></textarea>
+              <div class="factor-actions">
+                <button type="button" class="btn btn-ghost btn-sm btn-cancel">Cancel</button>
+                <button type="button" class="btn btn-primary btn-sm btn-save">Save</button>
+              </div>
+            </div>
+          </div>
+
+          
+          <div class="factor-row inactive" data-factor="work-auth">
+            <div class="factor-header">
+              <span class="chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 2l4 4-4 4"/></svg></span>
+              <span class="factor-name">Work Authorization</span>
+              <div class="weight-control" onclick="event.stopPropagation()">
+                <input type="number" class="weight-input" value="0" min="0" max="100" data-weight />
+                <span class="weight-suffix">%</span>
+                <div class="weight-arrows">
+                  <button type="button" class="weight-arrow" data-dir="up">▴</button>
+                  <button type="button" class="weight-arrow" data-dir="down">▾</button>
+                </div>
+              </div>
+              <label class="toggle" onclick="event.stopPropagation()">
+                <input type="checkbox" data-toggle />
+                <span class="toggle-track"><span class="toggle-thumb"></span></span>
+              </label>
+            </div>
+            <div class="factor-body">
+              <div class="context-label-row">
+                <span class="context-label">Scoring context</span>
+                <span class="ai-badge"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l1.2 3.5L12.5 6 9.2 7.5 8 11 6.8 7.5 3.5 6l3.3-1.5L8 1zm5 7l.7 2 2 .5-2 .5-.7 2-.7-2-2-.5 2-.5.7-2zM3 9l.5 1.5L5 11l-1.5.5L3 13l-.5-1.5L1 11l1.5-.5L3 9z"/></svg>AI Generated</span>
+              </div>
+              <textarea class="context-textarea">No work authorization requirements are specified in the BSWH hiring context. Enable this factor if BSWH confirms authorization status should be a scored dimension.</textarea>
+              <div class="factor-actions">
+                <button type="button" class="btn btn-ghost btn-sm btn-cancel">Cancel</button>
+                <button type="button" class="btn btn-primary btn-sm btn-save">Save</button>
+              </div>
+            </div>
+          </div>
+
+          
+          <div class="factor-row" data-factor="industry">
+            <div class="factor-header">
+              <span class="chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 2l4 4-4 4"/></svg></span>
+              <span class="factor-name">Industry Expertise</span>
+              <div class="weight-control" onclick="event.stopPropagation()">
+                <input type="number" class="weight-input" value="15" min="0" max="100" data-weight />
+                <span class="weight-suffix">%</span>
+                <div class="weight-arrows">
+                  <button type="button" class="weight-arrow" data-dir="up">▴</button>
+                  <button type="button" class="weight-arrow" data-dir="down">▾</button>
+                </div>
+              </div>
+              <label class="toggle" onclick="event.stopPropagation()">
+                <input type="checkbox" checked data-toggle />
+                <span class="toggle-track"><span class="toggle-thumb"></span></span>
+              </label>
+            </div>
+            <div class="factor-body">
+              <div class="context-label-row">
+                <span class="context-label">Scoring context</span>
+                <span class="ai-badge"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l1.2 3.5L12.5 6 9.2 7.5 8 11 6.8 7.5 3.5 6l3.3-1.5L8 1zm5 7l.7 2 2 .5-2 .5-.7 2-.7-2-2-.5 2-.5.7-2zM3 9l.5 1.5L5 11l-1.5.5L3 13l-.5-1.5L1 11l1.5-.5L3 9z"/></svg>AI Generated</span>
+              </div>
+              <textarea class="context-textarea" id="ctx-industry"></textarea>
+              <div class="factor-actions">
+                <button type="button" class="btn btn-ghost btn-sm btn-cancel">Cancel</button>
+                <button type="button" class="btn btn-primary btn-sm btn-save">Save</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      
+      <div class="tab-panel" id="panel-rules">
+        <p class="panel-intro" style="margin-bottom:20px;">Rules override scores. Use them for requirements that must be met regardless of how strong a candidate looks otherwise.</p>
+        <div class="rules-list">
+          
+          <div class="rule-card" data-rule="cert-rule" id="cert-rule-card">
+            <div class="rule-header">
+              <span class="chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 2l4 4-4 4"/></svg></span>
+              <span class="rule-badge no-fit">No Fit</span>
+              <span class="rule-title" id="cert-rule-title">Certification requirement</span>
+              <label class="toggle" onclick="event.stopPropagation()">
+                <input type="checkbox" id="cert-rule-toggle" />
+                <span class="toggle-track"><span class="toggle-thumb"></span></span>
+              </label>
+            </div>
+            <div class="rule-body">
+              <div class="rule-when" id="cert-rule-when"></div>
+              <div class="condition-row" id="cert-condition-row">
+                <select class="cond-select"><option selected>Certification</option></select>
+                <select class="cond-select"><option selected>does not include</option></select>
+                <input type="text" class="cond-input" id="cert-rule-value" style="width:240px;" />
+                <button type="button" class="cond-trash"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 4h10M6 4V3h4v1M5.5 4v8.5a1 1 0 001 1h3a1 1 0 001-1V4"/></svg></button>
+              </div>
+              <div class="factor-actions">
+                <button type="button" class="btn btn-ghost btn-sm btn-cancel">Cancel</button>
+                <button type="button" class="btn btn-primary btn-sm btn-save">Save</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      
+      <div class="tab-panel" id="panel-instructions">
+        <div class="instr-card">
+          <div class="instr-section">
+            <h2 class="instr-title">Global scoring instructions</h2>
+            <p class="instr-sub">Applies across all factors and all experience buckets for the Patient Services group.</p>
+            <textarea class="instr-textarea">BSWH Patient Services — Customer Service family.
+
+This configuration grades every role in the Patient Services group (Patient Services Specialist levels). These are patient-facing front-line roles: registering and checking in patients, verifying insurance, answering questions and keeping accurate records. Seniority within the group is differentiated by years of relevant experience (the experience buckets), not by job title.
+
+Priorities across all buckets:
+1. Direct patient-facing or customer service experience, in healthcare or another regulated environment.
+2. Patient registration, insurance verification and accurate data entry.
+3. EMR/EHR familiarity (Epic preferred) and HIPAA-compliant handling of patient information.
+4. Clear verbal and written communication; bilingual (Spanish/English) is a positive signal.
+5. Employment at recognised health systems, clinics and medical practices is a positive signal.
+
+Clinical credentials (for example medical assistant or nursing assistant certification) and degrees are supporting signals. They should not on their own move a candidate up or down.
+
+Do not score up candidates with no customer-facing or patient-facing experience, or whose experience is limited to back-office roles with no interaction with patients, members or the public.</textarea>
+          </div>
+          <div class="instr-section">
+            <h2 class="instr-title">Bucket-specific context</h2>
+            <p class="instr-sub">Specific guidance for the selected experience bucket. Updates when you switch buckets.</p>
+            <textarea class="instr-textarea" id="instr-bucket"></textarea>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm3.2 5.2L7.3 10.1 4.8 7.6l.9-.9 1.6 1.6 3.1-3.1.8.9z"/></svg>
+  <span id="toast-msg">Configuration published successfully</span>
+</div>
+
+<script>
+(function () {
+
+  const BUCKETS = {
+  "b1": {
+    "title": "Patient Services — B1 (2–5 yrs)",
+    "ctx": {
+      "job-title": "Strong titles:\n- Patient Service Specialist (I / II)\n- Patient Referral Coordinator\n- Accounts Receivable Specialist (healthcare)\n- Certified Medical Assistant (front-office duties)\n\nAdjacent titles (score mid-band):\n- Lead Medical Assistant, healthcare office manager\n\nLow signal: titles with no healthcare or patient-facing element.",
+      "industry": "Required: healthcare.\nPreferred: hospital / health system, oncology, internal medicine, outpatient and infusion services.\n\nDomains that count as direct experience: patient care, medical administration, revenue cycle / patient access.\n\nExperience with no exposure to patient care, medical administration or patient access is low signal at this level.",
+      "experience": "2–5 years of continuous experience in healthcare roles.\nEvidence of progression or increased responsibility (for example Patient Service Specialist to Specialist II, or Medical Assistant to Lead) is a positive signal.\nEmployment at recognised systems (Texas Oncology, UT Southwestern, WellMed, Baylor Scott & White, Methodist Health System) is a positive signal.\n\nScore conservatively: experience with no direct patient interaction or administration duties.",
+      "education": "Required: High School Diploma or equivalent.\n\nPreferred:\n- Certificate in Medical Assisting from an accredited institution\n- Associate's degree or technical certificate in Business Administration\n- Healthcare certificate programs\n\nEducation is a tie-breaker — do not penalise candidates with strong experience but no post-secondary credential.",
+      "certs": "BLS or CPR Certification is strongly preferred for patient-facing roles at this level and is scored in this factor. A No Fit rule for it is available in the Rules tab if BSWH confirms it is a hiring requirement.\n\nPreferred (tie-breakers):\n- Certified Medical Assistant (CMA, CCMA, NCMA, NRCMA)\n- Driver's license (multi-site coverage)",
+      "skills": {
+        "must": [
+          "Epic EMR/EHR",
+          "Insurance verification",
+          "Medical terminology",
+          "HIPAA compliance",
+          "Patient care & documentation",
+          "Medical billing & coding (ICD, UB-04)",
+          "Cash handling",
+          "Communication"
+        ],
+        "nice": [
+          "Out-of-network billing",
+          "Staff training / mentoring",
+          "Process improvement",
+          "Phlebotomy / EKG / specimen collection",
+          "Supervising experience",
+          "Time management"
+        ]
+      },
+      "instr": "B1 (2–5 yrs): Early-career patient services professional. Epic or equivalent EHR proficiency, insurance verification and HIPAA-compliant documentation are expected. BLS or CPR certification is strongly preferred, and a certification rule is available if BSWH confirms it is mandatory. Clinical medical-assistant backgrounds are acceptable when they include front-office duties.",
+      "certRule": {
+        "active": false,
+        "title": "Certification requirement — BLS or CPR",
+        "when": "Set No Fit when",
+        "value": "BLS or CPR Certification"
+      }
+    }
+  },
+  "b2": {
+    "title": "Patient Services — B2 (5–10 yrs)",
+    "ctx": {
+      "job-title": "Strong titles:\n- Patient Service Representative\n- Customer Service Representative (healthcare or regulated environment)\n\nAdjacent titles (score mid-band):\n- Community Health Worker, Registered Dental Assistant, Patient Assistance Program (PAP) assistant, data entry clerk in a regulated setting\n\nLow signal: titles with no patient, client or customer interaction.",
+      "industry": "Required: healthcare, medical imaging, dentistry, or education with direct student- or patient-facing or compliance responsibilities.\nPreferred: community health, neurology and specialty clinics.\n\nDomains that count as direct experience: patient services; customer service in healthcare or other regulated environments. Patient assistance programs and HIPAA/FERPA-compliant data entry are positive.",
+      "experience": "5–10 years cumulative in patient-facing, customer service or administrative roles, often across several roles in healthcare, dental or regulated settings.\nHigh-volume, compliance-driven environments are a positive signal.\n\nScore conservatively: experience with no direct patient or customer interaction.",
+      "education": "Required: High School Diploma or equivalent.\n\nPreferred:\n- Bachelor's degree (any field) — signals ability to manage complex tasks and communicate effectively\n\nField of study is flexible. Do not penalise candidates with strong experience but no degree.",
+      "certs": "No certification is required at this level.\n\nPreferred (tie-breaker):\n- Community Health Worker (CHW) certification\n- BLS or CPR Certification",
+      "skills": {
+        "must": [
+          "Patient registration",
+          "Insurance verification",
+          "Data entry",
+          "Customer service",
+          "Multi-line phone systems",
+          "Communication (verbal & written)",
+          "Organisation & time management"
+        ],
+        "nice": [
+          "Bilingual (Spanish/English)",
+          "Medical terminology",
+          "Patient assistance program (PAP) support",
+          "Conflict resolution",
+          "PPE & safety protocols",
+          "Documentation & problem-solving"
+        ]
+      },
+      "instr": "B2 (5–10 yrs): Experienced patient services representative. Look for hands-on registration, insurance verification and accurate data entry in a healthcare or regulated setting. Bilingual (Spanish/English) is a positive signal.",
+      "certRule": {
+        "active": false,
+        "title": "Certification requirement — none required",
+        "when": "No certification required at this level",
+        "value": ""
+      }
+    }
+  },
+  "b3": {
+    "title": "Patient Services — B3 (10–15 yrs)",
+    "ctx": {
+      "job-title": "Strong titles:\n- Customer Service Representative\n- Medical Receptionist\n- Billing Service Representative\n- Verification Agent\n- Inbound / Outbound service agent\n\nAdjacent titles (score mid-band):\n- Purchasing & receiving coordinator, administration services roles with customer contact\n\nLow signal: titles with no customer or patient interaction.",
+      "industry": "Required: customer service.\nPreferred: healthcare, including healthcare administration, medical reception and pharmacy services.\n\nCustomer service backgrounds outside healthcare (for example security, legal or retail) are acceptable at this level; healthcare exposure is a positive signal.",
+      "experience": "10–15 years cumulative work experience across multiple employers and roles.\nSustained employment and continuity are positive signals.\nCustomer service tenure with healthcare or regulated-industry exposure is the strongest profile.\n\nScore conservatively: fragmented history or roles with no customer interaction.",
+      "education": "Required: High School Diploma or equivalent.\n\nPreferred:\n- Some college coursework or an associate's degree (completed or in progress)\n\nDo not exclude candidates without a degree.",
+      "certs": "No certification is required at this level.\n\nCertifications are treated as added value only when relevant to patient service, billing or verification duties.",
+      "skills": {
+        "must": [
+          "Customer service",
+          "Data entry"
+        ],
+        "nice": [
+          "Bilingual (Spanish/English)",
+          "Microsoft Office / Microsoft 365",
+          "Microsoft Teams",
+          "EMR systems",
+          "Detail orientation",
+          "Phone & interpersonal skills",
+          "Troubleshooting"
+        ]
+      },
+      "instr": "B3 (10–15 yrs): Seasoned customer service professional. Customer service and data entry are the core requirements; healthcare exposure and bilingual ability differentiate the strongest candidates.",
+      "certRule": {
+        "active": false,
+        "title": "Certification requirement — none required",
+        "when": "No certification required at this level",
+        "value": ""
+      }
+    }
+  },
+  "b4": {
+    "title": "Patient Services — B4 (15+ yrs)",
+    "ctx": {
+      "job-title": "Strong titles:\n- Patient Care Tech\n- Health Unit Coordinator\n\nAdjacent titles (score mid-band):\n- Certified Nursing Assistant, healthcare manager\n\nLow signal: titles with no patient-care or unit-coordination element.",
+      "industry": "Required: healthcare.\nPreferred: hospital and long-term care settings.\n\nDomains that count as direct experience: patient care. Health administration and medical billing are positive.\n\nLack of healthcare industry experience is low signal at this level.",
+      "experience": "15+ years cumulative, with the majority in healthcare and patient care roles.\nDepth across both clinical-support and administrative processes is a positive signal.\n\nScore conservatively: 15+ years total with little of it in healthcare.",
+      "education": "Required: High School Diploma or equivalent.\n\nPreferred:\n- Nursing Assistant certificate\n- Bachelor's degree (any field)",
+      "certs": "No certification is required at this level.\n\nPreferred (tie-breakers):\n- Nursing Assistant certificate (CNA)\n- Medical Billing Specialist certificate",
+      "skills": {
+        "must": [
+          "Customer service",
+          "Communication",
+          "Problem-solving",
+          "Interpersonal skills"
+        ],
+        "nice": [
+          "Management",
+          "Computer skills",
+          "Cash handling & deposits",
+          "Payroll"
+        ]
+      },
+      "instr": "B4 (15+ yrs): Senior patient-facing professional with extensive healthcare experience. Strong customer service, communication and problem-solving are the core requirements; hospital or long-term care experience is a differentiator.",
+      "certRule": {
+        "active": false,
+        "title": "Certification requirement — none required",
+        "when": "No certification required at this level",
+        "value": ""
+      }
+    }
+  }
+};
+
+  let currentBucket = 'b1';
+
+  function applyBucket(key) {
+    const b = BUCKETS[key];
+    if (!b) return;
+    const ctx = b.ctx;
+
+    document.getElementById('page-title').textContent = b.title;
+    document.querySelectorAll('.bucket-btn[data-bucket]').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.bucket === key);
+    });
+
+    const setTA = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
+    setTA('ctx-job-title', ctx['job-title']);
+    setTA('ctx-experience', ctx['experience']);
+    setTA('ctx-education', ctx['education']);
+    setTA('ctx-certs', ctx['certs']);
+    setTA('ctx-industry', ctx['industry']);
+    setTA('instr-bucket', ctx['instr']);
+
+    const setTags = (id, tags) => {
+      const wrap = document.getElementById(id);
+      if (!wrap) return;
+      wrap.dataset.tags = JSON.stringify(tags);
+      renderTags(wrap);
+    };
+    setTags('skills-must', ctx.skills.must);
+    setTags('skills-nice', ctx.skills.nice);
+
+    const cr = ctx.certRule;
+    document.getElementById('cert-rule-title').textContent = cr.title;
+    document.getElementById('cert-rule-when').textContent = cr.when;
+    document.getElementById('cert-rule-value').value = cr.value;
+    document.getElementById('cert-rule-value').disabled = !cr.active;
+    document.getElementById('cert-rule-toggle').checked = cr.active;
+  }
+
+  /* Tabs */
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+    });
+  });
+
+  /* Bucket buttons */
+  document.querySelectorAll('.bucket-btn[data-bucket]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentBucket = btn.dataset.bucket;
+      applyBucket(currentBucket);
+      updateWeightMeta();
+    });
+  });
+
+  /* Toast */
+  const toast = document.getElementById('toast');
+  const toastMsg = document.getElementById('toast-msg');
+  let toastTimer;
+  function showToast(msg) {
+    toastMsg.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2800);
+  }
+  document.getElementById('btn-publish').addEventListener('click', () => showToast('Configuration published — ' + BUCKETS[currentBucket].title));
+  document.getElementById('btn-preview').addEventListener('click', () => showToast('Preview opened'));
+
+  /* Weight meta */
+  function updateWeightMeta() {
+    const rows = document.querySelectorAll('.factor-row');
+    let active = 0, total = 0;
+    rows.forEach(row => {
+      const tog = row.querySelector('[data-toggle]');
+      const w = parseInt(row.querySelector('[data-weight]').value, 10) || 0;
+      if (tog && tog.checked) { active++; total += w; }
+    });
+    document.getElementById('active-count').textContent = active + ' of ' + rows.length + ' factors active';
+    document.getElementById('total-weight').textContent = total + '%';
+  }
+
+  /* Factor accordion */
+  document.querySelectorAll('.factor-row').forEach(row => {
+    const header = row.querySelector('.factor-header');
+    const textarea = row.querySelector('.context-textarea');
+    let saved = textarea ? textarea.value : null;
+    header.addEventListener('click', e => {
+      if (e.target.closest('.weight-control') || e.target.closest('.toggle')) return;
+      row.classList.toggle('open');
+    });
+    row.querySelector('[data-toggle]').addEventListener('change', function () {
+      row.classList.toggle('inactive', !this.checked);
+      row.querySelector('[data-weight]').value = this.checked ? row.querySelector('[data-weight]').value : 0;
+      updateWeightMeta();
+    });
+    const wi = row.querySelector('[data-weight]');
+    wi.addEventListener('input', updateWeightMeta);
+    wi.addEventListener('change', () => {
+      let v = parseInt(wi.value, 10);
+      if (isNaN(v) || v < 0) v = 0; if (v > 100) v = 100;
+      wi.value = v; updateWeightMeta();
+    });
+    row.querySelectorAll('.weight-arrow').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        let v = parseInt(wi.value, 10) || 0;
+        v = btn.dataset.dir === 'up' ? Math.min(100, v + 1) : Math.max(0, v - 1);
+        wi.value = v; updateWeightMeta();
+      });
+    });
+    const saveBtn = row.querySelector('.btn-save');
+    const cancelBtn = row.querySelector('.btn-cancel');
+    if (saveBtn) saveBtn.addEventListener('click', () => {
+      if (textarea) saved = textarea.value;
+      const orig = saveBtn.textContent; saveBtn.textContent = 'Saved ✓'; saveBtn.disabled = true;
+      setTimeout(() => { saveBtn.textContent = orig; saveBtn.disabled = false; }, 1400);
+    });
+    if (cancelBtn) cancelBtn.addEventListener('click', () => {
+      if (textarea && saved !== null) textarea.value = saved;
+      row.classList.remove('open');
+    });
+  });
+
+  /* Tag inputs */
+  function renderTags(wrap) {
+    const tags = JSON.parse(wrap.dataset.tags || '[]');
+    const input = wrap.querySelector('.tag-text-input');
+    wrap.querySelectorAll('.tag').forEach(t => t.remove());
+    tags.forEach((label, i) => {
+      const tag = document.createElement('span'); tag.className = 'tag';
+      tag.innerHTML = '<span class="tag-label"></span><button type="button" class="tag-remove">&times;</button>';
+      tag.querySelector('.tag-label').textContent = label;
+      tag.querySelector('.tag-remove').addEventListener('click', e => {
+        e.stopPropagation();
+        const next = JSON.parse(wrap.dataset.tags || '[]'); next.splice(i, 1);
+        wrap.dataset.tags = JSON.stringify(next); renderTags(wrap);
+      });
+      wrap.insertBefore(tag, input);
+    });
+  }
+  document.querySelectorAll('.tag-input-wrap').forEach(wrap => {
+    renderTags(wrap);
+    const input = wrap.querySelector('.tag-text-input');
+    wrap.addEventListener('click', () => input.focus());
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        e.preventDefault(); const val = input.value.trim(); if (!val) return;
+        const tags = JSON.parse(wrap.dataset.tags || '[]');
+        if (!tags.includes(val)) { tags.push(val); wrap.dataset.tags = JSON.stringify(tags); renderTags(wrap); }
+        input.value = '';
+      } else if (e.key === 'Backspace' && !input.value) {
+        const tags = JSON.parse(wrap.dataset.tags || '[]');
+        if (tags.length) { tags.pop(); wrap.dataset.tags = JSON.stringify(tags); renderTags(wrap); }
+      }
+    });
+  });
+
+  /* Rules accordion */
+  document.querySelectorAll('.rule-card').forEach(card => {
+    card.querySelector('.rule-header').addEventListener('click', e => {
+      if (e.target.closest('.toggle')) return;
+      card.classList.toggle('open');
+    });
+    const saveBtn = card.querySelector('.btn-save');
+    if (saveBtn) saveBtn.addEventListener('click', () => {
+      const orig = saveBtn.textContent; saveBtn.textContent = 'Saved ✓'; saveBtn.disabled = true;
+      setTimeout(() => { saveBtn.textContent = orig; saveBtn.disabled = false; }, 1400);
+    });
+    const cancelBtn = card.querySelector('.btn-cancel');
+    if (cancelBtn) cancelBtn.addEventListener('click', () => card.classList.remove('open'));
+    card.querySelectorAll('.cond-trash').forEach(btn => {
+      btn.addEventListener('click', () => { const row = btn.closest('.condition-row'); if (row) row.remove(); });
+    });
+  });
+
+  /* Init */
+  applyBucket('b1');
+  updateWeightMeta();
+
+})();
+</script>
+</body>
+</html>
