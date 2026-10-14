@@ -1,0 +1,668 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>PMI FitScore Dashboard Jul–Sep</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout concept: same five-tab report as the Jul–Aug version. Pale blue-grey ground, white cards,
+   one indigo brand accent, semantic band colors (A green, B blue, C slate, No Fit grey, No Score amber).
+   Light only by choice, to match the report already shared with PMI. */
+:root{
+  color-scheme: light;
+  --bg:#eef2f7; --surface:#ffffff; --ink:#0f1b2d; --ink2:#44536a; --muted:#76849a;
+  --line:#e0e6ee; --line2:#edf1f6; --brand:#3f4fd0;
+  --a:#2f9a5d; --b:#3b5bdb; --c:#7d8aa0; --nf:#b4bfce; --ns:#e0a21a;
+  --pre:#a99af0; --ij:#ee8a17; --ul:#f1c94e; --ip:#d5dce7; --none:#e8ecf2; --purple:#6b5bd6;
+  --warn-bg:#fff5d9; --warn-line:#efd68a; --warn-ink:#5b4606;
+  --good-bg:#e8f6ed; --good-line:#a9dcb9; --good-ink:#17653a;
+  --info-bg:#e9eefc; --info-line:#c3cff7; --info-ink:#27399a;
+  --risk-bg:#fdecec; --risk-line:#f0bcbc; --risk-ink:#8f2626;
+  --orange:#d9730d; --red:#c43a3a;
+  --font:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 var(--font);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.num{font-variant-numeric:tabular-nums}
+/* header */
+.top{background:var(--surface);border-bottom:1px solid var(--line)}
+.brandrow{display:flex;align-items:center;gap:12px;padding-block:16px 10px}
+.logo{width:34px;height:34px;border-radius:8px;background:var(--brand);color:#fff;font-weight:700;display:grid;place-items:center;flex:none}
+.brandrow h1{margin:0;font-size:15px;font-weight:700;line-height:1.25}
+.brandrow p{margin:2px 0 0;font-size:11px;color:var(--muted)}
+.tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{appearance:none;background:none;border:0;border-bottom:2px solid transparent;padding:12px 14px;font:500 12.5px var(--font);color:var(--ink2);cursor:pointer;white-space:nowrap}
+.tabs button:hover{color:var(--ink)}
+.tabs button[aria-selected="true"]{color:var(--brand);border-bottom-color:var(--brand);font-weight:600}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-radius:4px}
+main{padding-block:22px 36px}
+[hidden]{display:none!important}
+.panel{display:flex;flex-direction:column;gap:16px}
+/* building blocks */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px 20px;min-width:0}
+.card h2{margin:0 0 3px;font-size:13px;font-weight:700}
+.card .sub{margin:0 0 14px;font-size:11.5px;color:var(--ink2);max-width:80ch}
+.chapter{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--brand);border-radius:6px;padding:14px 18px}
+.chapter h2{margin:0 0 4px;font-size:13px;font-weight:700}
+.chapter p{margin:0;font-size:12px;color:var(--ink2);max-width:90ch}
+.note{border-radius:8px;padding:11px 14px;font-size:11.5px;line-height:1.55;border:1px solid}
+.note p{margin:0}
+.note p+p{margin-top:6px}
+.note.warn{background:var(--warn-bg);border-color:var(--warn-line);color:var(--warn-ink)}
+.note.good{background:var(--good-bg);border-color:var(--good-line);color:var(--good-ink)}
+.note.info{background:var(--info-bg);border-color:var(--info-line);color:var(--info-ink)}
+.note.risk{background:var(--risk-bg);border-color:var(--risk-line);color:var(--risk-ink)}
+.grid{display:grid;gap:14px}
+.g3{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.kpi .lab{font-size:10px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--muted)}
+.kpi .val{font-size:30px;font-weight:700;line-height:1.15;margin:6px 0 4px;font-variant-numeric:tabular-nums}
+.kpi .desc{font-size:11.5px;color:var(--ink2);margin:0}
+.kpi .foot{font-size:10.5px;color:var(--muted);font-style:italic;margin:10px 0 0;padding-top:8px;border-top:1px solid var(--line2)}
+.cg{color:var(--a)}.cb{color:var(--b)}.co{color:var(--orange)}.cp{color:var(--purple)}.cr{color:var(--red)}
+/* hero */
+.hero{background:var(--good-bg);border:1px solid var(--good-line);border-radius:12px;padding:24px 26px;display:grid;grid-template-columns:auto 1fr;gap:30px;align-items:center}
+.hero .big{font-size:76px;font-weight:800;letter-spacing:-.02em;color:var(--a);line-height:1;font-variant-numeric:tabular-nums}
+.hero h2{margin:0 0 6px;font-size:16px;font-weight:700}
+.hero p{margin:0 0 12px;font-size:12.5px;color:var(--ink2);max-width:62ch}
+.calc{background:rgba(47,154,93,.12);border:1px solid var(--good-line);border-radius:6px;padding:9px 12px;font-size:11.5px;color:var(--good-ink);display:flex;flex-direction:column;gap:3px}
+.pill{display:inline-block;margin-top:12px;border:1px solid var(--good-line);background:#f4fbf6;color:var(--good-ink);border-radius:999px;padding:3px 11px;font-size:10.5px;font-weight:600}
+@media (max-width:720px){.hero{grid-template-columns:1fr;gap:12px;padding:20px}.hero .big{font-size:60px}}
+/* donut */
+.donutrow{display:grid;grid-template-columns:minmax(220px,300px) 1fr;gap:28px;align-items:center;justify-items:center}
+.donutrow svg{width:100%;max-width:260px;height:auto}
+.legend{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px;width:100%;max-width:440px}
+.legend li{display:grid;grid-template-columns:12px 1fr auto auto;gap:10px;align-items:center;font-size:12px}
+.legend i{width:12px;height:12px;border-radius:3px;display:block}
+.legend .n{font-weight:600;font-variant-numeric:tabular-nums;text-align:right;min-width:48px}
+.legend .p{color:var(--muted);font-variant-numeric:tabular-nums;text-align:right;min-width:48px}
+@media (max-width:720px){.donutrow{grid-template-columns:1fr}}
+.explain{margin-top:16px;background:#f3f5fa;border:1px solid var(--line);border-radius:8px;padding:12px 14px;font-size:11.5px;color:var(--ink2);line-height:1.6}
+.explain b{color:var(--ink)}
+/* funnel */
+.legrow{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:11px;color:var(--ink2);margin-bottom:6px}
+.legrow span{display:inline-flex;align-items:center;gap:6px}
+.legrow i{width:10px;height:10px;border-radius:2px;display:inline-block}
+.fstage{display:grid;grid-template-columns:150px 1fr 130px;gap:16px;padding:16px 0;border-top:1px solid var(--line2);align-items:center}
+.fstage .nm{text-align:right}
+.fstage .nm b{display:block;font-size:12.5px}
+.fstage .nm span{display:block;font-size:10px;color:var(--muted);line-height:1.35;margin-top:2px}
+.bars{display:flex;flex-direction:column;gap:3px;min-width:0}
+.brow{display:flex;align-items:center;gap:7px;height:12px}
+.brow .bar{height:9px;border-radius:2px;flex:none;min-width:3px}
+.brow .lb{font-size:10px;white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:500}
+.fstage .pc{text-align:right}
+.fstage .pc strong{display:block;font-size:20px;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums}
+.fstage .pc span{display:block;font-size:10px;color:var(--muted);font-variant-numeric:tabular-nums}
+@media (max-width:760px){.fstage{grid-template-columns:1fr;gap:8px}.fstage .nm,.fstage .pc{text-align:left}.fstage .pc{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}}
+/* tables */
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
+.scroll.tall{max-height:560px;overflow-y:auto}
+table{width:100%;border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums}
+th{position:sticky;top:0;background:#f3f5fa;text-align:left;font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:9px 12px;white-space:nowrap;border-bottom:1px solid var(--line);z-index:1}
+td{padding:9px 12px;border-bottom:1px solid var(--line2);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.l{font-weight:600}
+.chip{display:inline-block;min-width:1.7em;text-align:center;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:600}
+.chip.a{background:#dcf1e4;color:#1d6b40}.chip.b{background:#e0e7fb;color:#2a40a8}.chip.c{background:#eaeef4;color:#44536a}.chip.n{background:#eef1f5;color:#6b7a90}.chip.s{background:#fdeec5;color:#8a5a00}
+.rate{display:flex;align-items:center;gap:10px;min-width:170px}
+.rate .tr{flex:1;height:6px;background:var(--line2);border-radius:3px;overflow:hidden}
+.rate .fl{display:block;height:100%;border-radius:3px}
+.rate b{min-width:44px;text-align:right}
+.tgt{display:inline-block;border-radius:5px;padding:2px 8px;font-size:10.5px;font-weight:600}
+.tgt.ok{background:#dcf1e4;color:#1d6b40}.tgt.m{background:#fdeec5;color:#8a5a00}.tgt.h{background:#fde0c8;color:#9a4a07}.tgt.x{background:#eef1f5;color:#76849a}
+.lown{font-size:9.5px;color:var(--muted);margin-left:6px;font-weight:500}
+.hint{font-size:11px;color:var(--muted);margin:10px 0 0}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden;margin-bottom:12px}
+.seg button{appearance:none;border:0;background:var(--surface);padding:6px 12px;font:500 11.5px var(--font);color:var(--ink2);cursor:pointer}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--info-bg);color:var(--info-ink);font-weight:600}
+/* pipeline flow */
+.mon{margin-top:14px}
+.mon h3{margin:0 0 8px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.frow{display:grid;grid-template-columns:160px 1fr 210px;gap:14px;align-items:center;padding:4px 0;font-size:11.5px}
+.frow .tk{height:20px;background:var(--line2);border-radius:4px;position:relative;overflow:hidden}
+.frow .fi{position:absolute;inset:0 auto 0 0;border-radius:4px;display:flex;align-items:center;padding-left:8px;color:#fff;font-size:11px;font-weight:600;white-space:nowrap;min-width:max-content}
+.frow .fi.out{color:var(--ink);padding-left:0;left:0;background:none!important}
+.frow .ann{font-size:10.5px;color:var(--muted);text-align:right}
+.frow .ann.g{color:var(--a);font-weight:600}.frow .ann.o{color:var(--orange);font-weight:600}
+@media (max-width:760px){.frow{grid-template-columns:1fr;gap:3px;padding:7px 0}.frow .ann{text-align:left}}
+/* actions */
+.item{border-radius:8px;border:1px solid var(--line);border-left:3px solid var(--a);background:var(--surface);padding:13px 16px}
+.item h3{margin:0 0 4px;font-size:12.5px;font-weight:700}
+.item p{margin:0;font-size:12px;color:var(--ink2);max-width:90ch}
+.item.risk{border-left-color:var(--red);background:var(--risk-bg);border-color:var(--risk-line)}
+.item.risk h3{color:var(--risk-ink)}
+.chart svg{width:100%;height:auto;display:block}
+.chart text{font-family:var(--font)}
+footer{padding-block:6px 30px;font-size:10.5px;color:var(--muted)}
+.sr{position:absolute;left:-9999px}
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brandrow">
+      <div class="logo" aria-hidden="true">P</div>
+      <div>
+        <h1>Fit Score Impact Report — PMI</h1>
+        <p>Jul – Sep 2026 · All data sourced from Phenom Snowflake · Confidential · Data as of Oct 14, 2026</p>
+      </div>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Report sections" id="tabs"></nav>
+  </div>
+</header>
+
+<main class="wrap" id="panels"></main>
+<div class="wrap"><footer>PMI · PMIPMIGB · Jul 1 – Sep 30, 2026 · Confidential</footer></div>
+
+<script>
+/* ---------- DATA (Jul 1 – Sep 30, 2026, REFNUM PMIPMIGB; pulled Oct 14, 2026) ---------- */
+const D = {
+  asOf: 'Oct 14, 2026',
+  // Hired population, latest score generated inside the window (Q1A / Q1B)
+  hires: { total: 3027, a: 352, b: 683, c: 274, nf: 170, ij: 988, ul: 178, ip: 78, pre: 283, none: 21 },
+  // Latest score on file for the 283 hires whose latest score pre-dates Jul 1 (Q1C)
+  pre: { a: 37, b: 94, c: 35, nf: 26, ij: 22, ul: 56, ip: 13 },
+  ulByMonth: { Jul: 97, Aug: 47, Sep: 34 },
+  // Funnel (Q2A)
+  funnel: [
+    { k:'Applied',      sub:'New Application · SuccessFactors',                total:233733, a:32931, b:89711, c:48900, nf:39201, ns:22990 },
+    { k:'Screening',    sub:'Profile Review — Accepted by Recruiter',          total:11456,  a:3385,  b:5029,  c:1593,  nf:974,   ns:475 },
+    { k:'Assessment',   sub:'Recruiter Review — Accepted',                     total:6896,   a:1613,  b:2838,  c:1251,  nf:786,   ns:408 },
+    { k:'HM Shortlist', sub:'Hiring Manager Shortlist — Accepted',             total:5689,   a:1540,  b:2400,  c:817,   nf:495,   ns:437 },
+    { k:'Interview',    sub:'Interview 1–4 incl. offline & Assessment Center', total:8032,   a:2193,  b:3430,  c:1042,  nf:628,   ns:739 },
+    { k:'Hired',        sub:'Hired status only (excl. Hired On Other Req)',    total:3027,   a:352,   b:683,   c:274,   nf:170,   ns:1548 }
+  ],
+  // Monthly A/B at Interview (Q2B)
+  interviewMonthly: [
+    { m:'Jul', total:2442, ab:1686, scored:2175 },
+    { m:'Aug', total:2251, ab:1589, scored:2049 },
+    { m:'Sep', total:3339, ab:2348, scored:3069 }
+  ],
+  // Job category, hired only (Q3A): [name, hired, A, B, C, NoFit, NoScore]
+  cats: [
+    ['Commercial Operations',1278,113,313,126,96,630],
+    ['Operations',772,80,150,78,37,427],
+    ['Other',311,84,104,35,21,67],
+    ['Finance',86,21,25,6,3,31],
+    ['People & Culture',76,13,22,5,3,33],
+    ['GBS Services',74,13,28,12,3,18],
+    ['Information Technology',55,15,24,7,2,7],
+    ['General Management',39,2,6,2,5,24],
+    ['Legal & Compliance',12,6,4,2,0,0],
+    ['PMI Strategy',11,3,4,0,0,4]
+  ],
+  catUnknown: 304,
+  // Country, hired only (Q3B, raw locale labels, top 60 labels with 5+ hires): [label, hired, A, B, C, NoFit, NoScore]
+  countryRaw: [
+    ['Indonesia',402,28,32,18,6,318],['United States',208,16,16,10,10,156],['Philippines',141,8,20,5,2,106],
+    ['Portugal',135,9,13,4,4,105],['Poland',82,12,36,10,4,20],['Turkey',70,4,4,5,2,55],['Pakistan',63,7,9,3,6,38],
+    ['Mexico',51,1,2,4,1,43],['Spain',50,1,10,6,3,30],['Greece',48,3,3,1,2,39],['Kazakhstan',47,0,2,0,1,44],
+    ['Italy',44,4,6,1,2,31],['Czechia',42,0,4,3,0,35],['Argentina',40,8,8,2,2,20],['Romania',36,2,20,5,5,4],
+    ['Japan',36,0,7,3,8,18],['Germany',33,2,13,2,4,12],['Brazil',29,2,13,5,2,7],['Colombia',28,4,7,3,2,12],
+    ['France',23,0,2,0,0,21],['Serbia',22,1,2,1,1,17],['United Kingdom',17,2,1,4,0,10],['İspanya',15,2,3,2,2,6],
+    ['Brasil',15,1,2,6,2,4],['Sweden',15,0,2,1,0,12],['Espanha',14,1,8,2,1,2],['Ispanija',14,0,3,4,2,5],
+    ['ポーランド',13,1,7,2,2,1],['Unknown',13,0,0,0,0,13],['Polonya',13,2,4,4,1,2],['Filipinas',13,1,6,1,1,4],
+    ['Польша',12,1,5,3,0,3],['Polen',12,3,5,1,1,2],['Uzbekistan',11,1,1,0,0,9],['Polônia',11,4,5,1,1,0],
+    ['South Africa',11,2,8,1,0,0],['Polonia',11,3,4,2,1,1],['Польща',11,1,8,0,1,1],['Denmark',10,0,1,0,2,7],
+    ['Ukraine',10,0,3,1,0,6],['Jordan',10,0,0,0,0,10],['Spania',10,1,3,1,0,5],['Filipinai',9,2,4,1,0,2],
+    ['Indonesie',9,3,4,1,0,1],['Kanada',9,2,5,0,2,0],['Казахстан',9,0,0,0,0,9],['Spanje',9,0,5,2,0,2],
+    ['Іспанія',9,1,4,2,0,2],['Brezilya',9,2,2,0,1,4],['Austria',9,1,1,4,2,1],['Netherlands',9,0,0,2,3,4],
+    ['スペイン',8,0,2,1,2,3],['Аргентина',8,2,3,3,0,0],['Cazaquistão',8,0,0,1,0,7],['Испания',8,0,4,1,2,1],
+    ['Espagne',8,0,4,2,1,1],['India',8,4,2,1,0,1],['Ισπανία',8,2,1,1,1,3],['บราซิล',7,0,3,1,0,3],['Hungary',7,1,3,1,0,2]
+  ],
+  countryAlias: {
+    'Spain':['İspanya','Espanha','Espanna','Ispanija','Spania','Spanje','Іспанія','スペイン','Испания','Espagne','Ισπανία'],
+    'Poland':['Polonya','ポーランド','Польша','Polen','Polônia','Polonia','Польща'],
+    'Philippines':['Filipinas','Filipinai'],
+    'Brazil':['Brasil','Brezilya','บราซิล'],
+    'Indonesia':['Indonesie'],
+    'Kazakhstan':['Казахстан','Cazaquistão'],
+    'Argentina':['Аргентина'],
+    'Canada':['Kanada']
+  },
+  // Monthly pipeline and TAF (Q4A–Q4D)
+  months: ['Jul','Aug','Sep'],
+  newApps: [81869,75244,77205],
+  tafTotal: [17183,11434,12057],
+  tafScored: [16129,10252,10915],
+  thumbsUp: [9550,7147,6984],
+  thumbsDown: [2479,2025,1409],
+  tafEvents: [ {m:'Jul',acc:4969,dec:3078,rej:9415}, {m:'Aug',acc:3495,dec:2940,rej:5106}, {m:'Sep',acc:3385,dec:3225,rej:6994} ],
+  // Top 30 recruiters (Q4E): [email, moves, scored, unscored, thumbsOnTaf]
+  recruiters: [
+    ['kat.dumlao@pmi.com',5193,4483,710,3357],['maffie.martin@pmi.com',3688,3467,221,2690],
+    ['agustinasol.rozenblum@pmi.com',2853,2827,26,2269],['magdalena.waligora@pmi.com',2158,1991,167,1603],
+    ['daniela.bruh@pmi.com',2066,1964,102,1156],['magdalena.karp@pmi.com',1792,1783,9,1388],
+    ['aljun.esquerida@pmi.com',1600,1573,27,1388],['bihter.onkaya@contracted.pmi.com',1463,1460,3,0],
+    ['natalia.ilnitchi@pmi.com',1269,1000,269,581],['david.levintant@contracted.pmi.com',1206,859,347,566],
+    ['jenny-rose.belbora@pmi.com',1179,1068,111,806],['angel.amago@pmi.com',1105,958,147,538],
+    ['yeldos.yerkin@contracted.pmi.com',1066,672,394,323],['maria-raluca.viertl@pmi.com',959,953,6,753],
+    ['kayla.randall@contracted.smpmi.com',903,903,0,0],['malgorzata.swietlik@pmi.com',780,775,5,640],
+    ['amanda.camposalves@pmi.com',700,700,0,366],['glory.enriquez@pmi.com',663,595,68,385],
+    ['zuzanna.zybala@pmi.com',650,644,6,427],['jennifer.krowczyk@contracted.smpmi.com',591,574,17,0],
+    ['natalia.korba@contracted.pmi.com',565,556,9,452],['florin-stefanita.diaconu@pmi.com',545,525,20,321],
+    ['marta.litwinowicz@pmi.com',395,394,1,280],['dimitris.elezis@pmi.com',340,0,340,0],
+    ['karolina.lasik@pmi.com',315,303,12,153],['joey.au@pmi.com',269,266,3,0],
+    ['natalia.swirska@pmi.com',269,251,18,0],['sonia.marquez@pmi.com',247,240,7,98],
+    ['anggraini.putri@contracted.sampoerna.com',213,143,70,0],['justyna.bieniek@pmi.com',191,191,0,129]
+  ]
+};
+
+/* ---------- helpers ---------- */
+const fmt = n => n.toLocaleString('en-US');
+const p1 = x => x.toFixed(1);
+const abPct = (a,b,c,nf) => (a+b) / (a+b+c+nf) * 100;
+const TARGET = 80;
+const COL = { a:'var(--a)', b:'var(--b)', c:'var(--c)', nf:'var(--nf)', ns:'var(--ns)' };
+const sum = (arr, f) => arr.reduce((s, x) => s + f(x), 0);
+
+/* derived headline numbers */
+const H = D.hires;
+const scored = H.a + H.b + H.c + H.nf;
+const abCount = H.a + H.b;
+const unscored = H.total - scored;
+const abRate = abCount / scored * 100;
+const gapPP = TARGET - Number(p1(abRate));
+const preScored = D.pre.a + D.pre.b + D.pre.c + D.pre.nf;
+const preAB = D.pre.a + D.pre.b;
+const preUnscored = D.pre.ij + D.pre.ul + D.pre.ip;
+const sensScored = scored + preScored;
+const sensAB = abCount + preAB;
+const F = Object.fromEntries(D.funnel.map(r => [r.k, r]));
+const fRate = r => abPct(r.a, r.b, r.c, r.nf);
+const fScored = r => r.a + r.b + r.c + r.nf;
+const applied = F['Applied'].total;
+const interview = F['Interview'];
+
+/* ---------- tab 1 ---------- */
+function donutSvg(segs){
+  const R = 70, C = 2 * Math.PI * R, total = sum(segs, s => s.n);
+  let off = 0, out = '';
+  segs.forEach(s => {
+    const len = s.n / total * C;
+    const gap = len > 4 ? 1.6 : 0;
+    out += `<circle cx="100" cy="100" r="${R}" fill="none" stroke="${s.color}" stroke-width="30" stroke-dasharray="${Math.max(len - gap, 0.5)} ${C}" stroke-dashoffset="${-off}" transform="rotate(-90 100 100)"><title>${s.label}: ${fmt(s.n)} (${p1(s.n/total*100)}%)</title></circle>`;
+    off += len;
+  });
+  return `<svg viewBox="0 0 200 200" role="img" aria-label="Donut chart of ${fmt(total)} hires by Fit Score status">${out}
+    <text x="100" y="97" text-anchor="middle" font-size="26" font-weight="700" fill="var(--ink)">${fmt(total)}</text>
+    <text x="100" y="116" text-anchor="middle" font-size="10" fill="var(--muted)" letter-spacing="1">HIRES</text></svg>`;
+}
+
+function tab1(){
+  const segs = [
+    { label:'Incomplete Job', n:H.ij, color:'var(--ij)' },
+    { label:'B Fit — Strong match', n:H.b, color:'var(--b)' },
+    { label:'A Fit — Top match', n:H.a, color:'var(--a)' },
+    { label:'Scored before Jul 1', n:H.pre, color:'var(--pre)' },
+    { label:'C Fit — Partial match', n:H.c, color:'var(--c)' },
+    { label:'Unsupported Language', n:H.ul, color:'var(--ul)' },
+    { label:'No Fit', n:H.nf, color:'var(--nf)' },
+    { label:'Incomplete Profile', n:H.ip, color:'var(--ip)' },
+    { label:'No score on file', n:H.none, color:'var(--none)' }
+  ];
+  const legend = segs.map(s => `<li><i style="background:${s.color}${s.color==='var(--none)'?';box-shadow:inset 0 0 0 1px var(--line)':''}"></i><span>${s.label}</span><span class="n">${fmt(s.n)}</span><span class="p">${p1(s.n/H.total*100)}%</span></li>`).join('');
+  const iv = fScored(interview), sc = fScored(F['Screening']);
+  return `
+  <div class="note warn"><p><b>How to read this report:</b> All numbers cover <b>Jul 1 – Sep 30, 2026</b> (data as of ${D.asOf}). Every percentage shows its exact numerator and denominator. "Scored hires" = candidates who received a valid Fit Score (A, B, C, or No Fit) in the window. "No Score" = no valid score in the window: Incomplete Job (blank matching criteria, often child requisitions), Incomplete Profile, Unsupported Language, a most recent score generated before July 1, or no score on file. Figures can differ slightly from earlier Jul–Aug and Jan–Aug reports because the underlying data continues to update.</p></div>
+
+  <section class="hero" aria-labelledby="hero-h">
+    <div class="big">${p1(abRate)}%</div>
+    <div>
+      <h2 id="hero-h">of <i>scored</i> hires in Jul – Sep 2026 were A or B rated</h2>
+      <p>Of the ${fmt(scored)} hires who received a valid score, ${fmt(abCount)} were rated A or B. Recruiters keep full control of every hiring decision.</p>
+      <div class="calc">
+        <span><b>How this is calculated:</b> ${fmt(abCount)} A or B hires ÷ ${fmt(scored)} scored hires (A+B+C+No Fit) = ${p1(abRate)}% · Hired status only · excludes ${fmt(unscored)} hires with no score in the window</span>
+        <span>Counting the ${fmt(H.pre)} hires whose latest score pre-dates July 1 as well: ${fmt(sensAB)} of ${fmt(sensScored)} scored hires are A or B (${p1(sensAB/sensScored*100)}%).</span>
+      </div>
+      <span class="pill">Jul – Sep 2026 · Scored hires only</span>
+    </div>
+  </section>
+
+  <div class="grid g3">
+    <div class="card kpi"><div class="lab">A/B at Interview</div><div class="val cg">${p1(fRate(interview))}%</div>
+      <p class="desc">${fmt(interview.a+interview.b)} of ${fmt(iv)} scored candidates at Interview are A or B rated</p>
+      <p class="foot">Jul – Sep 2026 · Scored candidates only (A+B+C+No Fit denominator)</p></div>
+    <div class="card kpi"><div class="lab">A/B at Screening</div><div class="val cb">${p1(fRate(F['Screening']))}%</div>
+      <p class="desc">${fmt(F['Screening'].a+F['Screening'].b)} of ${fmt(sc)} scored candidates at Screening are A or B rated</p>
+      <p class="foot">Jul – Sep 2026 · Scored candidates only</p></div>
+    <div class="card kpi"><div class="lab">PMI Target</div><div class="val co">${TARGET}%</div>
+      <p class="desc">of all hires to come from A or B candidates · enabling 10% CLE headcount savings</p>
+      <p class="foot">Current scored hire rate is ${p1(abRate)}% · Gap = ${gapPP.toFixed(1)}pp · Two actions in Tab 5</p></div>
+  </div>
+
+  <section class="card" aria-labelledby="d-h">
+    <h2 id="d-h">Fit Score Distribution at Hired Stage — Jul – Sep 2026</h2>
+    <p class="sub">Breakdown of all ${fmt(H.total)} candidates who reached "Hired" status in Jul – Sep 2026 by their most recent Fit Score. The ${p1(abRate)}% headline uses only the ${fmt(scored)} scored candidates as the denominator. This chart shows the full picture, including the ${fmt(unscored)} who had no score in the window.</p>
+    <div class="donutrow">
+      <div class="chart">${donutSvg(segs)}</div>
+      <ul class="legend">${legend}</ul>
+    </div>
+    <div class="explain"><b>Why ${fmt(unscored)} hires (${p1(unscored/H.total*100)}%) have no score in the window:</b>
+      <b>Incomplete Job</b> (${fmt(H.ij)}) are roles where matching criteria were blank, most likely child requisitions.
+      <b>Unsupported Language</b> (${fmt(H.ul)}): Gen 3 covers 17 languages, and these hires fell from ${D.ulByMonth.Jul} in July to ${D.ulByMonth.Sep} in September.
+      <b>Incomplete Profile</b> (${fmt(H.ip)}) are candidate profiles missing enough data to score.
+      <b>Scored before Jul 1</b> (${fmt(H.pre)}) have a score on file, but it was generated before the reporting window and not refreshed in it.
+      <b>No score on file</b> (${fmt(H.none)}) are under review. Recruiters retain full control over all hiring decisions regardless of score status.</div>
+  </section>`;
+}
+
+/* ---------- tab 2 ---------- */
+function lineChart(){
+  const W = 640, Hh = 270, L = 46, R = 26, T = 26, B = 34, ymin = 50, ymax = 90;
+  const pts = D.interviewMonthly.map(r => ({ m:r.m, v:r.ab / r.scored * 100, ab:r.ab, sc:r.scored }));
+  const x = i => L + (W - L - R) * (i + 0.5) / pts.length;
+  const y = v => T + (Hh - T - B) * (1 - (v - ymin) / (ymax - ymin));
+  let grid = '';
+  for (let v = ymin; v <= ymax; v += 10) grid += `<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width="1"/><text x="${L-8}" y="${y(v)+3.5}" text-anchor="end" font-size="10" fill="var(--muted)">${v}%</text>`;
+  const line = pts.map((p,i) => `${i?'L':'M'}${x(i)},${y(p.v)}`).join(' ');
+  const area = `${line} L${x(pts.length-1)},${y(ymin)} L${x(0)},${y(ymin)} Z`;
+  const dots = pts.map((p,i) => `<circle cx="${x(i)}" cy="${y(p.v)}" r="5" fill="var(--a)" stroke="var(--surface)" stroke-width="2"><title>${p.m}: ${p1(p.v)}% (${fmt(p.ab)} of ${fmt(p.sc)} scored)</title></circle>
+    <text x="${x(i)}" y="${y(p.v)-12}" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ink)">${p1(p.v)}%</text>
+    <text x="${x(i)}" y="${Hh-12}" text-anchor="middle" font-size="11" fill="var(--ink2)">${p.m}</text>`).join('');
+  return `<svg viewBox="0 0 ${W} ${Hh}" role="img" aria-label="A/B share at Interview by month: ${pts.map(p=>p.m+' '+p1(p.v)+'%').join(', ')}. Target ${TARGET}%.">
+    ${grid}
+    <line x1="${L}" x2="${W-R}" y1="${y(TARGET)}" y2="${y(TARGET)}" stroke="var(--orange)" stroke-width="1.5" stroke-dasharray="5 4"/>
+    <text x="${W-R}" y="${y(TARGET)-6}" text-anchor="end" font-size="10" font-weight="600" fill="var(--orange)">80% target</text>
+    <path d="${area}" fill="var(--a)" opacity=".10"/>
+    <path d="${line}" fill="none" stroke="var(--a)" stroke-width="2"/>
+    ${dots}</svg>`;
+}
+
+function tab2(){
+  const maxN = Math.max(...D.funnel.map(r => Math.max(r.a, r.b, r.c, r.nf, r.ns)));
+  const bandDef = [['a','A Fit','var(--a)'],['b','B Fit','var(--b)'],['c','C Fit','var(--c)'],['nf','No Fit','var(--ns)'],['ns','No Score','var(--ns)']];
+  const lblCol = { a:'var(--a)', b:'var(--b)', c:'var(--ink2)', nf:'var(--muted)', ns:'#8a5a00' };
+  const rows = D.funnel.map(r => {
+    const rt = fRate(r);
+    const cls = rt >= 75 ? 'cg' : rt >= 65 ? 'cb' : 'co';
+    const bars = ['a','b','c','nf','ns'].map(k => {
+      const w = r[k] / maxN;
+      const name = { a:'A Fit', b:'B Fit', c:'C Fit', nf:'No Fit', ns:'No Score' }[k];
+      return `<div class="brow"><span class="bar" style="width:calc((100% - 118px) * ${w.toFixed(4)});background:${COL[k]}"></span><span class="lb" style="color:${lblCol[k]}">${fmt(r[k])} ${name}</span></div>`;
+    }).join('');
+    return `<div class="fstage">
+      <div class="nm"><b>${r.k}</b><span>${r.sub}</span></div>
+      <div class="bars">${bars}</div>
+      <div class="pc"><strong class="${cls}">${p1(rt)}%</strong><span>A or B</span><span>${fmt(r.a+r.b)} / ${fmt(fScored(r))}</span><span>${fmt(r.total)} total</span></div>
+    </div>`;
+  }).join('');
+  const laterRates = D.funnel.slice(1).map(fRate);
+  const mo = D.interviewMonthly.map(r => ({ m:r.m, rt:r.ab / r.scored * 100, ab:r.ab, sc:r.scored }));
+  const hireRate = F['Hired'].total / applied * 100;
+  return `
+  <div class="chapter"><h2>Chapter 2 — Candidates who passed each stage (Jul – Sep 2026)</h2>
+    <p>Each stage shows how many unique candidate-job pairs ever passed through that stage at any point during Jul – Sep 2026, regardless of where they ended up. A candidate who applied, was screened, interviewed, and hired is counted in all four stages. This is a progression funnel, not a snapshot.</p></div>
+  <div class="note warn"><p><b>Funnel methodology:</b> Stage counts are unique candidate-job pairs ever recorded at that stage's confirmed SuccessFactors status value (per Jakub's July 15, 2026 mapping). A candidate appears in every stage they passed through. Fit Score band is the latest score generated in the Jul – Sep 2026 window. A/B % = (A+B) ÷ (A+B+C+No Fit), scored candidates only; No Score is excluded from the denominator. Each stage is counted independently, so totals can appear out of sequence (for example Interview ${fmt(interview.total)} against HM Shortlist ${fmt(F['HM Shortlist'].total)}). The A/B percentage at each stage is calculated within that stage and is not affected.</p></div>
+  <div class="grid g3">
+    <div class="card kpi"><div class="lab">Total entered pipeline</div><div class="val cb">${fmt(applied)}</div><p class="desc">Unique candidate-job pairs who ever reached New Application status</p><p class="foot">Source: RB_APPLICATIONS_DETAILS · Jul – Sep 2026</p></div>
+    <div class="card kpi"><div class="lab">Reached Interview</div><div class="val cg">${fmt(interview.total)}</div><p class="desc">Ever passed at least one Interview stage · ${p1(interview.total/applied*100)}% of all applicants shown</p><p class="foot">Jul – Sep 2026</p></div>
+    <div class="card kpi"><div class="lab">Overall hire rate</div><div class="val co">${hireRate.toFixed(2)}%</div><p class="desc">${fmt(F['Hired'].total)} hired ÷ ${fmt(applied)} applicants · Hired status only</p><p class="foot">Interview → Hired conversion calculated from data</p></div>
+  </div>
+  <section class="card" aria-labelledby="f-h"><h2 id="f-h">6-Stage Progression Funnel — Jul – Sep 2026</h2>
+    <p class="sub">Stages confirmed by Jakub Han on July 15, 2026. A/B % = (A+B) ÷ (A+B+C+No Fit), scored candidates only. The fraction is shown below each percentage, and the total count (including No Score) at the bottom.</p>
+    <div class="legrow"><span><i style="background:var(--a)"></i>A Fit — Top match</span><span><i style="background:var(--b)"></i>B Fit — Strong match</span><span><i style="background:var(--c)"></i>C Fit — Partial match</span><span><i style="background:var(--nf)"></i>No Fit</span><span><i style="background:var(--ns)"></i>No Score</span></div>
+    ${rows}
+    <div class="note good" style="margin-top:6px"><p><b>Key signal:</b> A/B share is ${p1(fRate(F['Applied']))}% at Applied and between ${p1(Math.min(...laterRates))}% and ${p1(Math.max(...laterRates))}% at every later stage.</p></div>
+  </section>
+  <section class="card chart" aria-labelledby="m-h"><h2 id="m-h">Monthly A/B Share at Interview Stage — Jul – Sep 2026</h2>
+    <p class="sub">Month-by-month A/B % for candidates at Interview stage. Scored candidates only. Month is the date of each candidate's latest Interview status.</p>
+    <div class="legrow"><span><i style="background:var(--a);border-radius:50%"></i>A/B % at Interview (scored only)</span><span><i style="background:transparent;border:1.5px dashed var(--orange);height:0;width:16px;border-radius:0"></i>80% target</span></div>
+    ${lineChart()}
+    <div class="note info" style="margin-top:8px"><p><b>Trend:</b> A/B at Interview was ${mo.map(r => `${p1(r.rt)}% in ${({Jul:'July',Aug:'August',Sep:'September'})[r.m]}`).join(', ').replace(/, ([^,]*)$/, ' and $1')} (September: ${fmt(mo[2].ab)} A/B of ${fmt(mo[2].sc)} scored).</p></div>
+  </section>`;
+}
+
+/* ---------- tab 3 ---------- */
+function rateCell(ab, n, withTag){
+  if (!n) return `<span class="tgt x">n/a</span>`;
+  const r = Number(p1(ab / n * 100));
+  const col = r >= TARGET ? 'var(--a)' : r >= 70 ? 'var(--b)' : 'var(--orange)';
+  return `<div class="rate"><span class="tr"><span class="fl" style="width:${Math.min(r,100)}%;background:${col}"></span></span><b>${p1(r)}%</b></div>`;
+}
+function vsCell(ab, n){
+  if (!n) return `<span class="tgt x">n/a</span>`;
+  const r = Number(p1(ab / n * 100)), d = r - TARGET;
+  if (d >= 0) return `<span class="tgt ok">✓ At target</span>`;
+  return `<span class="tgt ${d >= -5 ? 'm' : 'h'}">−${Math.abs(d).toFixed(1)}pp</span>`;
+}
+function bandRow(name, hired, a, b, c, nf, ns, lowN){
+  const sc = a + b + c + nf;
+  return `<tr><td class="l">${name}${lowN && sc < 20 ? '<span class="lown">low n</span>' : ''}</td><td>${fmt(hired)}</td>
+    <td><span class="chip a">${a}</span></td><td><span class="chip b">${b}</span></td><td><span class="chip c">${c}</span></td><td><span class="chip n">${nf}</span></td><td><span class="chip s">${fmt(ns)}</span></td>
+    <td>${fmt(sc)}</td><td>${rateCell(a + b, sc)}</td><td>${vsCell(a + b, sc)}</td></tr>`;
+}
+function consolidate(){
+  const alias = {};
+  Object.entries(D.countryAlias).forEach(([canon, list]) => list.forEach(l => alias[l] = canon));
+  const m = new Map();
+  D.countryRaw.forEach(([label, h, a, b, c, nf, ns]) => {
+    const k = alias[label] || label;
+    const cur = m.get(k) || [k, 0, 0, 0, 0, 0, 0];
+    [h, a, b, c, nf, ns].forEach((v, i) => cur[i + 1] += v);
+    m.set(k, cur);
+  });
+  return [...m.values()];
+}
+let countrySort = 'hires';
+function countryRows(){
+  const rows = consolidate();
+  const known = rows.filter(r => r[0] !== 'Unknown');
+  const unk = rows.filter(r => r[0] === 'Unknown');
+  const rate = r => { const s = r[2]+r[3]+r[4]+r[5]; return s ? (r[2]+r[3]) / s : -1; };
+  known.sort(countrySort === 'rate' ? (x, y) => rate(y) - rate(x) || y[1] - x[1] : (x, y) => y[1] - x[1]);
+  return known.concat(unk).map(r => bandRow(r[0], r[1], r[2], r[3], r[4], r[5], r[6], true)).join('');
+}
+
+function tab3(){
+  const cats = D.cats.map(r => ({ r, s: r[2]+r[3]+r[4]+r[5] })).sort((x, y) => (y.s ? (y.r[2]+y.r[3])/y.s : -1) - (x.s ? (x.r[2]+x.r[3])/x.s : -1));
+  const catRows = cats.map(({r}) => bandRow(r[0], r[1], r[2], r[3], r[4], r[5], r[6], true)).join('')
+    + `<tr><td class="l">Not scored in window</td><td>${fmt(D.catUnknown)}</td><td colspan="5" style="color:var(--muted)">Category comes from the Fit Score record, so these hires have no category split</td><td>0</td><td><span class="tgt x">n/a</span></td><td><span class="tgt x">n/a</span></td></tr>`;
+  const covered = sum(consolidate(), r => r[1]);
+  const head = `<thead><tr><th>Country</th><th>Total hires</th><th>A</th><th>B</th><th>C</th><th>No Fit</th><th>No Score</th><th>Scored hires</th><th>A/B rate (scored)</th><th>vs 80% target</th></tr></thead>`;
+  return `
+  <div class="chapter"><h2>Chapter 3 — Performance by job category and country · Jul – Sep 2026</h2>
+    <p>Fit Score performance varies by job category. Finance, People &amp; Culture and Information Technology (each with 40+ scored hires) are above the 80% target on their scored hires. All figures are Hired status only, and scored candidates only for A/B %. No Score is shown separately.</p></div>
+  <div class="note warn"><p><b>How A/B % is calculated:</b> A/B % = (A + B) ÷ (A + B + C + No Fit) per row. No Score is excluded from the denominator because the rate measures quality when Fit Score can score. "Total Hires" includes No Score. "low n" marks rows with fewer than 20 scored hires, where a single hire moves the rate noticeably. Categories with fewer than 10 hires are not shown. Salary Grade and Function filters are not available in this dashboard; use Report Builder for row-level filtering.</p></div>
+  <section class="card" aria-labelledby="c-h"><h2 id="c-h">A/B Hire Rate by Job Category — Jul – Sep 2026 · Hired Only · Scored Candidates</h2>
+    <p class="sub">Sorted by A/B rate, descending. Source: FACT_CRM_FITSCORE joined to RB_APPLICATIONS_DETAILS.</p>
+    <div class="scroll"><table><thead><tr><th>Job category</th><th>Total hires</th><th>A</th><th>B</th><th>C</th><th>No Fit</th><th>No Score</th><th>Scored hires</th><th>A/B rate (scored)</th><th>vs 80% target</th></tr></thead><tbody>${catRows}</tbody></table></div>
+    <div class="note info" style="margin-top:12px"><p><b>Key observations:</b> Several categories carry a large No Score share. Those hires are excluded from the A/B rate, so each rate reflects scored hires only. Tab 5 covers what drives No Score.</p></div>
+  </section>
+  <section class="card" aria-labelledby="k-h"><h2 id="k-h">A/B Hire Rate by Country — Jul – Sep 2026 · Hired Only · Scored Candidates</h2>
+    <p class="sub">Country names consolidated to English from multilingual source data (DIM_JOBS stores one row per locale translation of each job).</p>
+    <div class="seg" role="group" aria-label="Sort countries"><button type="button" id="s-hires" aria-pressed="true">Most hires</button><button type="button" id="s-rate" aria-pressed="false">Highest A/B rate</button></div>
+    <div class="scroll tall"><table>${head}<tbody id="country-body">${countryRows()}</tbody></table></div>
+    <p class="hint">This view covers ${fmt(covered)} of ${fmt(H.total)} hires (${p1(covered/H.total*100)}%). Job-country labels with fewer than 5 hires are not listed, so some country totals may be understated. Country is a static view for Jul – Sep 2026. For dynamic filtering by country, salary grade, or function, the Report Builder export is the right tool. We are happy to add specific country cuts as separate tabs if needed.</p>
+  </section>`;
+}
+
+/* ---------- tab 4 ---------- */
+function stackChart(){
+  const W = 640, Hh = 300, L = 58, R = 16, T = 28, B = 36, ymax = 18000;
+  const y = v => T + (Hh - T - B) * (1 - v / ymax);
+  let grid = '';
+  for (let v = 0; v <= ymax; v += 3000) grid += `<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${L-8}" y="${y(v)+3.5}" text-anchor="end" font-size="10" fill="var(--muted)">${fmt(v)}</text>`;
+  const slot = (W - L - R) / D.tafEvents.length, cw = 110;
+  let cols = '';
+  D.tafEvents.forEach((r, i) => {
+    const x0 = L + slot * i + (slot - cw) / 2;
+    let base = 0;
+    [['acc','Accepted','var(--a)','#fff'],['dec','Declined','var(--ns)','var(--ink)'],['rej','Rejected','var(--nf)','var(--ink)']].forEach(([k, name, col, tc]) => {
+      const v = r[k], yt = y(base + v), yb = y(base), h = yb - yt;
+      cols += `<rect x="${x0}" y="${yt + 1}" width="${cw}" height="${Math.max(h - 2, 1)}" fill="${col}" rx="2"><title>${r.m} · ${name}: ${fmt(v)}</title></rect>`;
+      if (h > 18) cols += `<text x="${x0 + cw/2}" y="${(yt + yb)/2 + 4}" text-anchor="middle" font-size="11" font-weight="600" fill="${tc}">${fmt(v)}</text>`;
+      base += v;
+    });
+    cols += `<text x="${x0 + cw/2}" y="${y(base) - 8}" text-anchor="middle" font-size="11" font-weight="700" fill="var(--ink)">${fmt(base)}</text><text x="${x0 + cw/2}" y="${Hh - 14}" text-anchor="middle" font-size="11" fill="var(--ink2)">${r.m}</text>`;
+  });
+  return `<svg viewBox="0 0 ${W} ${Hh}" role="img" aria-label="TAF status events by month, stacked: accepted, declined, rejected">${grid}${cols}</svg>`;
+}
+
+function flowRows(i){
+  const maxV = Math.max(...D.newApps);
+  const sc = D.tafScored[i] / D.tafTotal[i] * 100;
+  const defs = [
+    ['New Applications', D.newApps[i], 'var(--b)', 'Candidates entering pipeline', ''],
+    ['TAF Screened — Scored', D.tafScored[i], 'var(--a)', `${p1(sc)}% had Fit Score · thumbs possible`, 'g'],
+    ['TAF Screened — No Score', D.tafTotal[i] - D.tafScored[i], 'var(--ns)', 'No Fit Score · thumbs not possible', 'o'],
+    ['Thumbs Up', D.thumbsUp[i], 'var(--purple)', 'UI click events · all candidates', ''],
+    ['Thumbs Down (vol. only)', D.thumbsDown[i], 'var(--c)', 'Candidate attribution unavailable · under investigation', '']
+  ];
+  return defs.map(([name, v, col, ann, ac]) => {
+    const w = Math.max(v / maxV * 100, 0.6);
+    const inside = w > 14;
+    return `<div class="frow"><span>${name}</span><div class="tk"><div class="fi ${inside ? '' : 'out'}" style="width:${inside ? w : 0}%;background:${inside ? col : 'none'}">${inside ? fmt(v) : ''}</div>${inside ? '' : `<div class="fi out" style="left:calc(${w}% + 6px)"><span style="display:inline-block;width:${w}%;"></span>${fmt(v)}</div>`}</div><span class="ann ${ac}">${ann}</span></div>`;
+  }).join('');
+}
+// Small bars: draw the colored stub plus label (kept separate so tiny widths stay visible)
+function flowRowsFixed(i){
+  const maxV = Math.max(...D.newApps);
+  const sc = D.tafScored[i] / D.tafTotal[i] * 100;
+  const defs = [
+    ['New Applications', D.newApps[i], 'var(--b)', 'Candidates entering pipeline', ''],
+    ['TAF Screened — Scored', D.tafScored[i], 'var(--a)', `${p1(sc)}% had Fit Score · thumbs possible`, 'g'],
+    ['TAF Screened — No Score', D.tafTotal[i] - D.tafScored[i], 'var(--ns)', 'No Fit Score · thumbs not possible', 'o'],
+    ['Thumbs Up', D.thumbsUp[i], 'var(--purple)', 'UI click events · all candidates', ''],
+    ['Thumbs Down (vol. only)', D.thumbsDown[i], 'var(--c)', 'Candidate attribution unavailable · under investigation', '']
+  ];
+  return defs.map(([name, v, col, ann, ac]) => {
+    const w = Math.max(v / maxV * 100, 0.8);
+    const inside = w > 15;
+    const label = `<span style="font-size:11px;font-weight:600;color:${inside ? '#fff' : 'var(--ink)'};padding:0 8px;white-space:nowrap">${fmt(v)}</span>`;
+    return `<div class="frow"><span>${name}</span>
+      <div class="tk" style="overflow:visible;background:var(--line2)"><div style="height:20px;width:${w}%;background:${col};border-radius:4px;display:flex;align-items:center;position:relative">${inside ? label : ''}${inside ? '' : `<span style="position:absolute;left:calc(100% + 6px);font-size:11px;font-weight:600;white-space:nowrap">${fmt(v)}</span>`}</div></div>
+      <span class="ann ${ac}">${ann}</span></div>`;
+  }).join('');
+}
+
+function tab4(){
+  const totNew = sum(D.newApps, v => v), totTaf = sum(D.tafTotal, v => v), totSc = sum(D.tafScored, v => v);
+  const peakI = D.tafScored.map((s, i) => s / D.tafTotal[i]).reduce((bi, v, i, a) => v > a[bi] ? i : bi, 0);
+  const peak = D.tafScored[peakI] / D.tafTotal[peakI] * 100;
+  const mName = { Jul:'July', Aug:'August', Sep:'September' };
+  const fbScored = sum(D.recruiters, r => r[2]), fbThumbs = sum(D.recruiters, r => r[4]);
+  const rows = D.recruiters.map(r => {
+    const [em, mv, s, u, t] = r;
+    const sp = s / mv * 100, fr = s ? t / s * 100 : null;
+    const spCol = sp >= 90 ? 'var(--a)' : sp >= 75 ? 'var(--b)' : 'var(--orange)';
+    const frCol = fr === null ? 'var(--line2)' : fr >= 75 ? 'var(--a)' : fr >= 55 ? 'var(--b)' : 'var(--orange)';
+    const frTxt = fr === null ? `<span class="tgt x">—</span>` : fr === 0 ? `<div class="rate"><span class="tr"></span><b class="cr">0.0%</b></div>` : `<div class="rate"><span class="tr"><span class="fl" style="width:${fr}%;background:${frCol}"></span></span><b>${p1(fr)}%</b></div>`;
+    return `<tr><td class="l">${em}</td><td>${fmt(mv)}</td><td style="color:var(--a);font-weight:600">${fmt(s)}</td><td style="color:var(--orange);font-weight:600">${fmt(u)}</td>
+      <td><div class="rate" style="min-width:130px"><span class="tr"><span class="fl" style="width:${sp}%;background:${spCol}"></span></span><b>${p1(sp)}%</b></div></td>
+      <td style="color:var(--purple);font-weight:600">${fmt(t)}</td><td>${frTxt}</td></tr>`;
+  }).join('');
+  return `
+  <div class="chapter"><h2>Chapter 4 — Recruiter adoption and TAF screening activity · Jul – Sep 2026</h2>
+    <p>Monthly pipeline flow, TAF screening coverage, and per-recruiter Fit Score feedback analysis. All figures cover Jul – Sep 2026.</p></div>
+  <div class="note warn"><p><b>Data sources:</b> TAF screening counts from RB_APPLICATIONS_DETAILS (monthly) and RB_RECRUITER_ACTIVITY (per recruiter). Thumbs up and down from FACT_CRM_OVERALL_ACTIONS (UI event log; counts clicks, not unique decisions). <b>Important:</b> thumbs-down events have NULL Candidate ID and Job ID in the database, a confirmed data instrumentation gap under investigation by engineering. Thumbs-down volume is shown but cannot be attributed to specific candidates.</p></div>
+  <div class="grid g4">
+    <div class="card kpi"><div class="lab">Total new applications</div><div class="val cb">${fmt(totNew)}</div><p class="desc">Candidate-job pairs entering New Application status, summed by month · Jul – Sep 2026</p></div>
+    <div class="card kpi"><div class="lab">Total TAF screened</div><div class="val cg">${fmt(totTaf)}</div><p class="desc">Moved to any TAF step, summed by month · % with Fit Score shown in chart below</p></div>
+    <div class="card kpi"><div class="lab">Peak scored % at TAF</div><div class="val co">${p1(peak)}%</div><p class="desc">Best month for Fit Score coverage at TAF screening (${mName[D.months[peakI]]} 2026)</p></div>
+    <div class="card kpi"><div class="lab">Feedback rate, top 30</div><div class="val cp">${p1(fbThumbs / fbScored * 100)}%</div><p class="desc">% of scored TAF candidates who received thumbs-up feedback from their own screener (top 30 recruiters)</p></div>
+  </div>
+  <section class="card" aria-labelledby="p-h"><h2 id="p-h">Monthly Pipeline Flow — Jul – Sep 2026</h2>
+    <p class="sub">Five bars per month: New Applications entering the pipeline, TAF Screened with a Fit Score (thumbs possible), TAF Screened without one (thumbs not possible), Thumbs Up, and Thumbs Down (volume only, candidate attribution unavailable). All bars share one scale.</p>
+    ${D.months.map((m, i) => `<div class="mon"><h3>${m} 2026</h3>${flowRowsFixed(i)}</div>`).join('')}
+    <div class="note good" style="margin-top:14px"><p><b>TAF coverage:</b> ${D.months.map((m, i) => `${p1(D.tafScored[i]/D.tafTotal[i]*100)}% of TAF-screened candidates had a Fit Score in ${mName[m]}`).join(', ').replace(/, ([^,]*)$/, ' and $1')} (${p1(totSc/totTaf*100)}% across the quarter).</p></div>
+  </section>
+  <section class="card chart" aria-labelledby="t-h"><h2 id="t-h">TAF Screening Step Breakdown — Jul – Sep 2026</h2>
+    <p class="sub">Three confirmed TAF statuses per Jakub's July 15 mapping. Event-level counts from RB_APPLICATIONS_DETAILS, not distinct candidate-job pairs.</p>
+    <div class="legrow"><span><i style="background:var(--a)"></i>TAF Accepted</span><span><i style="background:var(--ns)"></i>TAF Declined</span><span><i style="background:var(--nf)"></i>TAF Rejected</span></div>
+    ${stackChart()}
+  </section>
+  <section class="card" aria-labelledby="r-h"><h2 id="r-h">Top 30 Recruiters — TAF Activity · Fit Score Feedback on Own Screened Candidates · Jul – Sep 2026</h2>
+    <p class="sub">TAF Moves = unique candidate-job pairs moved to any TAF status. Scored TAF = those with a valid Fit Score. Thumbs-up on own TAF = times this recruiter gave a thumbs-up on a scored candidate they personally screened (strict match: same recruiter, same candidate, same job). Feedback Rate = thumbs-up on own TAF ÷ Scored TAF.</p>
+    <div class="scroll tall"><table style="min-width:820px"><thead><tr><th>Recruiter email</th><th>TAF moves</th><th>Scored TAF</th><th>Unscored TAF</th><th>Scored %</th><th>Thumbs-up on own TAF</th><th>Feedback rate</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <div class="note info" style="margin-top:12px"><p><b>How to read Feedback Rate:</b> a high rate means the recruiter regularly gives feedback on Fit Score for candidates they screen. A rate of 0% means no thumbs-up was recorded for that recruiter; it can reflect recruiter behavior or how feedback is captured. Thumbs-down is not part of this strict match because of the instrumentation gap above, which is under engineering investigation.</p></div>
+  </section>`;
+}
+
+/* ---------- tab 5 ---------- */
+function tab5(){
+  const R = [
+    ['Incomplete Job', H.ij, 'Blank matching criteria, most likely child requisitions', '<span style="color:var(--orange);font-weight:600">▲ Child requisition linkage under investigation</span>'],
+    ['Unsupported Language', H.ul, 'Job or CV language outside scoring coverage', `<span style="color:var(--a);font-weight:600">✓ Gen 3 covers 17 languages</span> · ${D.ulByMonth.Jul} hires in July, ${D.ulByMonth.Aug} in August, ${D.ulByMonth.Sep} in September`],
+    ['Incomplete Profile', H.ip, 'Candidate profile missing data for scoring', 'Recruiter can prompt candidate to complete profile'],
+    ['Scored before Jul 1', H.pre, 'Latest score generated before the reporting window and not refreshed in it', `Counted as No Score in this report. ${fmt(preScored)} carry an A, B, C or No Fit band on file (${fmt(preAB)} A or B); ${fmt(preUnscored)} carry an Incomplete or Unsupported Language status`],
+    ['No score on file', H.none, 'No score record found for this candidate-job pair', 'Under review']
+  ];
+  const rows = R.map(r => `<tr><td class="l" style="white-space:normal">${r[0]}</td><td>${fmt(r[1])}</td><td>${p1(r[1]/H.total*100)}%</td><td style="white-space:normal;min-width:220px">${r[2]}</td><td style="white-space:normal;min-width:260px">${r[3]}</td></tr>`).join('')
+    + `<tr style="background:#f7f9fc"><td class="l">All no-score hires</td><td><b>${fmt(unscored)}</b></td><td><b>${p1(unscored/H.total*100)}%</b></td><td colspan="2"></td></tr>`;
+  return `
+  <div class="chapter"><h2>Chapter 5 — Path to 80% and unresolved gaps · Jul – Sep 2026</h2>
+    <p>PMI's target is 80% of hires from A or B candidates. The current scored hire rate is ${p1(abRate)}%, a gap of ${gapPP.toFixed(1)} percentage points. This tab explains the two actions that address the gap and the open question on child requisitions.</p></div>
+  <div class="grid g3">
+    <div class="card kpi"><div class="lab">Current A/B hire rate (scored)</div><div class="val cg">${p1(abRate)}%</div><p class="desc">${fmt(abCount)} A or B hires ÷ ${fmt(scored)} scored hires · Jul – Sep 2026 · Hired status only</p></div>
+    <div class="card kpi"><div class="lab">PMI target</div><div class="val co">${TARGET}%</div><p class="desc">of all hires to come from A or B candidates · enabling 10% CLE headcount savings</p></div>
+    <div class="card kpi"><div class="lab">Gap to close</div><div class="val cr">${gapPP.toFixed(1)}pp</div><p class="desc">Closeable through: reducing No Score at hire and completing job matching criteria</p></div>
+  </div>
+  <section class="card" aria-labelledby="n-h"><h2 id="n-h">No Score Breakdown at Hired Stage — Jul – Sep 2026</h2>
+    <p class="sub">Of ${fmt(H.total)} total hires in Jul – Sep 2026, ${fmt(unscored)} (${p1(unscored/H.total*100)}%) had no score in the window. Breakdown by reason:</p>
+    <div class="scroll"><table><thead><tr><th>Reason</th><th>Hired count</th><th>% of all hires</th><th>Root cause</th><th>Resolution</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <p class="hint">Sensitivity: counting the ${fmt(H.pre)} earlier-scored hires, ${fmt(sensAB)} of ${fmt(sensScored)} scored hires are A or B (${p1(sensAB/sensScored*100)}%), against ${p1(abRate)}% as reported. ${fmt(256)} of the ${fmt(H.pre)} were July hires.</p>
+  </section>
+  <div class="item risk"><h3>▲ Open item: Child requisition Fit Score linkage</h3><p>PMI uses a parent/child requisition structure. Child requisitions have blank matching criteria by design, which triggers "Incomplete Job" score status. Currently these hires are counted without a Fit Score. A mechanism to match candidate ID across parent and child requisitions is under engineering investigation, with no confirmed timeline. The A/B rate shown covers scored hires only.</p></div>
+  <div class="item"><h3>Action 1 — Gen 3 language coverage</h3><p>Gen 3 has been active for PMI since July 1, 2026 and covers 17 languages with cross-lingual scoring. Hires with an Unsupported Language status fell from ${D.ulByMonth.Jul} in July to ${D.ulByMonth.Sep} in September. No action is required from PMI.</p></div>
+  <div class="item"><h3>Action 2 — Complete job matching criteria before posting</h3><p>Incomplete Job is the largest no-score group (${fmt(H.ij)} hires, ${p1(H.ij/H.total*100)}% of all hires). Short-term action: make sure requisitions have complete matching criteria set before posting. This is the highest-leverage action available to raise the share of hires with a Fit Score.</p></div>
+  <div class="note warn"><p><b>Dashboard limitations:</b> Dynamic filtering by Country, Salary Grade, and Function is not supported in this dashboard. For row-level recruiter data, individual candidate scores, or filtering by date sub-range, the Report Builder export (configured with Leon) is the right tool.</p></div>`;
+}
+
+/* ---------- shell ---------- */
+const TABS = [
+  ['hiring','1. Hiring Outcomes',tab1],
+  ['funnel','2. Funnel Signal',tab2],
+  ['category','3. By Job Category',tab3],
+  ['recruiters','4. Recruiter Adoption',tab4],
+  ['path','5. Path to 80%',tab5]
+];
+const tabsEl = document.getElementById('tabs'), panelsEl = document.getElementById('panels');
+TABS.forEach(([id, label, fn]) => {
+  const b = document.createElement('button');
+  b.type = 'button'; b.role = 'tab'; b.id = 'tab-' + id; b.textContent = label;
+  b.setAttribute('aria-controls', 'panel-' + id);
+  b.addEventListener('click', () => show(id));
+  tabsEl.appendChild(b);
+  const p = document.createElement('section');
+  p.className = 'panel'; p.id = 'panel-' + id; p.setAttribute('role', 'tabpanel'); p.setAttribute('aria-labelledby', 'tab-' + id);
+  p.innerHTML = fn();
+  panelsEl.appendChild(p);
+});
+function show(id, noHash){
+  TABS.forEach(([t]) => {
+    const on = t === id;
+    const b = document.getElementById('tab-' + t);
+    b.setAttribute('aria-selected', on ? 'true' : 'false');
+    b.tabIndex = on ? 0 : -1;
+    document.getElementById('panel-' + t).hidden = !on;
+    if (on) b.scrollIntoView({ block:'nearest', inline:'nearest' });
+  });
+  if (!noHash) { try { history.replaceState(null, '', '#' + id); } catch (e) {} }
+  window.scrollTo(0, 0);
+}
+tabsEl.addEventListener('keydown', e => {
+  const ids = TABS.map(t => t[0]);
+  const cur = ids.findIndex(t => document.getElementById('tab-' + t).getAttribute('aria-selected') === 'true');
+  let n = null;
+  if (e.key === 'ArrowRight') n = (cur + 1) % ids.length;
+  if (e.key === 'ArrowLeft') n = (cur + ids.length - 1) % ids.length;
+  if (n !== null) { show(ids[n]); document.getElementById('tab-' + ids[n]).focus(); e.preventDefault(); }
+});
+function setSort(mode){
+  countrySort = mode;
+  document.getElementById('country-body').innerHTML = countryRows();
+  document.getElementById('s-hires').setAttribute('aria-pressed', mode === 'hires');
+  document.getElementById('s-rate').setAttribute('aria-pressed', mode === 'rate');
+}
+document.getElementById('s-hires').addEventListener('click', () => setSort('hires'));
+document.getElementById('s-rate').addEventListener('click', () => setSort('rate'));
+const start = (location.hash || '').replace('#', '');
+show(TABS.some(t => t[0] === start) ? start : 'hiring', true);
+window.scrollTo(0, 0);
+</script>
+
+</body></html>
